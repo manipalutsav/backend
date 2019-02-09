@@ -18,4 +18,5 @@ app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+require("./routes/users")(app);
 module.exports = app;
