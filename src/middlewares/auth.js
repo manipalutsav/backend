@@ -4,14 +4,14 @@ const jwt = require("../utils/jwt");
 
 
 /**
-  * Checks if user is authenticated (requires permission integration)
+  * Checks if user is authenticated
   * @module isAuthenticated
 */
 const isAuthenticated = async (req, res, next) => {
   let response = {
     success: false,
     message: undefined
-  }
+  };
 
   const token = req.cookies.token;
 
