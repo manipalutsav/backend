@@ -1,4 +1,4 @@
-const FLAGS = {
+const USER_TYPES = {
   ADMINISTRATOR: 1 << 0,
   FACULTY_COORDINATOR: 1 << 1,
   STUDENT_COORDINATOR: 1 << 2,
@@ -7,5 +7,5 @@ const FLAGS = {
 };
 
 module.exports = {
-  FLAGS,
+  USER_TYPES,
 };
