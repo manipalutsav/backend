@@ -12,7 +12,7 @@
   "scripts": {
     "test": "yarn test:lint",
     "test:lint": "./node_modules/.bin/eslint .",
-    "start": "node ./src/app"
+    "start": "node ."
   },
   "dependencies": {
     "bcrypt": "^3.0.4",
@@ -22,7 +22,8 @@
     "express": "^4.16.4",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
-    "mongoose": "^5.4.10"
+    "mongoose": "^5.4.10",
+    "morgan": "^1.9.1"
   },
   "devDependencies": {
     "eslint": "^5.13.0",
