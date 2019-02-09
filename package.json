@@ -12,15 +12,17 @@
   "scripts": {
     "test": "yarn test:lint",
     "test:lint": "./node_modules/.bin/eslint .",
-    "start": "node ."
+    "start": "node ./src/app"
   },
   "dependencies": {
     "bcrypt": "^3.0.4",
+    "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "lodash": "^4.17.11",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "mongoose": "^5.4.10"
   },
   "devDependencies": {
     "eslint": "^5.13.0",
