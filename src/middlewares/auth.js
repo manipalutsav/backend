@@ -2,38 +2,27 @@
 
 const jwt = require("../utils/jwt");
 
-
-/**
-  * Checks if user is authenticated
-  * @module isAuthenticated
-*/
-const isAuthenticated = async (req, res, next) => {
+exports.authenticate = async (req, res, next) => {
   let response = {
     success: false,
-    message: undefined
+    message: "Unauthorized. ",
   };
 
   const token = req.cookies.token;
 
-  if(token) {
-    try {
-      let data = await jwt.verifyToken(token);
-      next();
-    } catch (err) {
-      response = {
-        ...response,
-        message: error
-      }
+  if (!token) {
+    response.message += "Someone ate my cookie!";
 
-      res.status(200).json(response);
-    }
+    return res.status(401).json(response);
+  }
 
-  } else {
-    response = {
-      ...response,
-      message : 'Cookie undefined.'
-    }
+  try {
+    await jwt.verifyToken(token);
+
+    next();
+  } catch (e) {
+    response.message += e.toString();
 
     res.status(401).json(response);
   }
-}
+};
