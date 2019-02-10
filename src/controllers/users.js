@@ -37,17 +37,15 @@ const register = async (req, res) => {
 
     payload.save((err) => {
       if (err) {
-        res.json(err);
+        res.status(400).json(err);
       }
-      res.json({
+      res.status(200).json({
         message: "New user created",
-        status: 200,
       });
     });
   } else {
-    res.json({
+    res.status(406).json({
       message: "User already exists",
-      status: 406,
     });
   }
 };
