@@ -4,12 +4,14 @@ const userModel = require("../models/users");
 const hash = require("../utils/hash");
 
 /**
- * register new user
- * @param {requestersId, name, email, contact, type, password, collegeId, teams} req
- * @param {status} res
+ * Registers new user into the system.
+ * @param {object} req The request object
+ * @param {object} res The response object
+ * @returns {void}
  */
 const register = async (req, res) => {
   let {
+    // eslint-disable-next-line no-unused-vars
     requestersId,
     name,
     email,
