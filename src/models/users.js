@@ -2,11 +2,10 @@
 let mongoose = require("mongoose");
 
 let usersSchema = new mongoose.Schema({
-  id: Number,
   name: String,
   email: String,
   contact: [ Number ],
-  permissions: Number,
+  type: Number,
   password: String,
   collegeId: Number,
   regNo: Number,
