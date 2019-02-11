@@ -2,6 +2,7 @@
 
 const userModel = require("../models/users");
 const hash = require("../utils/hash");
+const jwt = require("../utils/jwt");
 
 /**
  * Registers new user into the system.
@@ -52,6 +53,42 @@ const register = async (req, res) => {
   }
 };
 
+/**
+ * logins user into the system.
+ * @param {object} req The request object
+ * @param {object} res The response object
+ * @returns {void}
+ */
+const login = async(req, res) => {
+  let {
+    email,
+    password,
+  } = req.body;
+
+  let user = await userModel.find({ email: email });
+
+  if(!user.length) {
+    return res.status(404).json({
+      message : "User not found",
+    });
+  }
+
+  let isValid = await hash.comparePasswordHash(password, user[0].password);
+
+  if(isValid) {
+    const token = jwt.generateToken(user[0].email);
+
+    res.cookie("token", token).status(200).json({
+      message: "User authenticated",
+    });
+  } else {
+    res.status(403).json({
+      message: "User authentication failed",
+    });
+  }
+};
+
 module.exports = {
   register,
+  login,
 };
