@@ -3,50 +3,57 @@
 const jwt = require("jsonwebtoken");
 
 /**
-  * PRIVATE_KEY will be kept as an env variable, temporarily holding it here
-  * @constant
-  * @type {string}
-*/
-const PRIVATE_KEY = "something";
-
-/**
-  * Default expiry time for jwt token set to 1 hour
-  * @constant
-  * @type {number}
-*/
+ * The default expiry time for JWT.
+ * @constant
+ * @type {number}
+ * @default
+ */
 const EXPIRY_TIME = 60 * 60;
 
 /**
-  * Generates a token for a payload with a given expiry time
-  * @module generateToken
-  * @param {string} payload The payload that has to be tokenized
-  * @param {number} expiryTime The expiry time for the token
-  * @returns {promise<string>} The generated token
-*/
+ * Generates a JWT for the payload with a given expiry time.
+ * @module generateToken
+ * @param {string|object} payload The payload for which the JWT is to be
+ * generated.
+ * @param {number|string} expiryTime The expiry time for the JWT (in seconds) or
+ * a timestamp (represented using string).
+ * @returns {Promise<string>} The generated JWT
+ */
 const generateToken = (payload, expiryTime = EXPIRY_TIME) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let token = await jwt.sign(payload, PRIVATE_KEY, { expiresIn: expiryTime });
+      let token;
+
+      if (typeof payload === "object") {
+        token = await jwt.sign(payload, process.env.HMAC_SECRET_KEY,
+          { expiresIn: expiryTime }
+        );
+      } else if (typeof payload === "string") {
+        // String payloads doesn't support `exp`. Why?
+        token = await jwt.sign(payload, process.env.HMAC_SECRET_KEY);
+      }
+
       resolve(token);
-    } catch (err) {
-      reject(err);
+    } catch (e) {
+      reject(e);
     }
   });
 };
 
 /**
-  * Verifies token for validity
-  * @module verifyToken
-  * @param {string} token The token to be verified
-  * @returns {promise<string>} The decoded token
-*/
+ * Verifies JWT for authenticity
+ * @module verifyToken
+ * @param {string} token The JWT to be authenticated
+ * @returns {Promise<string|object>} The decoded payload
+ */
 const verifyToken = (token) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let decoded = await jwt.verify(token, PRIVATE_KEY);
-      resolve(decoded);
-    } catch (err) {
-      reject(err);
+      let payload = await jwt.verify(token, process.env.HMAC_SECRET_KEY);
+
+      resolve(payload);
+    } catch (e) {
+      reject(e);
     }
   });
 };
