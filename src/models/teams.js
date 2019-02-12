@@ -1,12 +1,11 @@
 let mongoose = require("mongoose");
 
-let teamsSchema = new mongoose.Schema({
-  id: Number,
-  participants: [ Number ],
+let teamSchema = new mongoose.Schema({
+  participants: [ String ],
   maxParticipants: Number,
   minParticipants: Number,
-  collegeId: Number,
+  collegeId: String,
   disqualified: Boolean,
 });
 
-module.exports = mongoose.model("Teams", teamsSchema);
+module.exports = mongoose.model("Team", teamSchema);
