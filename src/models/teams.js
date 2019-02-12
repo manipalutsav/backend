@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 const teamSchema = new mongoose.Schema({
-  participants: [ String ],
-  maxParticipants: Number,
-  minParticipants: Number,
   collegeId: String,
+  participants: [ String ],
+  eventID: String,
   disqualified: Boolean,
 });
 
