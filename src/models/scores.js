@@ -1,15 +1,14 @@
 let mongoose = require("mongoose");
 
-let ScoresSchema = new mongoose.Schema({
-  id: Number,
-  round: String,
-  team: Number,
+let scoreSchema = new mongoose.Schema({
+  // Format: RoundID.TeamID
+  id: String,
   judges: [
     {
-      id: Number,
+      id: String,
       points: [ Number ],
     },
   ],
 });
 
-module.exports = mongoose.model("Scores", ScoresSchema);
+module.exports = mongoose.model("Score", scoreSchema);
