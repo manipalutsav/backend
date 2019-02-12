@@ -7,6 +7,8 @@ const eventSchema = new mongoose.Schema({
   collegeId: String,
   teams: [ String ],
   maxTeams: Number,
+  minParticipants: Number,
+  maxParticipants: Number,
   venue: String,
   description: String,
   duration: Number,
