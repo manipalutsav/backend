@@ -1,9 +1,8 @@
 let mongoose = require("mongoose");
 
-let judgesSchema = new mongoose.Schema({
-  id: Number,
+let judgeSchema = new mongoose.Schema({
   name: String,
   rounds: [ String ],
 });
 
-module.exports = mongoose.model("Judges", judgesSchema);
+module.exports = mongoose.model("Judge", judgeSchema);
