@@ -1,17 +1,18 @@
 let mongoose = require("mongoose");
 
-let eventsSchema = new mongoose.Schema({
-  id: 2828,
-  rounds: [ Number ],
+let eventSchema = new mongoose.Schema({
+  // Format for RoundID: EventID.RoundNumber
+  rounds: [ String ],
   name: String,
-  collegeId: Number,
-  teams: [ Number ],
+  collegeId: String,
+  teams: [ String ],
   maxTeams: Number,
   venue: String,
   description: String,
   duration: Number,
   startDate: Date,
   endDate: Date,
+  slottable: Boolean,
 });
 
-module.exports = mongoose.model("Events", eventsSchema);
+module.exports = mongoose.model("Event", eventSchema);
