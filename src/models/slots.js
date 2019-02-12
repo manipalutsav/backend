@@ -1,6 +1,6 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let slotSchema = new mongoose.Schema({
+const slotSchema = new mongoose.Schema({
   slotNo: Number,
   round: String,
   team: String,

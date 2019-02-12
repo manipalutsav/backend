@@ -1,6 +1,6 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let judgeSchema = new mongoose.Schema({
+const judgeSchema = new mongoose.Schema({
   name: String,
   rounds: [ String ],
 });

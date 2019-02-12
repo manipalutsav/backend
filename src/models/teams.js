@@ -1,6 +1,6 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let teamSchema = new mongoose.Schema({
+const teamSchema = new mongoose.Schema({
   participants: [ String ],
   maxParticipants: Number,
   minParticipants: Number,

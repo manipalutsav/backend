@@ -1,6 +1,6 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let scoreSchema = new mongoose.Schema({
+const scoreSchema = new mongoose.Schema({
   // Format: RoundID.TeamID
   id: String,
   judges: [
