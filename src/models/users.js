@@ -1,15 +1,15 @@
-
 let mongoose = require("mongoose");
 
-let usersSchema = new mongoose.Schema({
+let userSchema = new mongoose.Schema({
+  // Registration Number
+  id: String,
   name: String,
   email: String,
-  contact: [ Number ],
+  contact: String,
   type: Number,
   password: String,
-  collegeId: Number,
-  regNo: Number,
-  teams: [ Number ],
+  collegeId: String,
+  faculty: Boolean,
 });
 
-module.exports = mongoose.model("Users", usersSchema);
+module.exports = mongoose.model("User", userSchema);
