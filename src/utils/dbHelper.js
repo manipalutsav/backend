@@ -12,8 +12,11 @@ class Database {
     this._ip = process.env.MONGODB_IP || "127.0.0.1";
     this._port = process.env.MONGODB_PORT;
     this._host = this._ip + ":" + this._port;
-    this._database = process.env.MONGODB_DATABASE;
     this.uri = "mongodb://" + this._host + "/" + this._database;
+    this.options = {
+      useNewUrlParser: true,
+      dbName: process.env.MONGODB_DATABASE,
+    };
 
     this._connect();
   }
@@ -23,12 +26,9 @@ class Database {
    * @returns {void}
    */
   _connect() {
-    mongoose.connect(this.uri, { useNewUrlParser: true }).then(() => {
+    mongoose.connect(this.uri, this.options).then(() => {
       // eslint-disable-next-line no-console
       console.log("Database connection successful");
-    }).catch(err => {
-      // eslint-disable-next-line no-console
-      console.error("Database connection error: " + err);
     });
   }
 }
