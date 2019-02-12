@@ -1,9 +1,8 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let collegesSchema = new mongoose.Schema({
-  id: Number,
+const collegeSchema = new mongoose.Schema({
   name: String,
   location: String,
 });
 
-module.exports = mongoose.model("Colleges", collegesSchema);
+module.exports = mongoose.model("College", collegeSchema);
