@@ -5,8 +5,7 @@ const schema = {
     type: String,
     required: true,
   },
-  // TODO: Should it be rounds instead?
-  events: [ mongoose.Schema.Types.ObjectId ],
+  rounds: [ mongoose.Schema.Types.ObjectId ],
 };
 
 const options = {
