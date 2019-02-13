@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 
-const eventSchema = new mongoose.Schema({
-  // Format for RoundID: EventID.RoundNumber
-  rounds: [ String ],
-  name: String,
-  collegeId: String,
-  teams: [ String ],
-  maxTeams: Number,
+const schema = {
+  rounds: [ mongoose.Schema.Types.ObjectId ],
+  name: {
+    type: String,
+    required: true,
+  },
+  college: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  teams: [ mongoose.Schema.Types.ObjectId ],
   minParticipants: Number,
   maxParticipants: Number,
   venue: String,
@@ -14,7 +18,17 @@ const eventSchema = new mongoose.Schema({
   duration: Number,
   startDate: Date,
   endDate: Date,
-  slottable: Boolean,
-});
+  slottable: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+};
+
+const options = {
+  autoCreate: true,
+};
+
+const eventSchema = new mongoose.Schema(schema, options);
 
 module.exports = mongoose.model("Event", eventSchema);
