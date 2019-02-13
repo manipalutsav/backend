@@ -22,4 +22,4 @@ const options = {
 
 const eventSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("Event", eventSchema);
+module.exports = mongoose.model("Round", eventSchema);
