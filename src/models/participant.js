@@ -37,4 +37,4 @@ const options = {
 
 const partialUserSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("PartialUser", partialUserSchema);
+module.exports = mongoose.model("Participant", partialUserSchema);
