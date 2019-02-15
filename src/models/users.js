@@ -1,4 +1,3 @@
-
 let mongoose = require("mongoose");
 
 let usersSchema = new mongoose.Schema({
@@ -10,6 +9,7 @@ let usersSchema = new mongoose.Schema({
   collegeId: Number,
   regNo: Number,
   teams: [ Number ],
+  isAdmin: Boolean,
 });
 
 module.exports = mongoose.model("Users", usersSchema);

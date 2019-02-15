@@ -64,7 +64,7 @@ const login = async(req, res) => {
     email,
     password,
   } = req.body;
-
+  
   let user = await userModel.find({ email: email });
 
   if(!user.length) {
@@ -77,10 +77,11 @@ const login = async(req, res) => {
 
   if(isValid) {
     const token = jwt.generateToken(user[0].email);
-
-    res.cookie("token", token).status(200).json({
-      message: "User authenticated",
-    });
+    let userData = {
+      email:user[0].email,
+      name:user[0].name,
+    };
+    res.cookie("token", token).status(200).json(userData);
   } else {
     res.status(403).json({
       message: "User authentication failed",
