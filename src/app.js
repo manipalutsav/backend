@@ -12,6 +12,10 @@ dotenv.config();
 // eslint-disable-next-line no-unused-vars
 const db = require("./utils/dbHelper");
 
+// Middlewares
+const handle404 = require("./middlewares/handle404");
+const errorHandler = require("./middlewares/errorHandler");
+
 // Configure application
 app.use(logger("dev"));
 app.use(bodyParser.json());
@@ -21,5 +25,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const usersRouter = require("./routes/users");
 
 app.use("/users", usersRouter);
+
+// Error handlers
+app.use(handle404);
+app.use(errorHandler);
 
 module.exports = app;
