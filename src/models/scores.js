@@ -1,15 +1,20 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let ScoresSchema = new mongoose.Schema({
-  id: Number,
-  round: String,
-  team: Number,
+const schema = {
+  team: mongoose.Schema.Types.ObjectId,
+  round: mongoose.Schema.Types.ObjectId,
   judges: [
     {
-      id: Number,
+      id: mongoose.Schema.Types.ObjectId,
       points: [ Number ],
     },
   ],
-});
+};
 
-module.exports = mongoose.model("Scores", ScoresSchema);
+const options = {
+  autoCreate: true,
+};
+
+const scoreSchema = new mongoose.Schema(schema, options);
+
+module.exports = mongoose.model("Score", scoreSchema);

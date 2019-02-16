@@ -1,9 +1,20 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let collegesSchema = new mongoose.Schema({
-  id: Number,
-  name: String,
-  location: String,
-});
+const schema = {
+  name: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+};
 
-module.exports = mongoose.model("Colleges", collegesSchema);
+const options = {
+  autoCreate: true,
+};
+
+const collegeSchema = new mongoose.Schema(schema, options);
+
+module.exports = mongoose.model("College", collegeSchema);

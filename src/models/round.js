@@ -1,20 +1,11 @@
 const mongoose = require("mongoose");
 
 const schema = {
-  rounds: [ mongoose.Schema.Types.ObjectId ],
-  name: {
-    type: String,
-    required: true,
-  },
-  college: {
+  event: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   teams: [ mongoose.Schema.Types.ObjectId ],
-  minParticipants: Number,
-  maxParticipants: Number,
-  venue: String,
-  description: String,
   duration: Number,
   startDate: Date,
   endDate: Date,
@@ -31,4 +22,4 @@ const options = {
 
 const eventSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("Event", eventSchema);
+module.exports = mongoose.model("Round", eventSchema);

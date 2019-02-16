@@ -1,9 +1,18 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let slotsSchema = new mongoose.Schema({
-  slotNo: Number,
-  team: Number,
-  round: String,
-});
+const schema = {
+  number: {
+    type: Number,
+    required: true,
+  },
+  round: mongoose.Schema.Types.ObjectId,
+  team: mongoose.Schema.Types.ObjectId,
+};
 
-module.exports = mongoose.model("Slots", slotsSchema);
+const options = {
+  autoCreate: true,
+};
+
+const slotSchema = new mongoose.Schema(schema, options);
+
+module.exports = mongoose.model("Slot", slotSchema);

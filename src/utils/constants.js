@@ -1,9 +1,8 @@
 const USER_TYPES = {
   ADMINISTRATOR: 1 << 0,
-  FACULTY_COORDINATOR: 1 << 1,
-  STUDENT_COORDINATOR: 1 << 2,
-  JUDGE: 1 << 3,
-  PARTICIPANT: 1 << 4,
+  SUPPORT_TEAM: 1 << 1,
+  FACULTY_COORDINATOR: 1 << 2,
+  STUDENT_COORDINATOR: 1 << 3,
 };
 
 module.exports = {

@@ -1,9 +1,17 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let judgesSchema = new mongoose.Schema({
-  id: Number,
-  name: String,
-  rounds: [ String ],
-});
+const schema = {
+  name: {
+    type: String,
+    required: true,
+  },
+  rounds: [ mongoose.Schema.Types.ObjectId ],
+};
 
-module.exports = mongoose.model("Judges", judgesSchema);
+const options = {
+  autoCreate: true,
+};
+
+const judgeSchema = new mongoose.Schema(schema, options);
+
+module.exports = mongoose.model("Judge", judgeSchema);

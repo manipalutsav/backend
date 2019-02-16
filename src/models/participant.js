@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const schema = {
+  registrationID: {
+    // TODO: Add `match: RegExp` to validate registration number.
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -16,16 +21,12 @@ const schema = {
     type: String,
     required: true,
   },
-  type: {
-    type: Number,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
   college: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  faculty: {
+    type: Boolean,
     required: true,
   },
 };
@@ -34,6 +35,6 @@ const options = {
   autoCreate: true,
 };
 
-const userSchema = new mongoose.Schema(schema, options);
+const partialUserSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Participant", partialUserSchema);

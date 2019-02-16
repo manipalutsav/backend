@@ -1,12 +1,26 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let teamsSchema = new mongoose.Schema({
-  id: Number,
-  participants: [ Number ],
-  maxParticipants: Number,
-  minParticipants: Number,
-  collegeId: Number,
-  disqualified: Boolean,
-});
+const schema = {
+  event: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  college: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  members: [ mongoose.Schema.Types.ObjectId ],
+  disqualified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+};
 
-module.exports = mongoose.model("Teams", teamsSchema);
+const options = {
+  autoCreate: true,
+};
+
+const teamSchema = new mongoose.Schema(schema, options);
+
+module.exports = mongoose.model("Team", teamSchema);
