@@ -15,11 +15,13 @@ const db = require("./utils/dbHelper");
 // Middlewares
 const handle404 = require("./middlewares/handle404");
 const errorHandler = require("./middlewares/errorHandler");
+const headers = require("./middlewares/headers");
 
 // Configure application
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(headers);
 
 // Routes
 const usersRouter = require("./routes/users");
