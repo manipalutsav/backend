@@ -1,6 +1,6 @@
 "use strict";
 
-exports.setHeaders = (_req, res, next) => {
+module.exports = (_req, res, next) => {
   /**
    * This header improves the protection of web applications against
    * Clickjacking.
