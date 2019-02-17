@@ -24,9 +24,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
 
 // Routes
-const usersRouter = require("./routes/users");
+const userRouter = require("./routes/user");
 
-app.use("/users", usersRouter);
+app.use("/user", userRouter);
 
 // Error handlers
 app.use(handle404);
