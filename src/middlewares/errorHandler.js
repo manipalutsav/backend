@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = (err, req, res, _next) => {
+module.exports = (err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
@@ -10,4 +10,6 @@ module.exports = (err, req, res, _next) => {
     status: errorStatus,
     message: res.locals.message,
   });
+
+  next();
 };
