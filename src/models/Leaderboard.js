@@ -5,7 +5,7 @@ const schema = {
   points: {
     type: Number,
     required: true,
-  }
+  },
 };
 
 const options = {

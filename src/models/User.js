@@ -14,7 +14,6 @@ const schema = {
   mobile: {
     // TODO: Add `match: RegExp` to validate mobile number.
     type: String,
-    required: true,
   },
   type: {
     type: Number,
@@ -26,7 +25,6 @@ const schema = {
   },
   college: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
   },
 };
 

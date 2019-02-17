@@ -12,7 +12,7 @@ class Database {
     this._ip = process.env.MONGODB_IP || "127.0.0.1";
     this._port = process.env.MONGODB_PORT;
     this._host = this._ip + ":" + this._port;
-    this.uri = "mongodb://" + this._host + "/" + this._database;
+    this.uri = "mongodb://" + this._host;
     this.options = {
       useNewUrlParser: true,
       dbName: process.env.MONGODB_DATABASE,

@@ -2,7 +2,7 @@
 
 const jwt = require("../utils/jwt");
 
-exports.authenticate = async (req, res, next) => {
+module.exports = async (req, res, next) => {
   let response = {
     success: false,
     message: "Unauthorized. ",

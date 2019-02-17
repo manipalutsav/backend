@@ -7,8 +7,6 @@ const schema = {
   },
   teams: [ mongoose.Schema.Types.ObjectId ],
   duration: Number,
-  startDate: Date,
-  endDate: Date,
   slottable: {
     type: Boolean,
     required: true,
