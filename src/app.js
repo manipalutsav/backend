@@ -13,6 +13,8 @@ dotenv.config();
 const db = require("./utils/dbHelper");
 
 // Middlewares
+// TODO: Implement auth middleware
+// const auth = require("./middlewares/auth");
 const handle404 = require("./middlewares/handle404");
 const errorHandler = require("./middlewares/errorHandler");
 const headers = require("./middlewares/headers");
