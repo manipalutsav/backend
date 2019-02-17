@@ -1,6 +1,6 @@
 "use strict";
 
-const userModel = require("../models/users");
+const UserModel = require("../models/User");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
@@ -24,10 +24,10 @@ const register = async (req, res) => {
     teams,
   } = req.body;
 
-  let user = await userModel.find({ email: email });
+  let user = await UserModel.find({ email: email });
   let hashPassword = await hash.generatePasswordHash(password);
   if (!user.length) {
-    let payload = new userModel({
+    let payload = new UserModel({
       name: name,
       email: email,
       contact: contact,
@@ -65,7 +65,7 @@ const login = async(req, res) => {
     password,
   } = req.body;
 
-  let user = await userModel.find({ email: email });
+  let user = await UserModel.find({ email: email });
 
   if(!user.length) {
     return res.status(404).json({
