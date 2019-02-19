@@ -8,9 +8,9 @@ const JudgeModel = require("../models/Judge");
  * @param {object} res The response object
  * @returns {void}
  */
-const register = async (req, res) => {
+const register = (req, res) => {
   let {
-    name
+    name,
   } = req.body;
 
   let judge = new JudgeModel({
@@ -30,10 +30,10 @@ const register = async (req, res) => {
       data: {
         id: judge._id,
         name: judge.name,
-      }
+      },
     });
   });
-}
+};
 
 /**
  * Get all judges.
@@ -48,16 +48,16 @@ const get = async (req, res) => {
       status: 404,
       message : "No judge found",
     });
-  };
+  }
 
   res.status(200).json({
     status: 200,
     message: "Found " + judges.length + " judges",
-    data: judges
+    data: judges,
   });
-} 
+};
 
 module.exports = {
   register,
-  get
+  get,
 };
