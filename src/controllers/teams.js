@@ -1,6 +1,7 @@
 "use strict";
 
 const TeamsModel = require("../models/Team");
+const { addBulkParticipants } = require("./participant");
 
 /**
  * Add new team into the system.
@@ -8,12 +9,14 @@ const TeamsModel = require("../models/Team");
  * @param {object} res The response object
  * @returns {void}
  */
-exports.createTeam = (req, res) => {
+exports.createTeam = async (req, res) => {
   let {
     event,
     college,
-    members,
+    participants,
   } = req.body;
+
+  let members = await addBulkParticipants(participants);
 
   let payload = new TeamsModel({
     event,
@@ -24,13 +27,11 @@ exports.createTeam = (req, res) => {
   payload.save((err) => {
     if (err) {
       console.error(err);
-
       return res.status(500).json({
         status: 500,
         message: "Bad Request",
       });
     }
-
     return res.status(200).json({
       status: 200,
       message: "Team Created",
@@ -50,8 +51,7 @@ exports.getTeam = async (req, res) => {
   return res.json({
     status: 200,
     message: "Success",
-    // Awaiting Members creation
-    data: { team },
+    data: { members : team.members },
   });
 };
 

@@ -26,8 +26,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
 
 // Routes
+const teamRouter = require("./routes/team");
 const userRouter = require("./routes/user");
 
+app.use("/team", teamRouter);
 app.use("/user", userRouter);
 
 // Error handlers
