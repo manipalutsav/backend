@@ -27,8 +27,12 @@ app.use(headers);
 
 // Routes
 const userRouter = require("./routes/user");
+const judgeRouter = require("./routes/judge");
+const judgesRouter = require("./routes/judges");
 
 app.use("/user", userRouter);
+app.use("/judge", judgeRouter);
+app.use("/judges", judgesRouter);
 
 // Error handlers
 app.use(handle404);

@@ -7,6 +7,6 @@ const {
   register,
 } = require("../controllers/judges");
 
-router.post("/judge/register", register);
+router.post("/register", register);
 
 module.exports = router;

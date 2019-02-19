@@ -1,6 +1,6 @@
 "use strict";
 
-const JudgeModel = require("../model/Judge");
+const JudgeModel = require("../models/Judge");
 
 /**
  * Registers new judge into the system.
@@ -17,7 +17,7 @@ const register = async (req, res) => {
     name: name,
   });
 
-  payload.save((err) => {
+  judge.save((err) => {
     if (err) {
       return res.status(500).json({
         status: 500,

@@ -7,6 +7,6 @@ const {
   get,
 } = require("../controllers/judges");
 
-router.get("/judges", get);
+router.get("/", get);
 
 module.exports = router;
