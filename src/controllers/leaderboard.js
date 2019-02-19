@@ -2,8 +2,8 @@
 
 const LeaderboardModel = require("../models/Leaderboard");
 
-const get = async (req, res, next) => {
-  let leaderboard = await Leaderboard.find();
+const getAll = async (req, res, next) => {
+  let leaderboard = await LeaderboardModel.find();
 
   return res.json({
     status: 200,
