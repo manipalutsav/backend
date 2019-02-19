@@ -21,7 +21,7 @@ const register = async (req, res) => {
     college,
   } = req.body;
 
-  //TODO Use requestersID for validating permission
+  // TODO Use requestersID for validating permission
 
   let user = await UserModel.findOne({ email: email });
 
@@ -37,14 +37,19 @@ const register = async (req, res) => {
 
     payload.save((err) => {
       if (err) {
-        res.status(400).json(err);
+        return res.status(500).json({
+          status: 500,
+          message: "Internal server error",
+        });
       }
       res.status(200).json({
+        status: 200,
         message: "New user created",
       });
     });
   } else {
     res.status(406).json({
+      status: 406,
       message: "User already exists",
     });
   }
@@ -63,9 +68,9 @@ const login = async(req, res) => {
   } = req.body;
 
   let user = await UserModel.findOne({ email: email });
-  
   if(!user) {
     return res.status(404).json({
+      status: 404,
       message : "User not found",
     });
   }
@@ -76,10 +81,17 @@ const login = async(req, res) => {
     const token = jwt.generateToken(user.email);
 
     res.cookie("token", token).status(200).json({
-      message: "User authenticated",
+      status: 200,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        type: user.type,
+      },
     });
   } else {
     res.status(403).json({
+      status: 403,
       message: "User authentication failed",
     });
   }
