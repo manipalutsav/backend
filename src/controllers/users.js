@@ -16,26 +16,23 @@ const register = async (req, res) => {
     requestersId,
     name,
     email,
-    contact,
     type,
     password,
-    collegeId,
-    regNo,
-    teams,
+    college,
   } = req.body;
 
-  let user = await UserModel.find({ email: email });
+  //TODO Use requestersID for validating permission
+
+  let user = await UserModel.findOne({ email: email });
+
   let hashPassword = await hash.generatePasswordHash(password);
-  if (!user.length) {
+  if (!user) {
     let payload = new UserModel({
       name: name,
       email: email,
-      contact: contact,
       type: type,
       password: hashPassword,
-      collegeId: collegeId,
-      regNo: regNo,
-      teams: teams,
+      college: college,
     });
 
     payload.save((err) => {
@@ -65,18 +62,18 @@ const login = async(req, res) => {
     password,
   } = req.body;
 
-  let user = await UserModel.find({ email: email });
-
-  if(!user.length) {
+  let user = await UserModel.findOne({ email: email });
+  
+  if(!user) {
     return res.status(404).json({
       message : "User not found",
     });
   }
 
-  let isValid = await hash.comparePasswordHash(password, user[0].password);
+  let isValid = await hash.comparePasswordHash(password, user.password);
 
   if(isValid) {
-    const token = jwt.generateToken(user[0].email);
+    const token = jwt.generateToken(user.email);
 
     res.cookie("token", token).status(200).json({
       message: "User authenticated",
