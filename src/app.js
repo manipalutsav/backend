@@ -27,11 +27,13 @@ app.use(headers);
 
 // Routes
 const userRouter = require("./routes/user");
+const collegeRouter = require("./routes/college");
 const leaderboardRouter = require("./routes/leaderboard");
 const slotRouter = require("./routes/slot");
 const slotsRouter = require("./routes/slots");
 
 app.use("/user", userRouter);
+app.use("/college", collegeRouter);
 app.use("/leaderboard", leaderboardRouter);
 app.use("/slot", slotRouter);
 app.use("/slots", slotsRouter);
