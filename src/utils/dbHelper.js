@@ -33,4 +33,19 @@ class Database {
   }
 }
 
-module.exports = new Database();
+const closeConnection = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      mongoose.connection.close(() => {
+        resolve();
+      });
+    } catch (e) {
+      reject(e);  
+    }
+  });
+}
+
+module.exports = {
+  Database,
+  closeConnection,
+}
