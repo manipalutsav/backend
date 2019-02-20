@@ -5,6 +5,6 @@ const router = express.Router();
 
 const { getAll } = require("../controllers/leaderboard");
 
-router.get("/", getAll)
+router.get("/", getAll);
 
 module.exports = router;
