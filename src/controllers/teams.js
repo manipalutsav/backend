@@ -1,6 +1,8 @@
 "use strict";
 
-const TeamsModel = require("../models/Team");
+const TeamModel = require("../models/Team");
+const EventModel = require("../models/Event");
+
 const { addBulkParticipants } = require("./participant");
 
 /**
@@ -16,37 +18,48 @@ exports.createTeam = async (req, res) => {
     participants,
   } = req.body;
 
+
+  // Check if participation limit reached
+  let participatedTeams = await TeamModel.find({college: college});
+  let eventInfo = await EventModel.findOne(event);
+  if(participatedTeams.length === eventInfo.maxParticpants) {
+    return res.status(401).json({
+      status: 416,
+      message: "Max participation limit reached",
+    })
+  }
+
   let members = await addBulkParticipants(participants);
 
-  let payload = new TeamsModel({
+  let team = new TeamModel({
     event,
     college,
     members,
   });
 
-  payload.save((err) => {
+  team.save((err) => {
     if (err) {
-      console.error(err);
       return res.status(500).json({
         status: 500,
-        message: "Bad Request",
+        message: "Internal server error",
       });
     }
     return res.status(200).json({
       status: 200,
-      message: "Team Created",
+      message: "Team created",
+      data: team,
     });
   });
 };
 
 /**
- * Fetch Teams details.
+ * Fetch team details.
  * @param {object} req The request object
  * @param {object} res The response object
  * @returns {void}
  */
 exports.getTeam = async (req, res) => {
-  let team = await TeamsModel.findById({ id: req.params.id });
+  let team = await TeamModel.findById({ id: req.params.id });
 
   return res.json({
     status: 200,
