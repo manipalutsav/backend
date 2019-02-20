@@ -35,6 +35,6 @@ const options = {
   autoCreate: true,
 };
 
-const partialUserSchema = new mongoose.Schema(schema, options);
+const participantSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("Participant", partialUserSchema);
+module.exports = mongoose.model("Participant", participantSchema);
