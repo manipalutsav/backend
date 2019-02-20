@@ -18,6 +18,6 @@ const options = {
   autoCreate: true,
 };
 
-const eventSchema = new mongoose.Schema(schema, options);
+const roundSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("Round", eventSchema);
+module.exports = mongoose.model("Round", roundSchema);

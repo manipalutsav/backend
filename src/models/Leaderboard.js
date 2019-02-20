@@ -12,6 +12,6 @@ const options = {
   autoCreate: true,
 };
 
-const judgeSchema = new mongoose.Schema(schema, options);
+const leaderboardSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("Leaderboard", judgeSchema);
+module.exports = mongoose.model("Leaderboard", leaderboardSchema);
