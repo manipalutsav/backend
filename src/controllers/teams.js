@@ -20,13 +20,13 @@ exports.createTeam = async (req, res) => {
 
 
   // Check if participation limit reached
-  let participatedTeams = await TeamModel.find({college: college});
+  let participatedTeams = await TeamModel.find({ college: college });
   let eventInfo = await EventModel.findOne(event);
   if(participatedTeams.length === eventInfo.maxParticpants) {
     return res.status(401).json({
       status: 416,
       message: "Max participation limit reached",
-    })
+    });
   }
 
   let members = await addBulkParticipants(participants);

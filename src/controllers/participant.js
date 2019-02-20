@@ -30,6 +30,7 @@ exports.addParticipant = (req, res) => {
 
   payload.save((err) => {
     if (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       return res.status(500).json({
         status: 500,
@@ -46,7 +47,7 @@ exports.addParticipant = (req, res) => {
 /**
  * Insert Participents in bulk.
  * @param {object} data The request object
- * @returns {Array}
+ * @returns {Array} The members id
  */
 exports.addBulkParticipants = (data) => {
   return new Promise(async (resolve, reject) => {
