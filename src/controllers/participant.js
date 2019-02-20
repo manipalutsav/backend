@@ -1,6 +1,6 @@
 "use strict";
 
-const ParticipantModal = require("../models/Participant");
+const ParticipantModel = require("../models/Participant");
 
 /**
  * Add new Participant into the system.
@@ -19,7 +19,7 @@ exports.addParticipant = (req, res) => {
     faculty,
   } = req.body;
 
-  let payload = new ParticipantModal({
+  let payload = new ParticipantModel({
     registrationID,
     name,
     email,
@@ -53,7 +53,7 @@ exports.addBulkParticipants = (data) => {
     try {
       let members = [];
       await data.map(each => {
-        let participant = new ParticipantModal({
+        let participant = new ParticipantModel({
           registrationID: each.registrationID,
           name: each.name,
           email: each.email,
@@ -81,7 +81,7 @@ exports.addBulkParticipants = (data) => {
  * @returns {void}
  */
 exports.getParticipant = async (req, res) => {
-  let participant = await ParticipantModal.findById({ id: req.params.id });
+  let participant = await ParticipantModel.findById({ id: req.params.id });
 
   return res.json({
     status: 200,
