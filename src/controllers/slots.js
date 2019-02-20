@@ -2,7 +2,7 @@
 
 const SlotModel = require("../models/Slot");
 
-const getByRound = async (req, res, next) => {
+const getByRound = async (req, res) => {
   let slots = await SlotModel.find({
     round: req.params.round,
   });
@@ -14,7 +14,7 @@ const getByRound = async (req, res, next) => {
   });
 }
 
-const getByTeam = async (req, res, next) => {
+const getByTeam = async (req, res) => {
   let slots = await SlotModel.find({
     team: req.params.team,
   });
@@ -26,7 +26,7 @@ const getByTeam = async (req, res, next) => {
   });
 }
 
-const getForTeam = async (req, res, next) => {
+const getForTeam = async (req, res) => {
   let slots = await SlotModel.find({
     round: req.params.round,
     team: req.params.team,
@@ -38,3 +38,9 @@ const getForTeam = async (req, res, next) => {
     data: slots,
   });
 }
+
+module.exports = {
+  getByRound,
+  getByTeam,
+  getForTeam,
+};
