@@ -9,5 +9,6 @@ const {
 } = require("../controllers/teams");
 
 router.post("/add", createTeam);
+router.get("/:id", getTeam);
 
 module.exports = router;
