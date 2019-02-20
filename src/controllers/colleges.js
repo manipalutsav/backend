@@ -34,6 +34,14 @@ const getCollege = async (req, res, next) => {
   return res.json({
     status: 200,
     message: "Success",
-    data: { college.name, college.location },
+    data: {
+      name: college.name,
+      location: college.location,
+    },
   });
 }
+
+module.exports = {
+  createCollege,
+  getCollege,
+};
