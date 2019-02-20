@@ -10,7 +10,8 @@ dotenv.config();
 
 // Will be used soon.
 // eslint-disable-next-line no-unused-vars
-const db = require("./utils/dbHelper");
+const dbClass = require("./utils/dbHelper").Database;
+const db = new dbClass();
 
 // Middlewares
 // TODO: Implement auth middleware

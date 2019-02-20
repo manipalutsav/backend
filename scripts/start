@@ -4,6 +4,11 @@
 
 const app = require("../src/app");
 const http = require("http");
+const db = require("../src/utils/dbHelper");
+const commands = require("../src/utils/constants").COMMANDS;
+
+// Create custom commands for emoji logging
+commands.forEach(({ name, emoji }) => console[name] = (...args) => console.log(emoji + ' ' + args.join(', ')));
 
 const port = normalizePort(process.env.PORT || 3003);
 app.set("port", port);
@@ -15,6 +20,8 @@ server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
+process.on('SIGTERM', onShutdown);
+
 function normalizePort(val) {
   let port = parseInt(val, 10);
 
@@ -24,6 +31,22 @@ function normalizePort(val) {
   return false;
 }
 
+function onShutdown() {
+  console.log("\x1b[32m");
+  console.info('Got SIGTERM. Graceful shutdown start', new Date().toISOString())
+  server.close(async (err) => {
+    if (err) {
+      console.poo(" "+err)
+      process.exit(1)
+    } else {
+      console.tick(" Server health restored");
+      await db.closeConnection();
+      console.tick(" MongoDB connection closed");
+      console.bye(" Sayonara!");
+      process.exit(0);
+    }
+  });
+}
 
 function onError(error) {
   if (error.syscall !== "listen") {
@@ -54,5 +77,5 @@ function onListening() {
   let bind = typeof addr === "string"
     ? "pipe " + addr
     : "port " + addr.port;
-  console.log("Listening on " + bind);
+  console.listen(" Listening on " + bind);
 }
