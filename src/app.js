@@ -26,11 +26,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
 
 // Routes
-const teamRouter = require("./routes/team");
-const userRouter = require("./routes/user");
 
-app.use("/team", teamRouter);
+const collegeRouter = require("./routes/college");
+const judgeRouter = require("./routes/judge");
+const judgesRouter = require("./routes/judges");
+const leaderboardRouter = require("./routes/leaderboard");
+const slotRouter = require("./routes/slot");
+const slotsRouter = require("./routes/slots");
+const userRouter = require("./routes/user");
+const teamRouter = require("./routes/team");
+
+app.use("/college", collegeRouter);
+app.use("/judge", judgeRouter);
+app.use("/judges", judgesRouter);
+app.use("/leaderboard", leaderboardRouter);
+app.use("/slot", slotRouter);
+app.use("/slots", slotsRouter);
 app.use("/user", userRouter);
+app.use("/team", teamRouter);
 
 // Error handlers
 app.use(handle404);
