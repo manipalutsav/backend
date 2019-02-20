@@ -2,7 +2,7 @@
 
 const CollegeModel = require("../models/College");
 
-const createCollege = async (req, res, next) => {
+const createCollege = async (req, res) => {
   let { name, location } = req.body;
 
   let college = new CollegeModel({
@@ -26,7 +26,7 @@ const createCollege = async (req, res, next) => {
   });
 }
 
-const getCollege = async (req, res, next) => {
+const getCollege = async (req, res) => {
   let college = await CollegeModel.findById({
     id: req.params.id,
   });

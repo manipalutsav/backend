@@ -2,7 +2,7 @@
 
 const LeaderboardModel = require("../models/Leaderboard");
 
-const getAll = async (req, res, next) => {
+const getAll = async (req, res) => {
   let leaderboard = await LeaderboardModel.find();
 
   return res.json({
@@ -10,7 +10,7 @@ const getAll = async (req, res, next) => {
     message: "Success",
     data: leaderboard,
   });
-}
+};
 
 module.exports = {
   getAll,
