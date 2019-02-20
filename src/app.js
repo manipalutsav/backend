@@ -27,8 +27,10 @@ app.use(headers);
 
 // Routes
 const userRouter = require("./routes/user");
+const leaderboardRouter = require("./routes/leaderboard");
 
 app.use("/user", userRouter);
+app.use("/leaderboard", leaderboardRouter);
 
 // Error handlers
 app.use(handle404);
