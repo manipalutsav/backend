@@ -2,7 +2,7 @@
 
 const CollegeModel = require("../models/College");
 
-const createCollege = async (req, res) => {
+const createCollege = (req, res) => {
   let { name, location } = req.body;
 
   let college = new CollegeModel({
@@ -13,10 +13,12 @@ const createCollege = async (req, res) => {
   college.save((err) => {
     console.error(err);
 
-    if (err) return res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-    });
+    if (err) {
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error",
+      });
+    }
 
     return res.status(200).json({
       status: 200,
@@ -24,7 +26,7 @@ const createCollege = async (req, res) => {
       data: { name, location },
     });
   });
-}
+};
 
 const getCollege = async (req, res) => {
   let college = await CollegeModel.findById({
@@ -39,7 +41,7 @@ const getCollege = async (req, res) => {
       location: college.location,
     },
   });
-}
+};
 
 module.exports = {
   createCollege,

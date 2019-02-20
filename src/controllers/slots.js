@@ -12,7 +12,7 @@ const getByRound = async (req, res) => {
     message: "Success",
     data: slots,
   });
-}
+};
 
 const getByTeam = async (req, res) => {
   let slots = await SlotModel.find({
@@ -24,7 +24,7 @@ const getByTeam = async (req, res) => {
     message: "Success",
     data: slots,
   });
-}
+};
 
 const getForTeam = async (req, res) => {
   let slots = await SlotModel.find({
@@ -37,7 +37,7 @@ const getForTeam = async (req, res) => {
     message: "Success",
     data: slots,
   });
-}
+};
 
 module.exports = {
   getByRound,
