@@ -33,19 +33,23 @@ class Database {
   }
 }
 
+/**
+ * Closes connection from MongoDB server
+ * @returns {Promise} Empty promise
+ */
 const closeConnection = () => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       mongoose.connection.close(() => {
         resolve();
       });
     } catch (e) {
-      reject(e);  
+      reject(e);
     }
   });
-}
+};
 
 module.exports = {
   Database,
   closeConnection,
-}
+};

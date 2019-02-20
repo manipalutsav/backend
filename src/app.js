@@ -9,8 +9,8 @@ const app = express();
 dotenv.config();
 
 // Will be used soon.
-// eslint-disable-next-line no-unused-vars
 const dbClass = require("./utils/dbHelper").Database;
+// eslint-disable-next-line no-unused-vars
 const db = new dbClass();
 
 // Middlewares

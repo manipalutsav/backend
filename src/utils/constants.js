@@ -6,13 +6,13 @@ const USER_TYPES = {
 };
 
 const COMMANDS = [
-    { emoji: "🍕", name: "pizza" },
-    { emoji: "🍺", name: "beer" },
-    { emoji: "💩", name: "poo" },
-    { emoji: "✅", name: "tick"},
-    { emoji: "👍", name: "thumbs"},
-    { emoji: "👋", name: "bye"},
-    { emoji: "👂", name: "listen"},
+  { emoji: "🍕", name: "pizza" },
+  { emoji: "🍺", name: "beer" },
+  { emoji: "💩", name: "poo" },
+  { emoji: "✅", name: "tick" },
+  { emoji: "👍", name: "thumbs" },
+  { emoji: "👋", name: "bye" },
+  { emoji: "👂", name: "listen" },
 ];
 
 module.exports = {
