@@ -11,3 +11,7 @@ const getAll = async (req, res, next) => {
     data: leaderboard,
   });
 }
+
+module.exports = {
+  getAll,
+};
