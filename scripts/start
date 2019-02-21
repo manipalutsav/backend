@@ -10,6 +10,9 @@ const commands = require("../src/utils/constants").COMMANDS;
 // Create custom commands for emoji logging
 commands.forEach(({ name, emoji }) => console[name] = (...args) => console.log(emoji + ' ' + args.join(', ')));
 
+const dbConnect = new db.Database();
+console.tick(" Database connection successfull");
+
 const port = normalizePort(process.env.PORT || 3003);
 app.set("port", port);
 

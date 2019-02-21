@@ -26,10 +26,7 @@ class Database {
    * @returns {void}
    */
   _connect() {
-    mongoose.connect(this.uri, this.options).then(() => {
-      // eslint-disable-next-line no-console
-      console.log("Database connection successful");
-    });
+    mongoose.connect(this.uri, this.options);
   }
 }
 
