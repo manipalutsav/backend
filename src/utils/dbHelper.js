@@ -26,9 +26,24 @@ class Database {
    * @returns {void}
    */
   _connect() {
-    mongoose.connect(this.uri, this.options).then(() => {
-      // eslint-disable-next-line no-console
-      console.log("Database connection successful");
+    mongoose.connect(this.uri, this.options);
+    // eslint-disable-next-line no-console
+    console.tick("Database connection successful");
+  }
+
+  /**
+   * Closes connection from MongoDB server
+   * @returns {Promise} Empty promise
+   */
+  closeConnection() {
+    return new Promise((resolve, reject) => {
+      try {
+        mongoose.connection.close(() => {
+          resolve();
+        });
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 }

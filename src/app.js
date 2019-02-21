@@ -8,10 +8,6 @@ const dotenv = require("dotenv");
 const app = express();
 dotenv.config();
 
-// Will be used soon.
-// eslint-disable-next-line no-unused-vars
-const db = require("./utils/dbHelper");
-
 // Middlewares
 // TODO: Implement auth middleware
 // const auth = require("./middlewares/auth");
