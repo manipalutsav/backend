@@ -24,6 +24,7 @@ app.use(headers);
 // Routes
 
 const collegeRouter = require("./routes/college");
+const collegesRouter = require("./routes/colleges");
 const judgeRouter = require("./routes/judge");
 const judgesRouter = require("./routes/judges");
 const leaderboardRouter = require("./routes/leaderboard");
@@ -33,6 +34,7 @@ const userRouter = require("./routes/user");
 const teamRouter = require("./routes/team");
 
 app.use("/college", collegeRouter);
+app.use("/colleges", collegesRouter);
 app.use("/judge", judgeRouter);
 app.use("/judges", judgesRouter);
 app.use("/leaderboard", leaderboardRouter);
