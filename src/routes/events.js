@@ -1,1 +1,50 @@
 "use strict";
+
+const express = require("express");
+const router = express.Router();
+
+// TODO: replace `noop` with actual controllers
+const noop = require("../middlewares/noop");
+
+// Returns the list of all events
+router.get("/", noop);
+// Returns the event for the given id
+router.get("/:event", noop);
+// Returns the leaderboard for the given event id
+router.get("/:event/leaderboard", noop);
+// Returns the list of rounds in the given event id
+router.get("/:event/rounds", noop);
+// Returns the round for the given round id in the given event
+router.get("/:event/rounds/:round", noop);
+// Returns the slots for the given round in the given event
+router.get("/:event/rounds/:round/slots", noop);
+// Returns the leaderboard for the given round in the given event
+router.get("/:event/rounds/:round/leaderboard", noop);
+// Returns the list of teams qualified for the given round in the given event
+router.get("/:event/rounds/:round/teams", noop);
+// Returns the scores of given team in the given round in the given event
+router.get("/:event/rounds/:round/teams/:team/scores", noop);
+// Returns the list of teams participating in the given event
+router.get("/:event/teams", noop);
+// Returns the team for the given team id participating in the given event
+router.get("/:event/teams/:team", noop);
+// Returns the scores of given team in the given event
+router.get("/:event/teams/:team/scores", noop);
+
+// Create a new event
+router.post("/", noop);
+// Create a new round in the given event
+router.post("/:event/rounds", noop);
+// Create slotting for the given round in the given event
+router.post("/:event/rounds/:round/slots", noop);
+// Add scores for the given team for the given round in the given event
+router.post("/:event/rounds/:round/teams/:team/scores", noop);
+// Register a team to the given round
+router.post("/:event/teams", noop);
+// Add members (participants) to the given team
+router.post("/:event/teams/:team/members", noop);
+
+// Modify the given team's details for the given event
+router.patch("/:event/teams/:team", noop);
+
+module.exports = router;
