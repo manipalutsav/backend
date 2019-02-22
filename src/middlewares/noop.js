@@ -1,5 +1,6 @@
 "use strict";
 
-module.exports = (_req, _res, _next) => {
+module.exports = (_req, _res, next) => {
+  console.log("noop");
   next();
 };
