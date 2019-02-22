@@ -10,8 +10,8 @@ const createCollege = async (req, res) => {
   if(collegeName) {
     return res.json({
       status: 406,
-      message: "College already registered"
-    })
+      message: "College already registered",
+    });
   }
 
   let college = new CollegeModel({
@@ -44,7 +44,7 @@ const getCollege = async (req, res) => {
     return res.json({
       status: 404,
       message: "No college registered under this id",
-    })
+    });
   }
 
   return res.json({
@@ -60,19 +60,19 @@ const getCollege = async (req, res) => {
 const getColleges = async (req, res) => {
   let colleges = await CollegeModel.find();
 
-  if(colleges.length == 0) {
+  if(colleges.length === 0) {
     return res.json({
       status: 404,
       message: "No colleges registered",
-    })
+    });
   }
 
   return res.json({
     status: 200,
     message: "Success",
     data: colleges,
-  })
-}
+  });
+};
 
 module.exports = {
   createCollege,
