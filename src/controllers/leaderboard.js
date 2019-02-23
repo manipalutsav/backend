@@ -11,7 +11,10 @@ const CollegeModel = require("../models/College");
  */
 const get = async (req, res) => {
   let leaderboard = await LeaderboardModel.find();
-  leaderboard = leaderboard.map(lb => ({ college, points }));
+  leaderboard = leaderboard.map(lb => ({
+    college: lb.college,
+    points: lb.points,
+  }));
 
   return res.json({
     status: 200,
@@ -55,18 +58,18 @@ const update = async (req, res) => {
 
   college.points = req.body.points;
 
-  await college.save()
-    .then(lb => {
+  await college.save().
+    then(lb => {
       return res.json({
         status: 200,
         message: "Success",
         data: {
           college: lb.college,
-          college: lb.points,
+          points: lb.points,
         },
       });
-    })
-    .catch(e => {
+    }).
+    catch(e => {
       console.error(e);
 
       return res.status(500).json({
