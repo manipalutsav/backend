@@ -4,6 +4,26 @@ const UserModel = require("../models/User");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
+const get = async (req, res, next) => {
+  try {
+    let user = await UserModel.findById(req.params.user);
+
+    if (!user) return next();
+
+    return res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      mobile: user.mobile,
+      type: user.type,
+      college: user.college,
+    });
+  } catch (e) {
+    console.error(e);
+    next();
+  }
+};
+
 /**
  * Registers new user into the system.
  * @param {object} req The request object
@@ -98,6 +118,7 @@ const login = async(req, res) => {
 };
 
 module.exports = {
+  get,
   register,
   login,
 };
