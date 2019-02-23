@@ -94,72 +94,81 @@ const create = async (req, res, next) => {
   }
 };
 
-const update = async (req, res, next) => {
-  if (!req.body.oldUser || !req.body.newUser) {
-    return res.status(400).json({
-      status: 400,
-      message : "Bad request",
-    });
-  }
-
-  if (req.params.user !== req.body.oldUser.id) {
-    return res.status(401).json({
-      status: 401,
-      message : "Unauthorized",
-    });
-  }
-
-  let user = await UserModel.findById(req.params.user);
-
-  if (!user) {
-    return res.status(401).json({
-      status: 401,
-      message : "Unauthorized",
-    });
-  }
-
-  let isValidPassword = await hash.comparePasswordHash(
-    req.body.oldPassword,
-    user.password
-  );
-
-  if (!isValidPassword) {
-    return res.status(401).json({
-      status: 401,
-      message : "Unauthorized",
-    });
-  }
-
-  if (user.name !== req.body.newUser.name) user.name = req.body.newUser.name;
-  if (user.email !== req.body.newUser.email) user.email = req.body.newUser.email;
-  if (user.mobile !== req.body.newUser.mobile) user.mobile = req.body.newUser.mobile;
-  if (user.college !== req.body.newUser.college) user.college = req.body.newUser.college;
-
-  await user.save().
-    then(user => {
-      const token = jwt.generateToken(user.email);
-
-      return res.cookie("token", token).json({
-        status: 200,
-        message: "User details updated",
-        data: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          mobile: user.mobile,
-          type: user.type,
-          college: user.college,
-        },
+const update = async (req, res) => {
+  try {
+    if (!req.body.oldUser || !req.body.newUser) {
+      return res.status(400).json({
+        status: 400,
+        message : "Bad request",
       });
-    }).
-    catch((e) => {
-      console.error(e);
+    }
 
-      return res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
+    if (req.params.user !== req.body.oldUser.id) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
       });
+    }
+
+    let user = await UserModel.findById(req.params.user);
+
+    if (!user) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    let isValidPassword = await hash.comparePasswordHash(
+      req.body.oldPassword,
+      user.password
+    );
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    if (user.name !== req.body.newUser.name) user.name = req.body.newUser.name;
+    if (user.email !== req.body.newUser.email) user.email = req.body.newUser.email;
+    if (user.mobile !== req.body.newUser.mobile) user.mobile = req.body.newUser.mobile;
+    if (user.college !== req.body.newUser.college) user.college = req.body.newUser.college;
+
+    await user.save().
+      then(user => {
+        const token = jwt.generateToken(user.email);
+
+        return res.cookie("token", token).json({
+          status: 200,
+          message: "User details updated",
+          data: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            mobile: user.mobile,
+            type: user.type,
+            college: user.college,
+          },
+        });
+      }).
+      catch((e) => {
+        console.error(e);
+
+        return res.status(500).json({
+          status: 500,
+          message: "Internal Server Error",
+        });
+      });
+  } catch (e) {
+    console.error(e);
+
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
     });
+  }
 };
 
 /**
@@ -168,41 +177,50 @@ const update = async (req, res, next) => {
  * @param {object} res The response object
  * @returns {void}
  */
-const login = async (req, res, next) => {
-  let user = await UserModel.findOne({ email: req.body.email });
+const login = async (req, res) => {
+  try {
+    let user = await UserModel.findOne({ email: req.body.email });
 
-  if (!user) {
-    return res.status(401).json({
-      status: 401,
-      message : "Unauthorized",
+    if (!user) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    let isValidPassword = await hash.comparePasswordHash(
+      req.body.password,
+      user.password
+    );
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    const token = jwt.generateToken(user.email);
+
+    res.cookie("token", token).json({
+      status: 200,
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        type: user.type,
+        college: user.college,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
     });
   }
-
-  let isValidPassword = await hash.comparePasswordHash(
-    req.body.password,
-    user.password
-  );
-
-  if (!isValidPassword) {
-    return res.status(401).json({
-      status: 401,
-      message : "Unauthorized",
-    });
-  }
-
-  const token = jwt.generateToken(user.email);
-
-  res.cookie("token", token).json({
-    status: 200,
-    data: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      mobile: user.mobile,
-      type: user.type,
-      college: user.college,
-    },
-  });
 };
 
 module.exports = {
