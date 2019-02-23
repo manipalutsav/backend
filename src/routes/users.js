@@ -5,9 +5,10 @@ const router = express.Router();
 
 // TODO: replace `noop` with actual controllers
 const noop = require("../middlewares/noop");
+const Users = require("../controllers/users");
 
 // Returns the user for the given id
-router.get("/:user", noop);
+router.get("/:user", Users.get);
 
 // Create a new user
 router.post("/", noop);
