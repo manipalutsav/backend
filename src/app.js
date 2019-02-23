@@ -22,24 +22,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
 
 // Routes
-
-const collegeRouter = require("./routes/college");
-const judgeRouter = require("./routes/judge");
-const judgesRouter = require("./routes/judges");
+const collegesRouter = require("./routes/colleges");
+const eventsRouter = require("./routes/events");
 const leaderboardRouter = require("./routes/leaderboard");
-const slotRouter = require("./routes/slot");
-const slotsRouter = require("./routes/slots");
-const userRouter = require("./routes/user");
-const teamRouter = require("./routes/team");
+const usersRouter = require("./routes/users");
 
-app.use("/college", collegeRouter);
-app.use("/judge", judgeRouter);
-app.use("/judges", judgesRouter);
+app.use("/colleges", collegesRouter);
+app.use("/events", eventsRouter);
 app.use("/leaderboard", leaderboardRouter);
-app.use("/slot", slotRouter);
-app.use("/slots", slotsRouter);
-app.use("/user", userRouter);
-app.use("/team", teamRouter);
+app.use("/users", usersRouter);
 
 // Error handlers
 app.use(handle404);
