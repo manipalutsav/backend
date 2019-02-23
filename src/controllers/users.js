@@ -27,9 +27,10 @@ const get = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    let requester = await UserModel.findById(req.body.requester);
+    let requester = await UserModel.findById(req.body.requesterID);
+    let isRealRequester = await hash.comparePasswordHash(req.body.requesterPassword, requester.password);
 
-    if (!requester) {
+    if (!requester || !isRealRequester) {
       return res.status(403).json({
         status: 403,
         message: "Forbidden",
