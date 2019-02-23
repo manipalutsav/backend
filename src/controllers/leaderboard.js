@@ -2,8 +2,15 @@
 
 const LeaderboardModel = require("../models/Leaderboard");
 
-const getAll = async (req, res) => {
+/**
+ * Returns the leaderboard
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
+const get = async (req, res) => {
   let leaderboard = await LeaderboardModel.find();
+  leaderboard = leaderboard.map(lb => ({ college, points }));
 
   return res.json({
     status: 200,
@@ -13,5 +20,5 @@ const getAll = async (req, res) => {
 };
 
 module.exports = {
-  getAll,
+  get,
 };
