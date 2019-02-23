@@ -44,7 +44,41 @@ const init = async (req, res) => {
   });
 };
 
+/**
+ * Modify the leaderboard with updated scores
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
+const update = async (req, res) => {
+  let college = await LeaderboardModel.findOne({ college: req.params.college });
+
+  college.points = req.body.points;
+
+  await college.save()
+    .then(lb => {
+      return res.json({
+        status: 200,
+        message: "Success",
+        data: {
+          college: lb.college,
+          college: lb.points,
+        },
+      });
+    })
+    .catch(e => {
+      console.error(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    });
+
+};
+
 module.exports = {
   get,
   init,
+  update,
 };
