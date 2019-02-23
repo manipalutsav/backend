@@ -1,6 +1,7 @@
 "use strict";
 
 const UserModel = require("../models/User");
+const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
@@ -24,54 +25,71 @@ const get = async (req, res, next) => {
   }
 };
 
-/**
- * Registers new user into the system.
- * @param {object} req The request object
- * @param {object} res The response object
- * @returns {void}
- */
-const register = async (req, res) => {
-  let {
-    // eslint-disable-next-line no-unused-vars
-    requestersId,
-    name,
-    email,
-    type,
-    password,
-    college,
-  } = req.body;
+const create = async (req, res, next) => {
+  try {
+    let requester = await UserModel.findById(req.body.requester);
 
-  // TODO Use requestersID for validating permission
+    if (!requester) {
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden",
+      });
+    }
 
-  let user = await UserModel.findOne({ email: email });
+    if (requester.type !== USER_TYPES.ADMINISTRATOR
+      && requester.type <= req.body.type) {
+      return res.status(401).json({
+        status: 401,
+        message: "Unauthorized",
+      });
+    }
 
-  let hashPassword = await hash.generatePasswordHash(password);
-  if (!user) {
-    let payload = new UserModel({
-      name: name,
-      email: email,
-      type: type,
-      password: hashPassword,
-      college: college,
+    let user = await UserModel.findOne({ email: req.body.email });
+
+    if (user) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request",
+      });
+    }
+
+    let hashedPassword = await hash.generatePasswordHash(req.body.password);
+
+    let userDocument = new UserModel({
+      name: req.body.name,
+      email: req.body.email,
+      mobile: req.body.mobile || null,
+      type: req.body.type,
+      password: hashedPassword,
+      college: req.body.college || null,
     });
 
-    payload.save((err) => {
-      if (err) {
+    await userDocument.save().
+      then(user => {
+        return res.json({
+          status: 200,
+          message: "New user created",
+          data: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            mobile: user.mobile,
+            type: user.type,
+            college: user.college,
+          },
+        });
+      }).
+      catch((e) => {
+        console.error(e);
+
         return res.status(500).json({
           status: 500,
-          message: "Internal server error",
+          message: "Internal Server Error",
         });
-      }
-      res.status(200).json({
-        status: 200,
-        message: "New user created",
       });
-    });
-  } else {
-    res.status(406).json({
-      status: 406,
-      message: "User already exists",
-    });
+  } catch (e) {
+    console.error(e);
+    next();
   }
 };
 
@@ -119,6 +137,6 @@ const login = async(req, res) => {
 
 module.exports = {
   get,
-  register,
+  create,
   login,
 };
