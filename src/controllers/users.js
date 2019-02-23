@@ -95,45 +95,46 @@ const create = async (req, res, next) => {
 };
 
 /**
- * logins user into the system.
+ * Authenticate a user into the system
  * @param {object} req The request object
  * @param {object} res The response object
  * @returns {void}
  */
-const login = async(req, res) => {
-  let {
-    email,
-    password,
-  } = req.body;
+const login = async (req, res, next) => {
+  let user = await UserModel.findOne({ email: req.body.email });
 
-  let user = await UserModel.findOne({ email: email });
-  if(!user) {
-    return res.status(404).json({
-      status: 404,
-      message : "User not found",
+  if (!user) {
+    return res.status(401).json({
+      status: 401,
+      message : "Unauthorized",
     });
   }
 
-  let isValid = await hash.comparePasswordHash(password, user.password);
+  let isValidPassword = await hash.comparePasswordHash(
+    req.body.password,
+    user.password
+  );
 
-  if(isValid) {
-    const token = jwt.generateToken(user.email);
-
-    res.cookie("token", token).status(200).json({
-      status: 200,
-      data: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        type: user.type,
-      },
-    });
-  } else {
-    res.status(403).json({
-      status: 403,
-      message: "User authentication failed",
+  if (!isValidPassword) {
+    return res.status(401).json({
+      status: 401,
+      message : "Unauthorized",
     });
   }
+
+  const token = jwt.generateToken(user.email);
+
+  res.cookie("token", token).json({
+    status: 200,
+    data: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      mobile: user.mobile,
+      type: user.type,
+      college: user.college,
+    },
+  });
 };
 
 module.exports = {
