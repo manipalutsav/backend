@@ -11,9 +11,7 @@ const Users = require("../controllers/users");
 router.get("/:user", Users.get);
 
 // Create a new user
-router.post("/", noop);
-// Register a user into the system
-router.post("/register", noop);
+router.post("/", Users.create);
 // Authenticate a user into the system
 router.post("/login", noop);
 
