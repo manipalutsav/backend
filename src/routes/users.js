@@ -13,7 +13,7 @@ router.get("/:user", Users.get);
 // Create a new user
 router.post("/", Users.create);
 // Authenticate a user into the system
-router.post("/login", noop);
+router.post("/login", Users.login);
 
 // Modify the requester's user details.
 router.patch("/:user", noop);
