@@ -1,6 +1,7 @@
 "use strict";
 
 const CollegeModel = require("../models/College");
+const TeamModel = require("../models/Team");
 
 const create = (req, res) => {
   let { name, location } = req.body;
@@ -46,7 +47,7 @@ const get = async (req, res) => {
 const getAll = async (req, res) => {
   let colleges = await CollegeModel.find();
 
-  colleges = college.map(clg => ({
+  colleges = colleges.map(clg => ({
     name: clg.name,
     location: clg.location,
   }));
@@ -58,8 +59,26 @@ const getAll = async (req, res) => {
   });
 };
 
+const getTeams = async (req, res) => {
+  let teams = await TeamModel.find({ college: req.params.college });
+
+  teams = teams.map(team => ({
+    event: team.event,
+    college: team.college,
+    members: team.members,
+    disqualified: team.disqualified,
+  }));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: teams,
+  });
+};
+
 module.exports = {
   create,
   get,
   getAll,
+  getTeams,
 };
