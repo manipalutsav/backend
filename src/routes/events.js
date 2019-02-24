@@ -10,7 +10,7 @@ const Events = require("../controllers/events");
 // Returns the list of all events
 router.get("/", Events.getAll);
 // Returns the event for the given id
-router.get("/:event", noop);
+router.get("/:event", Events.get);
 // Returns the leaderboard for the given event id
 router.get("/:event/leaderboard", noop);
 // Returns the list of rounds in the given event id
