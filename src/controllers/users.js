@@ -141,7 +141,7 @@ const update = async (req, res) => {
 
     await user.save().
       then(user => {
-        const token = jwt.generateToken({
+        const token = await jwt.generateToken({
           id: user.id,
           email: user.email,
           password: user.password,
@@ -208,7 +208,7 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.generateToken({
+    const token = await jwt.generateToken({
       id: user.id,
       email: user.email,
       password: user.password,
