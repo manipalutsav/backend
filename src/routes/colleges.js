@@ -8,7 +8,7 @@ const noop = require("../middlewares/noop");
 const Colleges = require("../controllers/colleges");
 
 // Returns all colleges
-router.get("/", noop);
+router.get("/", Colleges.getAll);
 // Returns the college for the given id
 router.get("/:college", Colleges.get);
 // Returns the list of participants from the given college
