@@ -29,6 +29,8 @@ module.exports = async (req, res, next) => {
       || user.password !== payload.password
       || user.type !== payload.type) res.status(401).json(response);
 
+    req.user = payload;
+
     next();
   } catch (e) {
     response.message += e.toString();

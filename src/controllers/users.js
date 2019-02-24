@@ -27,6 +27,8 @@ const get = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
+    // TODO: We don't need to get requester anymore after auth middleware is
+    // implemented as we can get the requester from `req.user`.
     let requester = await UserModel.findById(req.body.requesterID);
     let isRealRequester = await hash.comparePasswordHash(req.body.requesterPassword, requester.password);
 
