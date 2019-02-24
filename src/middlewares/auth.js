@@ -1,6 +1,7 @@
 "use strict";
 
 const jwt = require("../utils/jwt");
+const UserModel = require("../models/User");
 
 module.exports = async (req, res, next) => {
   let response = {
@@ -17,7 +18,16 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    await jwt.verifyToken(token);
+    let payload = await jwt.verifyToken(token);
+
+    let user = await UserModel.findById(payload.id);
+
+    if (!user) res.status(401).json(response);
+
+    if (user.id !== payload.id
+      || user.email !== payload.email
+      || user.password !== payload.password
+      || user.type !== payload.type) res.status(401).json(response);
 
     next();
   } catch (e) {
