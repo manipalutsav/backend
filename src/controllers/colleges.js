@@ -43,7 +43,23 @@ const get = async (req, res) => {
   });
 };
 
+const getAll = async (req, res) => {
+  let colleges = await CollegeModel.find();
+
+  colleges = college.map(clg => ({
+    name: clg.name,
+    location: clg.location,
+  }));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: colleges,
+  });
+};
+
 module.exports = {
   create,
   get,
+  getAll,
 };
