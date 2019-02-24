@@ -14,7 +14,7 @@ router.get("/:college", Colleges.get);
 // Returns the list of participants from the given college
 router.get("/:college/participants", noop);
 // Returns the list of teams from the given college
-router.get("/:college/teams", noop);
+router.get("/:college/teams", Colleges.getTeams);
 
 // Create a new college
 router.post("/", Colleges.create);
