@@ -5,9 +5,10 @@ const router = express.Router();
 
 // TODO: replace `noop` with actual controllers
 const noop = require("../middlewares/noop");
+const Events = require("../controllers/events");
 
 // Returns the list of all events
-router.get("/", noop);
+router.get("/", Events.getAll);
 // Returns the event for the given id
 router.get("/:event", noop);
 // Returns the leaderboard for the given event id
