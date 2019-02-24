@@ -2,7 +2,7 @@
 
 const EventModel = require("../models/Event");
 
-const get = async (req, res) => {
+const get = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) return next();
