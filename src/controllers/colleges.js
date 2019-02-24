@@ -2,6 +2,7 @@
 
 const CollegeModel = require("../models/College");
 const TeamModel = require("../models/Team");
+const ParticipantModel = require("../models/Participant");
 
 const create = (req, res) => {
   let { name, location } = req.body;
@@ -59,6 +60,25 @@ const getAll = async (req, res) => {
   });
 };
 
+const getParticipants = async (req, res) => {
+  let participants = await ParticipantModel.find({ college: req.params.college });
+
+  participants = participants.map(participant => ({
+    registrationID: participant.registrationID,
+    name: participant.name,
+    email: participant.email,
+    mobile: participant.mobile,
+    college: participant.college,
+    faculty: participant.faculty,
+  }));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: participants,
+  });
+};
+
 const getTeams = async (req, res) => {
   let teams = await TeamModel.find({ college: req.params.college });
 
@@ -80,5 +100,6 @@ module.exports = {
   create,
   get,
   getAll,
+  getParticipants,
   getTeams,
 };
