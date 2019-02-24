@@ -138,7 +138,12 @@ const update = async (req, res) => {
 
     await user.save().
       then(user => {
-        const token = jwt.generateToken(user.email);
+        const token = jwt.generateToken({
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          type: user.type,
+        });
 
         return res.cookie("token", token).json({
           status: 200,
@@ -200,7 +205,12 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.generateToken(user.email);
+    const token = jwt.generateToken({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      type: user.type,
+    });
 
     res.cookie("token", token).json({
       status: 200,
