@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
     message: "Unauthorized. ",
   };
 
-  const token = req.cookies.token;
+  const token = req.cookies && req.cookies.token;
 
   if (!token) {
     response.message += "Someone ate my cookie!";

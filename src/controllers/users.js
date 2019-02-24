@@ -142,7 +142,7 @@ const update = async (req, res) => {
     if (user.password !== hashedNewPassword) user.password = hashedNewPassword;
 
     await user.save().
-      then(user => {
+      then(async user => {
         const token = await jwt.generateToken({
           id: user.id,
           email: user.email,
