@@ -76,6 +76,27 @@ const getRounds = async (req, res, next) => {
   });
 };
 
+const getTeam = async (req, res, next) => {
+  let team = await TeamModel.findOne({
+    id: req.params.id,
+    event: req.params.event,
+  });
+
+  if (!team) next();
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: {
+      id: team.id,
+      event: team.event,
+      college: team.college,
+      members: team.members,
+      disqualified: team.disqualified,
+    },
+  });
+};
+
 const getTeams = async (req, res, next) => {
   let teams = await TeamModel.find({ event: req.params.event });
 
@@ -100,5 +121,6 @@ module.exports = {
   get,
   getAll,
   getRounds,
+  getTeam,
   getTeams,
 };
