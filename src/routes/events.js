@@ -26,7 +26,7 @@ router.get("/:event/rounds/:round/teams", noop);
 // Returns the scores of given team in the given round in the given event
 router.get("/:event/rounds/:round/teams/:team/scores", noop);
 // Returns the list of teams participating in the given event
-router.get("/:event/teams", noop);
+router.get("/:event/teams", Events.getTeams);
 // Returns the team for the given team id participating in the given event
 router.get("/:event/teams/:team", noop);
 // Returns the scores of given team in the given event
