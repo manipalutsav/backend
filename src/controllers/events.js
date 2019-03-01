@@ -1,6 +1,7 @@
 "use strict";
 
 const EventModel = require("../models/Event");
+const RoundModel = require("../models/Round");
 const TeamModel = require("../models/Team");
 
 const get = async (req, res, next) => {
@@ -55,6 +56,26 @@ const getAll = async (req, res) => {
   });
 };
 
+const getRounds = async (req, res, next) => {
+  let rounds = await RoundModel.find({ event: req.params.event });
+
+  if (!rounds) rounds = [];
+
+  rounds = rounds.map(round => {
+    id: round.id,
+    event: round.event,
+    teams: round.teams,
+    duration: round.duration,
+    slottable: round.slottable,
+  });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: rounds,
+  });
+};
+
 const getTeams = async (req, res, next) => {
   let teams = await TeamModel.find({ event: req.params.event });
 
@@ -78,4 +99,6 @@ const getTeams = async (req, res, next) => {
 module.exports = {
   get,
   getAll,
+  getRounds,
+  getTeams,
 };
