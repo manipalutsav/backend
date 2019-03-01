@@ -1,6 +1,7 @@
 "use strict";
 
 const EventModel = require("../models/Event");
+const TeamModel = require("../models/Team");
 
 const get = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
@@ -51,6 +52,26 @@ const getAll = async (req, res) => {
     status: 200,
     message: "Success",
     data: events,
+  });
+};
+
+const getTeams = async (req, res, next) => {
+  let teams = await TeamModel.find({ event: req.params.event });
+
+  if (!teams) teams = [];
+
+  teams = teams.map(team => {
+    id: team.id,
+    event: team.event,
+    college: team.college,
+    members: team.members,
+    disqualified: team.disqualified,
+  });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: teams,
   });
 };
 
