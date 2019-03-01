@@ -67,4 +67,3 @@ exports.getTeam = async (req, res) => {
     data: { members : team.members },
   });
 };
-

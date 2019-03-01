@@ -78,7 +78,7 @@ const getRounds = async (req, res, next) => {
 
 const getTeam = async (req, res, next) => {
   let team = await TeamModel.findOne({
-    id: req.params.id,
+    id: req.params.team,
     event: req.params.event,
   });
 
