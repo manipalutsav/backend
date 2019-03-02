@@ -4,11 +4,16 @@ const CollegeModel = require("../models/College");
 const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 
+/**
+ * create the college
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
 const create = async (req, res) => {
   let { name, location } = req.body;
 
   let college = await CollegeModel.findOne({ name: req.body.name });
-  
   if(college) {
     return res.status(400).json({
       status: 400,
@@ -37,6 +42,12 @@ const create = async (req, res) => {
   });
 };
 
+/**
+ * return college object with request id
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
 const get = async (req, res) => {
 
   let college = await CollegeModel.findById(req.params.college);
@@ -51,6 +62,12 @@ const get = async (req, res) => {
   });
 };
 
+/**
+ * return all colleges
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
 const getAll = async (req, res) => {
   let colleges = await CollegeModel.find();
 
@@ -66,6 +83,12 @@ const getAll = async (req, res) => {
   });
 };
 
+/**
+ * return participants from college
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
 const getParticipants = async (req, res) => {
   let participants = await ParticipantModel.find({ college: req.params.college });
 
@@ -85,6 +108,12 @@ const getParticipants = async (req, res) => {
   });
 };
 
+/**
+ * return teams from college
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
 const getTeams = async (req, res) => {
   let teams = await TeamModel.find({ college: req.params.college });
 

@@ -20,7 +20,7 @@ const get = async (req, res, next) => {
       college: user.college,
     });
   } catch (e) {
-    console.error(e);
+    console.poo(e);
     next();
   }
 };
@@ -83,7 +83,7 @@ const create = async (req, res, next) => {
         });
       }).
       catch((e) => {
-        console.error(e);
+        console.poo(e);
 
         return res.status(500).json({
           status: 500,
@@ -91,7 +91,7 @@ const create = async (req, res, next) => {
         });
       });
   } catch (e) {
-    console.error(e);
+    console.poo(e);
     next();
   }
 };
@@ -164,7 +164,7 @@ const update = async (req, res) => {
         });
       }).
       catch((e) => {
-        console.error(e);
+        console.poo(e);
 
         return res.status(500).json({
           status: 500,
@@ -172,7 +172,7 @@ const update = async (req, res) => {
         });
       });
   } catch (e) {
-    console.error(e);
+    console.poo(e);
 
     res.status(500).json({
       status: 500,
@@ -229,7 +229,7 @@ const login = async (req, res) => {
       },
     });
   } catch (e) {
-    console.error(e);
+    console.poo(e);
 
     res.status(500).json({
       status: 500,

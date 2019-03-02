@@ -70,7 +70,7 @@ const update = async (req, res) => {
       });
     }).
     catch(e => {
-      console.error(e);
+      console.poo(e);
 
       return res.status(500).json({
         status: 500,

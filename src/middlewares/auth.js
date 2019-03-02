@@ -27,7 +27,7 @@ module.exports = async (req, res, next) => {
 
     next();
   } catch (e) {
-    console.log(e);
+    console.poo(e);
 
     res.status(401).json(HTTP_STATUS[401]);
   }
