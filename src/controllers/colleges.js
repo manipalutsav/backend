@@ -4,17 +4,24 @@ const CollegeModel = require("../models/College");
 const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 
-const create = (req, res) => {
+const create = async (req, res) => {
   let { name, location } = req.body;
 
-  let college = new CollegeModel({
+  let college = await CollegeModel.findOne({ name: req.body.name });
+  
+  if(college) {
+    return res.status(400).json({
+      status: 400,
+      message: "Bad request",
+    });
+  }
+
+  let collegeDocument = new CollegeModel({
     name,
     location,
   });
 
-  college.save((err) => {
-    console.error(err);
-
+  collegeDocument.save((err) => {
     if (err) {
       return res.status(500).json({
         status: 500,
@@ -31,9 +38,8 @@ const create = (req, res) => {
 };
 
 const get = async (req, res) => {
-  let college = await CollegeModel.findById({
-    id: req.params.id,
-  });
+
+  let college = await CollegeModel.findById(req.params.college);
 
   return res.json({
     status: 200,
