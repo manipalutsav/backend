@@ -70,6 +70,7 @@ const update = async (req, res) => {
       });
     }).
     catch(e => {
+      // eslint-disable-next-line no-console
       console.poo(e);
 
       return res.status(500).json({

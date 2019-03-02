@@ -5,7 +5,7 @@ const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 
 /**
- * create the college
+ * Create a college object in the DB
  * @param {object} req the request object
  * @param {object} res the response object
  * @returns {object} the response object
@@ -43,7 +43,7 @@ const create = async (req, res) => {
 };
 
 /**
- * return college object with request id
+ * Return college object with request id
  * @param {object} req the request object
  * @param {object} res the response object
  * @returns {object} the response object
@@ -63,7 +63,7 @@ const get = async (req, res) => {
 };
 
 /**
- * return all colleges
+ * Return all colleges
  * @param {object} req the request object
  * @param {object} res the response object
  * @returns {object} the response object
@@ -84,7 +84,7 @@ const getAll = async (req, res) => {
 };
 
 /**
- * return participants from college
+ * Return participants from college
  * @param {object} req the request object
  * @param {object} res the response object
  * @returns {object} the response object
@@ -109,7 +109,7 @@ const getParticipants = async (req, res) => {
 };
 
 /**
- * return teams from college
+ * Return teams from college
  * @param {object} req the request object
  * @param {object} res the response object
  * @returns {object} the response object

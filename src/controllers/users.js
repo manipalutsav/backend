@@ -5,6 +5,13 @@ const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
+/**
+ * Get a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @param {function} next call the next handler in route
+ * @returns {object} the response object
+ */
 const get = async (req, res, next) => {
   try {
     let user = await UserModel.findById(req.params.user);
@@ -20,11 +27,19 @@ const get = async (req, res, next) => {
       college: user.college,
     });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.poo(e);
     next();
   }
 };
 
+/**
+ * Create a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @param {function} next call the next handler in route
+ * @returns {object} the response object
+ */
 const create = async (req, res, next) => {
   try {
     // TODO: We don't need to get requester anymore after auth middleware is
@@ -83,6 +98,7 @@ const create = async (req, res, next) => {
         });
       }).
       catch((e) => {
+        // eslint-disable-next-line no-console
         console.poo(e);
 
         return res.status(500).json({
@@ -91,11 +107,18 @@ const create = async (req, res, next) => {
         });
       });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.poo(e);
     next();
   }
 };
 
+/**
+ * Update a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
 const update = async (req, res) => {
   try {
     if (!req.body.oldUser || !req.body.newUser) {
@@ -164,6 +187,7 @@ const update = async (req, res) => {
         });
       }).
       catch((e) => {
+        // eslint-disable-next-line no-console
         console.poo(e);
 
         return res.status(500).json({
@@ -172,6 +196,7 @@ const update = async (req, res) => {
         });
       });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.poo(e);
 
     res.status(500).json({
@@ -229,6 +254,7 @@ const login = async (req, res) => {
       },
     });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.poo(e);
 
     res.status(500).json({

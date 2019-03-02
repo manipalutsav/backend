@@ -56,7 +56,7 @@ const getAll = async (req, res) => {
   });
 };
 
-const getRounds = async (req, res, next) => {
+const getRounds = async (req, res) => {
   let rounds = await RoundModel.find({ event: req.params.event });
 
   if (!rounds) rounds = [];
@@ -97,7 +97,7 @@ const getTeam = async (req, res, next) => {
   });
 };
 
-const getTeams = async (req, res, next) => {
+const getTeams = async (req, res) => {
   let teams = await TeamModel.find({ event: req.params.event });
 
   if (!teams) teams = [];
@@ -144,11 +144,12 @@ const create = async (req, res) => {
     duration,
     startDate,
     endDate,
-    slottable
+    slottable,
   });
 
-  event.save((err) => {
-    console.error(err);
+  await event.save((err) => {
+    // eslint-disable-next-line no-console
+    console.poo(err);
 
     if (err) {
       return res.status(500).json({
@@ -163,7 +164,7 @@ const create = async (req, res) => {
     });
   });
 
-}
+};
 
 module.exports = {
   get,

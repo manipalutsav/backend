@@ -27,6 +27,7 @@ module.exports = async (req, res, next) => {
 
     next();
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.poo(e);
 
     res.status(401).json(HTTP_STATUS[401]);
