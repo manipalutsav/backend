@@ -77,6 +77,26 @@ const getRounds = async (req, res) => {
   });
 };
 
+const getSlot = async (req, res, next) => {
+  let slot = await SlotModel.findOne({
+    round: req.params.round,
+    team: req.params.team,
+  });
+
+  if (!slot) next();
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: {
+      id: slot.id,
+      number: slot.number,
+      round: slot.round,
+      team: slot.team,
+    },
+  });
+};
+
 const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
 
@@ -190,6 +210,8 @@ module.exports = {
   get,
   getAll,
   getRounds,
+  getSlot,
+  getSlots,
   getTeam,
   getTeams,
   create,
