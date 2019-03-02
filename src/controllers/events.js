@@ -117,10 +117,59 @@ const getTeams = async (req, res, next) => {
   });
 };
 
+const create = async (req, res) => {
+  let {
+    rounds,
+    name,
+    college,
+    teams,
+    minParticipants,
+    maxParticipants,
+    venue,
+    description,
+    duration,
+    startDate,
+    endDate,
+    slottable } = req.body;
+
+  let event = new EventModel({
+    rounds,
+    name,
+    college,
+    teams,
+    minParticipants,
+    maxParticipants,
+    venue,
+    description,
+    duration,
+    startDate,
+    endDate,
+    slottable
+  });
+
+  event.save((err) => {
+    console.error(err);
+
+    if (err) {
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error",
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Success",
+    });
+  });
+
+}
+
 module.exports = {
   get,
   getAll,
   getRounds,
   getTeam,
   getTeams,
+  create,
 };
