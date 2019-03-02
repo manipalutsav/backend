@@ -61,13 +61,13 @@ const getRounds = async (req, res, next) => {
 
   if (!rounds) rounds = [];
 
-  rounds = rounds.map(round => {
+  rounds = rounds.map(round => ({
     id: round.id,
     event: round.event,
     teams: round.teams,
     duration: round.duration,
     slottable: round.slottable,
-  });
+  }));
 
   return res.json({
     status: 200,
@@ -102,13 +102,13 @@ const getTeams = async (req, res, next) => {
 
   if (!teams) teams = [];
 
-  teams = teams.map(team => {
+  teams = teams.map(team => ({
     id: team.id,
     event: team.event,
     college: team.college,
     members: team.members,
     disqualified: team.disqualified,
-  });
+  }));
 
   return res.json({
     status: 200,
