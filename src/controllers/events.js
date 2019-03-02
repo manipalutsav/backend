@@ -2,6 +2,7 @@
 
 const EventModel = require("../models/Event");
 const RoundModel = require("../models/Round");
+const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 
 const get = async (req, res, next) => {
@@ -73,6 +74,25 @@ const getRounds = async (req, res) => {
     status: 200,
     message: "Success",
     data: rounds,
+  });
+};
+
+const getSlots = async (req, res, next) => {
+  let slots = await SlotModel.find({ round: req.params.round });
+
+  if (!slots) next();
+
+  slots = slots.map(slot => ({
+    id: slot.id,
+    number: slot.number,
+    round: slot.round,
+    team: slot.team,
+  }));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: slots,
   });
 };
 
