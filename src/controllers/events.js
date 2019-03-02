@@ -57,6 +57,27 @@ const getAll = async (req, res) => {
   });
 };
 
+const getRound = async (req, res) => {
+  let round = await RoundModel.findOne({
+    event: req.params.event,
+    round: req.params.round,
+  });
+
+  if (!round) next();
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: {
+      id: round.id,
+      event: round.event,
+      teams: round.teams,
+      duration: round.duration,
+      slottable: round.slottable,
+    },
+  });
+};
+
 const getRounds = async (req, res) => {
   let rounds = await RoundModel.find({ event: req.params.event });
 
@@ -209,6 +230,7 @@ const create = async (req, res) => {
 module.exports = {
   get,
   getAll,
+  getRound,
   getRounds,
   getSlot,
   getSlots,
