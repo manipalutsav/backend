@@ -215,6 +215,31 @@ const getAll = async (req, res) => {
   });
 };
 
+const getRoundLeaderboard = async (req, res, next) => {
+  let round = await RoundModel.findOne({
+    id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+
+  let scores = await ScoreModel.find({
+    round: round.id,
+  });
+
+  scores = scores.map(score => {
+    team: score.team,
+    round: score.round,
+    points: score.points,
+  });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
+  });
+};
+
 const getRound = async (req, res, next) => {
   let round = await RoundModel.findOne({
     event: req.params.event,
@@ -483,6 +508,7 @@ module.exports = {
   get,
   getAll,
   getRound,
+  getRoundLeaderboard,
   getRounds,
   getSlot,
   getSlots,
