@@ -2,6 +2,7 @@
 
 const EventModel = require("../models/Event");
 const RoundModel = require("../models/Round");
+const ScoreModel = require("../models/Score");
 const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
