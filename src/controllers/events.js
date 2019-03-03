@@ -6,7 +6,7 @@ const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
 
-const createRound = async (req, res) => {
+const createRound = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) next();
@@ -28,6 +28,7 @@ const createRound = async (req, res) => {
         message: "New round created",
         data: {
           id: round.id,
+          event: req.params.event,
           teams: [],
           duration: round.duration,
           slottable: round.slottable,
@@ -43,21 +44,9 @@ const createRound = async (req, res) => {
         message: "Internal Server Error",
       });
     });
-
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: {
-      id: round.id,
-      event: round.event,
-      teams: round.teams,
-      duration: round.duration,
-      slottable: round.slottable,
-    },
-  });
 };
 
-const createSlots = async (req, res, next) => {
+const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
     round: req.params.round,
@@ -142,7 +131,7 @@ const getAll = async (req, res) => {
   });
 };
 
-const getRound = async (req, res) => {
+const getRound = async (req, res, next) => {
   let round = await RoundModel.findOne({
     event: req.params.event,
     round: req.params.round,

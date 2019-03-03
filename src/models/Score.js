@@ -6,7 +6,12 @@ const schema = {
   judges: [
     {
       id: mongoose.Schema.Types.ObjectId,
-      points: [ Number ],
+      points: [
+        {
+          name: String,
+          value: Number,
+        }
+      ],
     },
   ],
 };
