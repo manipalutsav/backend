@@ -14,6 +14,7 @@ const schema = {
   teams: [ mongoose.Schema.Types.ObjectId ],
   minParticipants: Number,
   maxParticipants: Number,
+  maxTeamsPerCollege: Number,
   venue: String,
   description: String,
   duration: Number,
