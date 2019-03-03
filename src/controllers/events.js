@@ -82,7 +82,8 @@ const createSlots = async (req, res) => {
 
   // Slotting
   let slots = [];
-  for (let i = 0; i < teams.length; i++) {
+  let noOfTeams = teams.length;
+  for (let i = 0; i < noOfTeams; i++) {
     let team = teams[Math.floor(Math.random() * teams.length)];
 
     await SlotModel.create({
