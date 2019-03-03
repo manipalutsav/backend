@@ -27,11 +27,13 @@ const collegesRouter = require("./routes/colleges");
 const eventsRouter = require("./routes/events");
 const leaderboardRouter = require("./routes/leaderboard");
 const usersRouter = require("./routes/users");
+const judgesRouter = require("./routes/judges");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
 app.use("/leaderboard", leaderboardRouter);
 app.use("/users", usersRouter);
+app.use("/judges", judgesRouter);
 
 // Error handlers
 app.use(handle404);
