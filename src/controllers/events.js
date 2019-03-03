@@ -19,7 +19,7 @@ const createRound = async (req, res) => {
   });
 
   await roundDocument.save().
-    then(round => {
+    then(async round => {
       event.rounds.push(round.id);
       await event.save();
 
