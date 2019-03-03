@@ -10,9 +10,9 @@
   },
   rules: {
     # Possible Errors
-    no-console: "warn",
+    # no-console: "warn",
     no-template-curly-in-string: "warn",
-    valid-jsdoc: "warn",
+    # valid-jsdoc: "warn",
 
     # Best Practices
     curly: [ "warn", "multi-line" ],
