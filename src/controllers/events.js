@@ -300,7 +300,7 @@ const getTeamsInRound = async (req, res) => {
   });
 };
 
-const create = async (req, res, next) => {
+const create = async (req, res) => {
   let {
     name,
     college,
