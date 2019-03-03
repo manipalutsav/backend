@@ -4,6 +4,7 @@ const EventModel = require("../models/Event");
 const RoundModel = require("../models/Round");
 const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
+const JudgeModel = require("../models/Judge");
 
 const createRound = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
@@ -305,10 +306,9 @@ const create = async (req, res) => {
   });
 
   await event.save((err) => {
-    // eslint-disable-next-line no-console
-    console.poo(err);
-
     if (err) {
+      // eslint-disable-next-line no-console
+      console.poo(err);
       return res.status(500).json({
         status: 500,
         message: "Internal server error",
@@ -321,6 +321,32 @@ const create = async (req, res) => {
     });
   });
 
+};
+
+const createJudge = async (req, res) => {
+  let { name } = req.body;
+  let { round } = req.params;
+
+  let judge = new JudgeModel({
+    name,
+    round,
+  });
+
+  await judge.save(err => {
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.poo(err);
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error",
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Success",
+    });
+  });
 };
 
 module.exports = {
@@ -336,4 +362,5 @@ module.exports = {
   getTeams,
   getTeamsInRound,
   create,
+  createJudge,
 };

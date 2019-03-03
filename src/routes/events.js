@@ -35,6 +35,10 @@ router.get("/:event/teams/:team/scores", noop);
 // Create a new event
 router.post("/", Events.create);
 // Create a new round in the given event
+router.post("/:event/rounds", noop);
+// Create a new judge for round
+router.post("/:event/rounds/:round/judge", Events.createJudge);
+// Create a new round for event
 router.post("/:event/rounds", Events.createRound);
 // Create slotting for the given round in the given event
 router.post("/:event/rounds/:round/slots", Events.createSlots);
