@@ -43,7 +43,7 @@ router.post("/:event/rounds/:round/slots", Events.createSlots);
 // Add scores for the given team for the given round in the given event
 router.post("/:event/rounds/:round/teams/:team/scores", Events.createScore);
 // Register a team to the given event
-router.post("/:event/teams", noop);
+router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team
 // router.post("/:event/teams/:team/members", noop);
 

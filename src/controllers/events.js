@@ -6,6 +6,58 @@ const ScoreModel = require("../models/Score");
 const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
+const ParticipantModel = require("../models/Participant");
+
+const createTeam = async (req, res) => {
+  let {
+    college,
+    participants,
+  } = req.body;
+
+  let { event } = req.params;
+
+  // Check if participation limit reached
+  let participatedTeams = await TeamModel.find({ college: college });
+  let eventInfo = await EventModel.findById(event);
+  if(participatedTeams.length === eventInfo.maxParticpants) {
+    return res.status(416).json({
+      status: 416,
+      message: "Max participation limit reached",
+    });
+  }
+
+  addBulkParticipants(participants, college)
+    .then(async members => {
+      let team = new TeamModel({
+        event,
+        college,
+        members,
+      });
+
+      await team.save((err) => {
+        if (err) {
+          return res.json({
+            status: 500,
+            message: "Internal Server Error",
+          });
+        }
+        return res.json({
+          status: 200,
+          message: "Team Created",
+          data: team,
+        });
+      });
+    })
+    .catch(e => {
+      // eslint-disable-next-line no-console
+      console.poo(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    })
+}
 
 const createRound = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
@@ -379,6 +431,42 @@ const createJudge = async (req, res) => {
   });
 };
 
+/**
+ * Insert Participants in bulk.
+ * @param {object} data The request object
+ * @param {string} college The college id
+ * @returns {Array} The members id
+ */
+const addBulkParticipants = (data, college) => {
+
+  // TODO: check if student particpant registered for faculty event and vice versa
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      let members = [];
+      await data.map(each => {
+        let participant = new ParticipantModel({
+          registrationID: each.registrationID,
+          name: each.name,
+          email: each.email,
+          mobile: each.mobile,
+          college: college,
+          faculty: each.faculty,
+        });
+        members.push(participant._id);
+        participant.save(err => {
+          if(err) {
+            throw err;
+          }
+        });
+      });
+      resolve(members);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   createRound,
   createScore,
@@ -394,4 +482,5 @@ module.exports = {
   getTeamsInRound,
   create,
   createJudge,
+  createTeam,
 };

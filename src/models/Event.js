@@ -24,6 +24,7 @@ const schema = {
     required: true,
     default: true,
   },
+  isFaculty: Boolean,
 };
 
 const options = {
