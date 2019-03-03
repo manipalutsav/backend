@@ -6,6 +6,90 @@ const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
 
+const createRound = async (req, res) => {
+  let event = await EventModel.findById(req.params.event);
+
+  if (!event) next();
+
+  let roundDocument = new RoundModel({
+    event: event.id,
+    teams: [],
+    duration: req.body.duration,
+    slottable: req.body.slottable,
+  });
+
+  await roundDocument.save().
+    then(round => {
+      event.rounds.push(round.id);
+      await event.save();
+
+      return res.json({
+        status: 200,
+        message: "New round created",
+        data: {
+          id: round.id,
+          teams: [],
+          duration: round.duration,
+          slottable: round.slottable,
+        },
+      });
+    }).
+    catch((e) => {
+      // eslint-disable-next-line no-console
+      console.poo(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: {
+      id: round.id,
+      event: round.event,
+      teams: round.teams,
+      duration: round.duration,
+      slottable: round.slottable,
+    },
+  });
+};
+
+const createSlots = async (req, res, next) => {
+  let teams = await TeamModel.find({
+    event: req.params.event,
+    round: req.params.round,
+  });
+
+  if (!teams) teams = [];
+
+  // TODO: Use team names
+  teams = teams.map(team => team.id);
+
+  // Slotting
+  let slots = [];
+  for (let i = 0; i < teams.length; i++) {
+    let team = teams[Math.floor(Math.random() * teams.length)];
+
+    await SlotModel.create({
+      number: i + 1,
+      round: req.params.round,
+      team: team,
+    });
+
+    slots.push(team);
+    teams.splice(teams.indexOf(team), 1);
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: slots,
+  });
+};
+
 const get = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
 
@@ -179,6 +263,29 @@ const getTeams = async (req, res) => {
   });
 };
 
+const getTeamsInRound = async (req, res) => {
+  let teams = await TeamModel.find({
+    event: req.params.event,
+    round: req.params.round,
+  });
+
+  if (!teams) teams = [];
+
+  teams = teams.map(team => ({
+    id: team.id,
+    event: team.event,
+    college: team.college,
+    members: team.members,
+    disqualified: team.disqualified,
+  }));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: teams,
+  });
+};
+
 const create = async (req, res) => {
   let {
     rounds,
@@ -254,6 +361,8 @@ const createJudge = async (req, res) => {
 };
 
 module.exports = {
+  createRound,
+  createSlots,
   get,
   getAll,
   getRound,
@@ -262,6 +371,7 @@ module.exports = {
   getSlots,
   getTeam,
   getTeams,
+  getTeamsInRound,
   create,
   createJudge,
 };

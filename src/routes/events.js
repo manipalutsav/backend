@@ -22,7 +22,7 @@ router.get("/:event/rounds/:round/slots", Events.getSlots);
 // Returns the leaderboard for the given round in the given event
 router.get("/:event/rounds/:round/leaderboard", noop);
 // Returns the list of teams qualified for the given round in the given event
-router.get("/:event/rounds/:round/teams", noop);
+router.get("/:event/rounds/:round/teams", Events.getTeamsInRound);
 // Returns the scores of given team in the given round in the given event
 router.get("/:event/rounds/:round/teams/:team/scores", noop);
 // Returns the list of teams participating in the given event
@@ -38,8 +38,10 @@ router.post("/", Events.create);
 router.post("/:event/rounds", noop);
 // Create a new judge for round
 router.post("/:event/rounds/:round/judge", Events.createJudge);
+// Create a new round for event
+router.post("/:event/rounds", Events.createRound);
 // Create slotting for the given round in the given event
-router.post("/:event/rounds/:round/slots", noop);
+router.post("/:event/rounds/:round/slots", Events.createSlots);
 // Add scores for the given team for the given round in the given event
 router.post("/:event/rounds/:round/teams/:team/scores", noop);
 // Register a team to the given round
