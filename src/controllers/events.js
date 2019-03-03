@@ -46,6 +46,29 @@ const createRound = async (req, res, next) => {
     });
 };
 
+const createScore = async (req, res, next) => {
+  let round = await RoundModel.findOne({
+    id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+
+  if (!round.teams.includes(req.params.team)) next();
+
+  let score = await ScoreModel.create({
+    team: req.params.team,
+    round: req.params.round,
+    judges: req.body.judges,
+  });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: score,
+  });
+};
+
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
@@ -356,6 +379,7 @@ const createJudge = async (req, res) => {
 
 module.exports = {
   createRound,
+  createScore,
   createSlots,
   get,
   getAll,
