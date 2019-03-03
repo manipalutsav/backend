@@ -19,10 +19,17 @@ const createTeam = async (req, res) => {
   // Check if participation limit reached
   let participatedTeams = await TeamModel.find({ college: college });
   let eventInfo = await EventModel.findById(event);
-  if(participatedTeams.length === eventInfo.maxParticpants) {
-    return res.status(416).json({
+  if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
+    return res.json({
       status: 416,
-      message: "Max participation limit reached",
+      message: "Max participation limit reached for college",
+    });
+  }
+
+  if (participants.length > eventInfo.maxParticipants ) {
+    return res.json({
+      status: 416,
+      message: "Number of particpants exceeds max particpants for event",
     });
   }
 
@@ -56,8 +63,8 @@ const createTeam = async (req, res) => {
         status: 500,
         message: "Internal Server Error",
       });
-    })
-}
+    });
+};
 
 const createRound = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
