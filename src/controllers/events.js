@@ -5,6 +5,57 @@ const RoundModel = require("../models/Round");
 const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 
+const createRound = async (req, res) => {
+  let event = await EventModel.findById(req.params.event);
+
+  if (!event) next();
+
+  let roundDocument = new RoundModel({
+    event: event.id,
+    teams: [],
+    duration: req.body.duration,
+    slottable: req.body.slottable,
+  });
+
+  await roundDocument.save().
+    then(round => {
+      event.rounds.push(round.id);
+      await event.save();
+
+      return res.json({
+        status: 200,
+        message: "New round created",
+        data: {
+          id: round.id,
+          teams: [],
+          duration: round.duration,
+          slottable: round.slottable,
+        },
+      });
+    }).
+    catch((e) => {
+      // eslint-disable-next-line no-console
+      console.poo(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: {
+      id: round.id,
+      event: round.event,
+      teams: round.teams,
+      duration: round.duration,
+      slottable: round.slottable,
+    },
+  });
+};
+
 const get = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
 
@@ -251,6 +302,7 @@ const create = async (req, res) => {
 };
 
 module.exports = {
+  createRound,
   get,
   getAll,
   getRound,
