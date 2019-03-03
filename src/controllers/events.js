@@ -56,6 +56,39 @@ const createRound = async (req, res) => {
   });
 };
 
+const createSlots = async (req, res, next) => {
+  let teams = await TeamModel.find({
+    event: req.params.event,
+    round: req.params.round,
+  });
+
+  if (!teams) teams = [];
+
+  // TODO: Use team names
+  teams = teams.map(team => team.id);
+
+  // Slotting
+  let slots = [];
+  for (let i = 0; i < teams.length; i++) {
+    let team = teams[Math.floor(Math.random() * teams.length)];
+
+    await SlotModel.create({
+      number: i + 1,
+      round: req.params.round,
+      team: team,
+    });
+
+    slots.push(team);
+    teams.splice(teams.indexOf(team), 1);
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: slots,
+  });
+};
+
 const get = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event);
 
@@ -303,6 +336,7 @@ const create = async (req, res) => {
 
 module.exports = {
   createRound,
+  createSlots,
   get,
   getAll,
   getRound,
