@@ -17,4 +17,8 @@ const options = {
 
 const scoreSchema = new mongoose.Schema(schema, options);
 
+collegeSchema.virtual('points').get(function() {
+ return this.judges.reduce((acc, curr) => acc + curr.points.reduce((a, c) => a + c, 0), 0);
+});
+
 module.exports = mongoose.model("Score", scoreSchema);
