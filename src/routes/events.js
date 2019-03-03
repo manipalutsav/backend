@@ -22,7 +22,7 @@ router.get("/:event/rounds/:round/slots", Events.getSlots);
 // Returns the leaderboard for the given round in the given event
 router.get("/:event/rounds/:round/leaderboard", noop);
 // Returns the list of teams qualified for the given round in the given event
-router.get("/:event/rounds/:round/teams", noop);
+router.get("/:event/rounds/:round/teams", Events.getTeamsInRound);
 // Returns the scores of given team in the given round in the given event
 router.get("/:event/rounds/:round/teams/:team/scores", noop);
 // Returns the list of teams participating in the given event
