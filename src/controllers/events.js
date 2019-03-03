@@ -371,6 +371,7 @@ const create = async (req, res) => {
     duration,
     startDate,
     endDate,
+    maxTeamsPerCollege,
     slottable } = req.body;
 
   let event = new EventModel({
@@ -384,6 +385,7 @@ const create = async (req, res) => {
     duration,
     startDate,
     endDate,
+    maxTeamsPerCollege,
     slottable,
   });
 
