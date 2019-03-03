@@ -6,6 +6,7 @@ const get = async (req, res) => {
   let judges = await JudgeModel.find();
 
   judges = judges.map(judge => ({
+    id: judge.id,
     name: judge.name,
   }));
 
