@@ -275,9 +275,8 @@ const getTeamsInRound = async (req, res) => {
   });
 };
 
-const create = async (req, res) => {
+const create = async (req, res, next) => {
   let {
-    rounds,
     name,
     college,
     teams,
@@ -291,7 +290,6 @@ const create = async (req, res) => {
     slottable } = req.body;
 
   let event = new EventModel({
-    rounds,
     name,
     college,
     teams,
@@ -305,22 +303,29 @@ const create = async (req, res) => {
     slottable,
   });
 
-  await event.save((err) => {
-    if (err) {
+  await event.save().
+    then(event => {
+      return res.json({
+        status: 200,
+        message: "New event created",
+        data: {
+          id: event.id,
+          name: event.name,
+          description: event.description,
+          startDate: event.startDate,
+          endDate: event.endDate,
+        },
+      });
+    }).
+    catch((e) => {
       // eslint-disable-next-line no-console
-      console.poo(err);
+      console.poo(e);
+
       return res.status(500).json({
         status: 500,
-        message: "Internal server error",
+        message: "Internal Server Error",
       });
-    }
-
-    return res.status(200).json({
-      status: 200,
-      message: "Success",
     });
-  });
-
 };
 
 const createJudge = async (req, res) => {
