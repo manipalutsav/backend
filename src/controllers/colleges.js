@@ -72,6 +72,7 @@ const getAll = async (req, res) => {
   let colleges = await CollegeModel.find();
 
   colleges = colleges.map(clg => ({
+    id: clg.id,
     name: clg.name,
     location: clg.location,
   }));
