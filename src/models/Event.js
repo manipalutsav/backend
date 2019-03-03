@@ -10,6 +10,7 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
+  criteria: [ String ],
   teams: [ mongoose.Schema.Types.ObjectId ],
   minParticipants: Number,
   maxParticipants: Number,
