@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require("dotenv");
+const cors = require('cors');
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ const headers = require("./middlewares/headers");
 
 // Configure application
 app.use(logger("dev"));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);

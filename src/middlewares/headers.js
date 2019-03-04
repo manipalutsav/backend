@@ -45,12 +45,6 @@ module.exports = (_req, res, next) => {
   res.append("Referrer-Policy", "no-referrer");
 
   /**
-   * The header governs if response header indicates whether the response can be shared
-   * with requesting code from the given origin.
-   */
-  res.append("Access-Control-Allow-Origin", "*");
-
-  /**
    * This is the most important header. I don't know why, but this needs to be
    * here. 😜
    */
