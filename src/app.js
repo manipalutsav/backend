@@ -4,44 +4,38 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 const app = express();
 dotenv.config();
 
 // Middlewares
-// TODO: Implement auth middleware
-// const auth = require("./middlewares/auth");
 const handle404 = require("./middlewares/handle404");
 const errorHandler = require("./middlewares/errorHandler");
 const headers = require("./middlewares/headers");
+// TODO: Implement auth middleware
+// const auth = require("./middlewares/auth");
 
 // Configure application
 app.use(logger("dev"));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
+// app.use(auth);
 
 // Routes
-
-const collegeRouter = require("./routes/college");
 const collegesRouter = require("./routes/colleges");
-const judgeRouter = require("./routes/judge");
-const judgesRouter = require("./routes/judges");
+const eventsRouter = require("./routes/events");
 const leaderboardRouter = require("./routes/leaderboard");
-const slotRouter = require("./routes/slot");
-const slotsRouter = require("./routes/slots");
-const userRouter = require("./routes/user");
-const teamRouter = require("./routes/team");
+const usersRouter = require("./routes/users");
+const judgesRouter = require("./routes/judges");
 
-app.use("/college", collegeRouter);
 app.use("/colleges", collegesRouter);
-app.use("/judge", judgeRouter);
-app.use("/judges", judgesRouter);
+app.use("/events", eventsRouter);
 app.use("/leaderboard", leaderboardRouter);
-app.use("/slot", slotRouter);
-app.use("/slots", slotsRouter);
-app.use("/user", userRouter);
-app.use("/team", teamRouter);
+app.use("/users", usersRouter);
+app.use("/judges", judgesRouter);
 
 // Error handlers
 app.use(handle404);

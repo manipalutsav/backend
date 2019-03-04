@@ -1,103 +1,272 @@
 "use strict";
 
 const UserModel = require("../models/User");
+const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
 /**
- * Registers new user into the system.
- * @param {object} req The request object
- * @param {object} res The response object
- * @returns {void}
+ * Get a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @param {function} next call the next handler in route
+ * @returns {object} the response object
  */
-const register = async (req, res) => {
-  let {
-    // eslint-disable-next-line no-unused-vars
-    requestersId,
-    name,
-    email,
-    type,
-    password,
-    college,
-  } = req.body;
+const get = async (req, res, next) => {
+  try {
+    let user = await UserModel.findById(req.params.user);
 
-  // TODO Use requestersID for validating permission
+    if (!user) return next();
 
-  let user = await UserModel.findOne({ email: email });
+    return res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      mobile: user.mobile,
+      type: user.type,
+      college: user.college,
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+    next();
+  }
+};
 
-  let hashPassword = await hash.generatePasswordHash(password);
-  if (!user) {
-    let payload = new UserModel({
-      name: name,
-      email: email,
-      type: type,
-      password: hashPassword,
-      college: college,
+/**
+ * Create a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @param {function} next call the next handler in route
+ * @returns {object} the response object
+ */
+const create = async (req, res, next) => {
+  try {
+    // TODO: We don't need to get requester anymore after auth middleware is
+    // implemented as we can get the requester from `req.user`.
+    let requester = await UserModel.findById(req.body.requesterID);
+    let isRealRequester = await hash.comparePasswordHash(req.body.requesterPassword, requester.password);
+
+    if (!requester || !isRealRequester) {
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden",
+      });
+    }
+
+    if (requester.type !== USER_TYPES.ADMINISTRATOR
+      && requester.type <= req.body.type) {
+      return res.status(401).json({
+        status: 401,
+        message: "Unauthorized",
+      });
+    }
+
+    let user = await UserModel.findOne({ email: req.body.email });
+
+    if (user) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request",
+      });
+    }
+
+    let hashedPassword = await hash.generatePasswordHash(req.body.password);
+
+    let userDocument = new UserModel({
+      name: req.body.name,
+      email: req.body.email,
+      mobile: req.body.mobile || null,
+      type: req.body.type,
+      password: hashedPassword,
+      college: req.body.college || null,
     });
 
-    payload.save((err) => {
-      if (err) {
+    await userDocument.save().
+      then(user => {
+        return res.json({
+          status: 200,
+          message: "New user created",
+          data: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            mobile: user.mobile,
+            type: user.type,
+            college: user.college,
+          },
+        });
+      }).
+      catch((e) => {
+        // eslint-disable-next-line no-console
+        console.poo(e);
+
         return res.status(500).json({
           status: 500,
-          message: "Internal server error",
+          message: "Internal Server Error",
         });
-      }
-      res.status(200).json({
-        status: 200,
-        message: "New user created",
       });
-    });
-  } else {
-    res.status(406).json({
-      status: 406,
-      message: "User already exists",
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+    next();
+  }
+};
+
+/**
+ * Update a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
+const update = async (req, res) => {
+  try {
+    if (!req.body.oldUser || !req.body.newUser) {
+      return res.status(400).json({
+        status: 400,
+        message : "Bad request",
+      });
+    }
+
+    if (req.params.user !== req.body.oldUser.id) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    let user = await UserModel.findById(req.params.user);
+
+    if (!user) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    let isValidPassword = await hash.comparePasswordHash(
+      req.body.oldUser.password,
+      user.password
+    );
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    if (user.name !== req.body.newUser.name) user.name = req.body.newUser.name;
+    if (user.email !== req.body.newUser.email) user.email = req.body.newUser.email;
+    if (user.mobile !== req.body.newUser.mobile) user.mobile = req.body.newUser.mobile;
+    if (user.college !== req.body.newUser.college) user.college = req.body.newUser.college;
+
+    let hashedNewPassword = await hash.generatePasswordHash(req.body.newUser.password);
+    if (user.password !== hashedNewPassword) user.password = hashedNewPassword;
+
+    await user.save().
+      then(async user => {
+        const token = await jwt.generateToken({
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          type: user.type,
+        });
+
+        return res.cookie("token", token).json({
+          status: 200,
+          message: "User details updated",
+          data: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            mobile: user.mobile,
+            type: user.type,
+            college: user.college,
+          },
+        });
+      }).
+      catch((e) => {
+        // eslint-disable-next-line no-console
+        console.poo(e);
+
+        return res.status(500).json({
+          status: 500,
+          message: "Internal Server Error",
+        });
+      });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
     });
   }
 };
 
 /**
- * logins user into the system.
+ * Authenticate a user into the system
  * @param {object} req The request object
  * @param {object} res The response object
  * @returns {void}
  */
-const login = async(req, res) => {
-  let {
-    email,
-    password,
-  } = req.body;
+const login = async (req, res) => {
+  try {
+    let user = await UserModel.findOne({ email: req.body.email });
 
-  let user = await UserModel.findOne({ email: email });
-  if(!user) {
-    return res.status(404).json({
-      status: 404,
-      message : "User not found",
+    if (!user) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    let isValidPassword = await hash.comparePasswordHash(
+      req.body.password,
+      user.password
+    );
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized",
+      });
+    }
+
+    const token = await jwt.generateToken({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      type: user.type,
     });
-  }
 
-  let isValid = await hash.comparePasswordHash(password, user.password);
-
-  if(isValid) {
-    const token = jwt.generateToken(user.email);
-
-    res.cookie("token", token).status(200).json({
+    res.cookie("token", token).json({
       status: 200,
       data: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
+        mobile: user.mobile,
         type: user.type,
+        college: user.college,
       },
     });
-  } else {
-    res.status(403).json({
-      status: 403,
-      message: "User authentication failed",
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
     });
   }
 };
 
 module.exports = {
-  register,
+  get,
+  create,
+  update,
   login,
 };

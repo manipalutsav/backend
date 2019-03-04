@@ -1,28 +1,35 @@
 "use strict";
 
 const jwt = require("../utils/jwt");
+const UserModel = require("../models/User");
+const { HTTP_STATUS } = require("../utils/constants");
 
 module.exports = async (req, res, next) => {
-  let response = {
-    success: false,
-    message: "Unauthorized. ",
-  };
+  if (req.url === "/users/login" && req.method === "POST") next();
 
-  const token = req.cookies.token;
+  const token = req.cookies && req.cookies.token;
 
-  if (!token) {
-    response.message += "Someone ate my cookie!";
-
-    return res.status(401).json(response);
-  }
+  if (!token) return res.status(401).json(HTTP_STATUS[401]);
 
   try {
-    await jwt.verifyToken(token);
+    let payload = await jwt.verifyToken(token);
+
+    let user = await UserModel.findById(payload.id);
+
+    if (!user) res.status(401).json(HTTP_STATUS[401]);
+
+    if (user.id !== payload.id
+      || user.email !== payload.email
+      || user.password !== payload.password
+      || user.type !== payload.type) res.status(401).json(HTTP_STATUS[401]);
+
+    req.user = payload;
 
     next();
   } catch (e) {
-    response.message += e.toString();
+    // eslint-disable-next-line no-console
+    console.poo(e);
 
-    res.status(401).json(response);
+    res.status(401).json(HTTP_STATUS[401]);
   }
 };

@@ -3,8 +3,18 @@
 const express = require("express");
 const router = express.Router();
 
-const { getColleges } = require("../controllers/colleges");
+const Colleges = require("../controllers/colleges");
 
-router.get("/", getColleges);
+// Returns all colleges
+router.get("/", Colleges.getAll);
+// Returns the college for the given id
+router.get("/:college", Colleges.get);
+// Returns the list of participants from the given college
+router.get("/:college/participants", Colleges.getParticipants);
+// Returns the list of teams from the given college
+router.get("/:college/teams", Colleges.getTeams);
+
+// Create a new college
+router.post("/", Colleges.create);
 
 module.exports = router;

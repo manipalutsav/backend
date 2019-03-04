@@ -10,9 +10,9 @@
   },
   rules: {
     # Possible Errors
-    no-console: "warn",
+    # no-console: "warn",
     no-template-curly-in-string: "warn",
-    valid-jsdoc: "warn",
+    # valid-jsdoc: "warn",
 
     # Best Practices
     curly: [ "warn", "multi-line" ],
@@ -57,7 +57,7 @@
     no-unneeded-ternary: "error",
     object-curly-spacing: ["warn", "always"],
     quotes: [ "warn", "double" ],
-    require-jsdoc: [ "warn", { require: { FunctionDeclaration: true, MethodDefinition: true, ClassDeclaration: true, ArrowFunctionExpression: true } } ],
+    # require-jsdoc: [ "warn", { require: { FunctionDeclaration: true, MethodDefinition: true, ClassDeclaration: true, ArrowFunctionExpression: true } } ],
     semi: [ "error", "always" ],
     space-infix-ops: "warn",
     spaced-comment: ["error", "always"],

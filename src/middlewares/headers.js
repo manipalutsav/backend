@@ -44,7 +44,6 @@ module.exports = (_req, res, next) => {
    */
   res.append("Referrer-Policy", "no-referrer");
 
-
   /**
    * This is the most important header. I don't know why, but this needs to be
    * here. 😜
