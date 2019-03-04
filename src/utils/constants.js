@@ -32,6 +32,12 @@ const USER_TYPES = {
   STUDENT_COORDINATOR: 1 << 3,
 };
 
+const ROUND_STATUS = {
+  SCHEDULED: 1,
+  ONGOING: 2,
+  COMPLETED: 3,
+};
+
 const COMMANDS = [
   { emoji: "🍕", name: "pizza" },
   { emoji: "🍺", name: "beer" },
