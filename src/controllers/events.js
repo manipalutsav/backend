@@ -216,11 +216,12 @@ const getAll = async (req, res) => {
 };
 
 const getLeaderboard = async (req, res, next) => {
-  let event = await EventModel.findById();
+  let event = await EventModel.findById(req.params.event);
 
   if (!event) next();
 
   let scores = await ScoreModel.find({
+    // TODO: $or doesn't work here. Fix this shit!
     round: { $or: event.rounds },
   });
 
