@@ -227,11 +227,11 @@ const getRoundLeaderboard = async (req, res, next) => {
     round: round.id,
   });
 
-  scores = scores.map(score => {
+  scores = scores.map(score => ({
     team: score.team,
     round: score.round,
     points: score.points,
-  });
+  }));
 
   return res.json({
     status: 200,
