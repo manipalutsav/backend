@@ -52,6 +52,13 @@ const get = async (req, res) => {
 
   let college = await CollegeModel.findById(req.params.college);
 
+  if(!college) {
+    return res.json({
+      status: 404,
+      message: "No college registered under this id",
+    });
+  }
+
   return res.json({
     status: 200,
     message: "Success",
