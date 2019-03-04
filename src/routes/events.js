@@ -4,7 +4,6 @@ const express = require("express");
 const router = express.Router();
 
 // TODO: replace `noop` with actual controllers
-const noop = require("../middlewares/noop");
 const Events = require("../controllers/events");
 
 // Returns the list of all events

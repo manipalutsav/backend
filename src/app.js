@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require("dotenv");
-const cors = require('cors');
+const cors = require("cors");
 
 const app = express();
 dotenv.config();

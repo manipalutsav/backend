@@ -33,8 +33,8 @@ const createTeam = async (req, res) => {
     });
   }
 
-  addBulkParticipants(participants, college)
-    .then(async members => {
+  addBulkParticipants(participants, college).
+    then(async members => {
       let team = new TeamModel({
         event,
         college,
@@ -54,8 +54,8 @@ const createTeam = async (req, res) => {
           data: team,
         });
       });
-    })
-    .catch(e => {
+    }).
+    catch(e => {
       // eslint-disable-next-line no-console
       console.poo(e);
 
@@ -236,7 +236,7 @@ const getLeaderboard = async (req, res, next) => {
     return acc;
   }, new Map());
 
-  let cumulatedScores = [...mappedScores].map(([team, score]) => ({team, score}));
+  let cumulatedScores = [ ...mappedScores ].map(([ team, score ]) => ({ team, score }));
 
   return res.json({
     status: 200,
