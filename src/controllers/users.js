@@ -45,9 +45,15 @@ const create = async (req, res, next) => {
     // TODO: We don't need to get requester anymore after auth middleware is
     // implemented as we can get the requester from `req.user`.
     let requester = await UserModel.findById(req.body.requesterID);
+    if (!requester) {
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden",
+      });
+    }
     let isRealRequester = await hash.comparePasswordHash(req.body.requesterPassword, requester.password);
 
-    if (!requester || !isRealRequester) {
+    if (!isRealRequester) {
       return res.status(403).json({
         status: 403,
         message: "Forbidden",
