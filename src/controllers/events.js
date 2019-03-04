@@ -215,6 +215,35 @@ const getAll = async (req, res) => {
   });
 };
 
+const getLeaderboard = async (req, res, next) => {
+  let event = await EventModel.findById();
+
+  if (!event) next();
+
+  let scores = await ScoreModel.find({
+    round: { $or: ...event.rounds },
+  });
+
+  scores = scores.map(score => ({
+    team: score.team,
+    points: score.points,
+  }));
+
+  let mappedScores = scores.reduce((acc, curr) => {
+    let point = acc.get(curr.team) || 0;
+    acc.set(curr.team, curr.points + point);
+    return acc;
+  }, new Map());
+
+  let cumulatedScores = [...mappedScores].map(([team, score]) => ({team, score}));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: cumulatedScores,
+  });
+};
+
 const getRoundLeaderboard = async (req, res, next) => {
   let round = await RoundModel.findOne({
     id: req.params.round,
@@ -508,6 +537,7 @@ module.exports = {
   get,
   getAll,
   getRound,
+  getLeaderboard,
   getRoundLeaderboard,
   getRounds,
   getSlot,
