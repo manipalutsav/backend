@@ -15,8 +15,8 @@ const get = async (req, res) => {
     message: "Success",
     data: judges,
   });
-}
+};
 
 module.exports = {
   get,
-}
+};
