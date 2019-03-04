@@ -60,13 +60,19 @@ const create = async (req, res, next) => {
       });
     }
 
-    if (requester.type !== USER_TYPES.ADMINISTRATOR
-      && requester.type <= req.body.type) {
+    if (requester.type !== USER_TYPES.ADMINISTRATOR){
       return res.status(401).json({
         status: 401,
         message: "Unauthorized",
       });
     }
+
+    // if(requester.type <= req.body.type) {
+    //   return res.status(401).json({
+    //     status: 401,
+    //     message: "Unauthorized",
+    //   });
+    // }
 
     let user = await UserModel.findOne({ email: req.body.email });
 

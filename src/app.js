@@ -21,7 +21,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
-app.use(auth);
+// app.use(auth);
 
 // Routes
 const collegesRouter = require("./routes/colleges");
