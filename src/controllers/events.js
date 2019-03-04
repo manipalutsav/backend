@@ -221,7 +221,7 @@ const getLeaderboard = async (req, res, next) => {
   if (!event) next();
 
   let scores = await ScoreModel.find({
-    round: { $or: ...event.rounds },
+    round: { $or: event.rounds },
   });
 
   scores = scores.map(score => ({
