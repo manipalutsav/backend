@@ -274,9 +274,9 @@ const getRoundLeaderboard = async (req, res, next) => {
 
 const getRound = async (req, res, next) => {
 
-  // DO NOT TOUCH THIS.
   let round = await RoundModel.findOne({
     _id: req.params.round,
+    event: req.params.event,
   });
 
   if (!round) next();
@@ -358,7 +358,7 @@ const getSlots = async (req, res, next) => {
 
 const getTeam = async (req, res, next) => {
   let team = await TeamModel.findOne({
-    id: req.params.team,
+    _id: req.params.team,
     event: req.params.event,
   });
 
