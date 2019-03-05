@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ROUND_STATUS } = require("../utils/constants");
 
 const schema = {
   event: {
@@ -6,10 +7,15 @@ const schema = {
     required: true,
   },
   teams: [ mongoose.Schema.Types.ObjectId ],
+  criteria: [ String ],
   slottable: {
     type: Boolean,
     required: true,
     default: true,
+  },
+  status: {
+    type: Number,
+    default: ROUND_STATUS.SCHEDULED,
   },
 };
 

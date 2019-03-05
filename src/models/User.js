@@ -6,14 +6,14 @@ const schema = {
     required: true,
   },
   email: {
-    // TODO: Add `match: RegExp` to validate email.
     type: String,
     required: true,
     lowercase: true,
+    match: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   },
   mobile: {
-    // TODO: Add `match: RegExp` to validate mobile number.
     type: String,
+    match: /^(\+\d{1,3}[- ]?)?\d{10}$/,
   },
   type: {
     type: Number,

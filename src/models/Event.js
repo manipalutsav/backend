@@ -10,8 +10,6 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  criteria: [ String ],
-  teams: [ mongoose.Schema.Types.ObjectId ],
   minParticipants: Number,
   maxParticipants: Number,
   maxTeamsPerCollege: Number,
@@ -20,11 +18,6 @@ const schema = {
   duration: Number,
   startDate: Date,
   endDate: Date,
-  slottable: {
-    type: Boolean,
-    required: true,
-    default: true,
-  },
   isFaculty: Boolean,
 };
 
