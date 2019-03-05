@@ -60,7 +60,7 @@ async function populate() {
       teams: [],
       criteria: [ "C1", "C2", "C3", "C4" ],
       slottable: true,
-      status: Number,
+      status: 1,
     });
 
     event.rounds.push(round.id);
