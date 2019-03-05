@@ -44,6 +44,7 @@ function onShutdown() {
       await db.closeConnection();
       console.tick("MongoDB connection closed");
       console.bye("Sayonara!");
+      console.log("\x1b[0m");
       process.exit(0);
     }
   });
