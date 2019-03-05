@@ -46,7 +46,6 @@ async function populate() {
       rounds: [],
       name: "Dancing",
       college: college.id,
-      criteria: [ "C1", "C2", "C3", "C4" ],
       teams: [],
       minParticipants: 3,
       maxParticipants: 5,
@@ -59,6 +58,7 @@ async function populate() {
     let round = await Round.create({
       event: event.id,
       teams: [],
+      criteria: [ "C1", "C2", "C3", "C4" ],
       slottable: true,
       status: Number,
     });
