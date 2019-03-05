@@ -74,7 +74,7 @@ const createRound = async (req, res, next) => {
   let roundDocument = new RoundModel({
     event: event.id,
     teams: [],
-    duration: req.body.duration,
+    criteria: req.body.criteria,
     slottable: req.body.slottable,
   });
 
@@ -90,7 +90,7 @@ const createRound = async (req, res, next) => {
           id: round.id,
           event: req.params.event,
           teams: [],
-          duration: round.duration,
+          criteria: round.criteria,
           slottable: round.slottable,
         },
       });
