@@ -31,7 +31,7 @@ const createTeam = async (req, res) => {
   //TODO: Generate random team names, so we dont have to use
   // college models
   let names = [ "Team A", "Team B", "Team C" ];
-  let name = collegeDoc.name + "(" + names[participatedTeams.length] + ")";
+  let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
   if (participants.length > eventInfo.maxParticipants ) {
     return res.json({
       status: 416,
@@ -140,29 +140,30 @@ const createScore = async (req, res, next) => {
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
-    round: req.params.round,
   });
-
   if (!teams) teams = [];
 
+  let teamNames = teams.map(team => team.name);
   // TODO: Use team names
   teams = teams.map(team => team.id);
-  teamNames = teams.map(team => team.name);
-
+  
   // Slotting
   let slots = [];
   let noOfTeams = teams.length;
   for (let i = 0; i < noOfTeams; i++) {
-    let team = teams[Math.floor(Math.random() * teams.length)];
-
+    let index = Math.floor(Math.random() * teams.length);
+    let team_id = teams[index];
+    let team_name = teamNames[index];
+    console.log(team_name);
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
-      team: team,
+      team: team_id,
+      teamName: team_name,
     });
-
-    slots.push(team);
-    teams.splice(teams.indexOf(team), 1);
+    slots.push({ id:team_id, name: team_name, number: i + 1 });
+    teams.splice(teams.indexOf(team_id), 1);
+    teamNames.splice(teamNames.indexOf(team_name), 1);
   }
 
   return res.json({
@@ -347,22 +348,15 @@ const getSlot = async (req, res, next) => {
 const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
   if (!slots) next();
-
+  console.log(slots);
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
     round: slot.round,
     team: slot.team,
+    teamName:slot.teamName,
   }));
-
-  await slots.map(async slot => {
-    let team = await TeamModel.findOne({
-      _id: slot.team,
-    });
-    slot.teamName = team.name;
-    console.log(team);
-  });
-
+  
   return res.json({
     status: 200,
     message: "Success",
