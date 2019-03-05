@@ -51,5 +51,6 @@ const COMMANDS = [
 module.exports = {
   HTTP_STATUS,
   USER_TYPES,
+  ROUND_STATUS,
   COMMANDS,
 };
