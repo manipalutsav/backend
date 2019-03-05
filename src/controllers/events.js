@@ -275,7 +275,7 @@ const getRoundLeaderboard = async (req, res, next) => {
 const getRound = async (req, res, next) => {
   let round = await RoundModel.findOne({
     event: req.params.event,
-    round: req.params.round,
+    id: req.params.round,
   });
 
   if (!round) next();
