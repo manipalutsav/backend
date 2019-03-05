@@ -1,0 +1,10 @@
+
+//Save user in mongo
+{"name": "Meghashyam Bhandary","email": "r21meghashyam@gmail.com","mobile": "8123928667","type": 16,"password": "super_secret"}
+
+
+/colleges
+{
+	"name": "MIT",
+	"location": "Manipal"
+}
