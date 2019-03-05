@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const schema = {
+  name: String,
   event: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
