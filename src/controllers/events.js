@@ -7,6 +7,7 @@ const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
 const ParticipantModel = require("../models/Participant");
+const { ROUND_STATUS } = require("../utils/constants");
 
 const createTeam = async (req, res) => {
   let {
@@ -76,6 +77,7 @@ const createRound = async (req, res, next) => {
     teams: [],
     criteria: req.body.criteria,
     slottable: req.body.slottable,
+    status: ROUND_STATUS.SCHEDULED,
   });
 
   await roundDocument.save().
@@ -287,6 +289,7 @@ const getRound = async (req, res, next) => {
       teams: round.teams,
       duration: round.duration,
       slottable: round.slottable,
+      status: round.status,
     },
   });
 };
@@ -302,6 +305,7 @@ const getRounds = async (req, res) => {
     teams: round.teams,
     duration: round.duration,
     slottable: round.slottable,
+    status: round.status,
   }));
 
   return res.json({
