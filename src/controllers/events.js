@@ -110,7 +110,7 @@ const createRound = async (req, res, next) => {
 
 const createScore = async (req, res, next) => {
   let round = await RoundModel.findOne({
-    id: req.params.round,
+    _id: req.params.round,
     event: req.params.event,
   });
 
@@ -249,7 +249,7 @@ const getLeaderboard = async (req, res, next) => {
 
 const getRoundLeaderboard = async (req, res, next) => {
   let round = await RoundModel.findOne({
-    id: req.params.round,
+    _id: req.params.round,
     event: req.params.event,
   });
 
