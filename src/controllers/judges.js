@@ -17,6 +17,20 @@ const get = async (req, res) => {
   });
 };
 
+const create = async (req, res) => {
+  let { name, round } = req.body;
+  let judge = await JudgeModel.create({
+    name,
+    rounds: [ round ],
+  });
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: judge,
+  });
+};
+
 module.exports = {
   get,
+  create,
 };

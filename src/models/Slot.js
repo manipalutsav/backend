@@ -7,6 +7,7 @@ const schema = {
   },
   round: mongoose.Schema.Types.ObjectId,
   team: mongoose.Schema.Types.ObjectId,
+  teamName: String,
 };
 
 const options = {
