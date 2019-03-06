@@ -48,7 +48,7 @@ const createTeam = async (req, res) => {
         name,
       });
 
-      await team.save((err) => {
+      await team.save(async (err) => {
         if (err) {
           return res.json({
             status: 500,
