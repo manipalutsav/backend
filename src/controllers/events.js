@@ -1,6 +1,7 @@
 "use strict";
 
 const EventModel = require("../models/Event");
+const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
 const ScoreModel = require("../models/Score");
 const SlotModel = require("../models/Slot");
@@ -19,6 +20,7 @@ const createTeam = async (req, res) => {
 
   // Check if participation limit reached
   let participatedTeams = await TeamModel.find({ college: college });
+  let collegeDoc = await CollegeModel.findById(college);
   let eventInfo = await EventModel.findById(event);
   if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
     return res.json({
@@ -26,7 +28,10 @@ const createTeam = async (req, res) => {
       message: "Max participation limit reached for college",
     });
   }
-
+  // TODO: Generate random team names, so we dont have to use
+  // college models
+  let names = [ "Team A", "Team B", "Team C" ];
+  let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
   if (participants.length > eventInfo.maxParticipants ) {
     return res.json({
       status: 416,
@@ -40,6 +45,7 @@ const createTeam = async (req, res) => {
         event,
         college,
         members,
+        name,
       });
 
       await team.save((err) => {
@@ -49,6 +55,13 @@ const createTeam = async (req, res) => {
             message: "Internal Server Error",
           });
         }
+
+        // Add team to round 1
+        // TODO: Check if round exists in event
+        let round1 = await RoundModel.findById(eventInfo.rounds[0]);
+        round1.teams.push(team.id);
+        await round1.save();
+
         return res.json({
           status: 200,
           message: "Team Created",
@@ -134,11 +147,10 @@ const createScore = async (req, res, next) => {
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
-    round: req.params.round,
   });
-
   if (!teams) teams = [];
 
+  let teamNames = teams.map(team => team.name);
   // TODO: Use team names
   teams = teams.map(team => team.id);
 
@@ -146,16 +158,19 @@ const createSlots = async (req, res) => {
   let slots = [];
   let noOfTeams = teams.length;
   for (let i = 0; i < noOfTeams; i++) {
-    let team = teams[Math.floor(Math.random() * teams.length)];
+    let index = Math.floor(Math.random() * teams.length);
+    let team_id = teams[index];
+    let team_name = teamNames[index];
 
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
-      team: team,
+      team: team_id,
+      teamName: team_name,
     });
-
-    slots.push(team);
-    teams.splice(teams.indexOf(team), 1);
+    slots.push({ id:team_id, name: team_name, number: i + 1 });
+    teams.splice(teams.indexOf(team_id), 1);
+    teamNames.splice(teamNames.indexOf(team_name), 1);
   }
 
   return res.json({
@@ -345,7 +360,6 @@ const getSlot = async (req, res, next) => {
 
 const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
-
   if (!slots) next();
 
   slots = slots.map(slot => ({
@@ -353,6 +367,7 @@ const getSlots = async (req, res, next) => {
     number: slot.number,
     round: slot.round,
     team: slot.team,
+    teamName:slot.teamName,
   }));
 
   return res.json({
@@ -375,6 +390,7 @@ const getTeam = async (req, res, next) => {
     message: "Success",
     data: {
       id: team.id,
+      name:team.name,
       event: team.event,
       college: team.college,
       members: team.members,
@@ -393,6 +409,7 @@ const getTeams = async (req, res) => {
     event: team.event,
     college: team.college,
     members: team.members,
+    name: team.name,
     disqualified: team.disqualified,
   }));
 
@@ -415,6 +432,7 @@ const getTeamsInRound = async (req, res) => {
     id: team.id,
     event: team.event,
     college: team.college,
+    name:team.name,
     members: team.members,
     disqualified: team.disqualified,
   }));
