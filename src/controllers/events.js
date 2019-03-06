@@ -503,6 +503,9 @@ const createJudge = async (req, res) => {
     return res.status(200).json({
       status: 200,
       message: "Success",
+      data: {
+        id: judge._id
+      }
     });
   });
 };
