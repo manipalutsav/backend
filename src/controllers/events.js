@@ -49,6 +49,13 @@ const createTeam = async (req, res) => {
             message: "Internal Server Error",
           });
         }
+
+        // Add team to round 1
+        // TODO: Check if round exists in event
+        let round1 = await RoundModel.findById(eventInfo.rounds[0]);
+        round1.teams.push(team.id);
+        await round1.save();
+
         return res.json({
           status: 200,
           message: "Team Created",
