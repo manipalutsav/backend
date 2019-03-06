@@ -28,7 +28,7 @@ const createTeam = async (req, res) => {
       message: "Max participation limit reached for college",
     });
   }
-  //TODO: Generate random team names, so we dont have to use
+  // TODO: Generate random team names, so we dont have to use
   // college models
   let names = [ "Team A", "Team B", "Team C" ];
   let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
@@ -45,7 +45,7 @@ const createTeam = async (req, res) => {
         event,
         college,
         members,
-        name
+        name,
       });
 
       await team.save((err) => {
@@ -146,7 +146,7 @@ const createSlots = async (req, res) => {
   let teamNames = teams.map(team => team.name);
   // TODO: Use team names
   teams = teams.map(team => team.id);
-  
+
   // Slotting
   let slots = [];
   let noOfTeams = teams.length;
@@ -154,7 +154,7 @@ const createSlots = async (req, res) => {
     let index = Math.floor(Math.random() * teams.length);
     let team_id = teams[index];
     let team_name = teamNames[index];
-    console.log(team_name);
+
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
@@ -330,7 +330,7 @@ const getSlot = async (req, res, next) => {
     round: req.params.round,
     team: req.params.team,
   });
-  console.log('SLOT',slot);
+
   if (!slot) next();
 
   return res.json({
@@ -348,7 +348,7 @@ const getSlot = async (req, res, next) => {
 const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
   if (!slots) next();
-  console.log(slots);
+
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
@@ -356,7 +356,7 @@ const getSlots = async (req, res, next) => {
     team: slot.team,
     teamName:slot.teamName,
   }));
-  
+
   return res.json({
     status: 200,
     message: "Success",
@@ -390,7 +390,7 @@ const getTeams = async (req, res) => {
   let teams = await TeamModel.find({ event: req.params.event });
 
   if (!teams) teams = [];
-  
+
   teams = teams.map(team => ({
     id: team.id,
     event: team.event,
@@ -399,7 +399,7 @@ const getTeams = async (req, res) => {
     name: team.name,
     disqualified: team.disqualified,
   }));
-  
+
   return res.json({
     status: 200,
     message: "Success",
