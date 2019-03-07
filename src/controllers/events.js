@@ -10,7 +10,7 @@ const JudgeModel = require("../models/Judge");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS } = require("../utils/constants");
 
-const createTeam = async (req, res, next) => {
+const createTeam = async (req, res) => {
   let {
     college,
     participants,
@@ -22,11 +22,6 @@ const createTeam = async (req, res, next) => {
   let participatedTeams = await TeamModel.find({ college: college });
   let collegeDoc = await CollegeModel.findById(college);
   let eventInfo = await EventModel.findById(event);
-
-  if(!eventInfo){
-    next();
-    return;
-  }
   if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
     return res.json({
       status: 416,
@@ -50,16 +45,23 @@ const createTeam = async (req, res, next) => {
         event,
         college,
         members,
-        name
+        name,
       });
 
-      await team.save((err) => {
+      await team.save(async (err) => {
         if (err) {
           return res.json({
             status: 500,
             message: "Internal Server Error",
           });
         }
+
+        // Add team to round 1
+        // TODO: Check if round exists in event
+        let round1 = await RoundModel.findById(eventInfo.rounds[0]);
+        round1.teams.push(team.id);
+        await round1.save();
+
         return res.json({
           status: 200,
           message: "Team Created",
