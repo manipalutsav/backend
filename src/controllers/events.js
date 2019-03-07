@@ -145,7 +145,25 @@ const createScore = async (req, res, next) => { // NOT BEING USED
 };
 
 const createScores = async (req, res, next) => {
+  /**
+   * {
+   *  team:
+   * round:
+   * judge:{
+   *  id:
+   *  points:[11,11,11,11,11]
+   *  }
+   * }
+   * 
+   */
   /* let data = [{
+    team: "Awcdkjw",
+    criteriaScores:[ 10, 20, 30, 40 ],
+    total: 100
+    judge : "wdkwckn",
+    round: "adscd",
+    event: "wCFEWC"
+  },{
     team: "Awcdkjw",
     criteriaScores:[ 10, 20, 30, 40 ],
     total: 100
@@ -158,17 +176,21 @@ const createScores = async (req, res, next) => {
     _id: req.params.round,
     event: req.params.event,
   });
-
+  console.log(round);
   if (!round) next();
   let scores = req.body;
   for(let i = 0;i < scores.length;i++){
-    console.log(round.teams, scores[i].team);
+    // console.log(round.teams, scores[i].team);
     if(!round.teams.includes(scores[i].team)){
       next();
       return;
     }
   }
   await scores.forEach(async score => {
+    let scoreM = await RoundModel.findOne({
+      round: score.round,
+      team: score.team,
+    });
     await ScoreModel.create(score);
   });
   return res.json({
