@@ -421,14 +421,15 @@ const getTeams = async (req, res) => {
 };
 
 const getTeamsInRound = async (req, res) => {
-  let teams = await TeamModel.find({
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
     event: req.params.event,
-    round: req.params.round,
-  });
-
-  if (!teams) teams = [];
-
-  teams = teams.map(team => ({
+  }).populate({
+    path: 'teams',
+    model: 'Team'
+  })
+  
+  let teams = round.teams.map(team => ({
     id: team.id,
     event: team.event,
     college: team.college,
