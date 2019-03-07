@@ -131,16 +131,62 @@ const createScore = async (req, res, next) => {
 
   if (!round.teams.includes(req.params.team)) next();
 
-  let score = await ScoreModel.create({
-    team: req.params.team,
+  let score = await ScoreModel.findOne({
+    team: req.params.event,
     round: req.params.round,
-    judges: req.body.judges,
   });
+
+  if (score) {
+    score.judges.concat(req.body.judges);
+    await score.save();
+  } else {
+    score = await ScoreModel.create({
+      team: req.params.team,
+      round: req.params.round,
+      judges: req.body.judges,
+    });
+  }
 
   return res.json({
     status: 200,
     message: "Success",
     data: score,
+  });
+};
+
+const createScore = async (req, res, next) => {
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+
+  if (!round.teams.includes(req.params.team)) next();
+
+  let scores = await ScoreModel.find({
+    round: req.params.round,
+  });
+
+  if (scores) {
+    // HACK: Improve this
+    for (let score of req.body) {
+      let score = ScoreModel.findOne({
+        team: score.team,
+        round: score.round,
+      });
+      score.judges.concat(score.judges);
+
+      await score.save();
+    }
+  } else {
+    scores = await ScoreModel.create(req.body);
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
   });
 };
 
@@ -207,7 +253,7 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-  
+
   let events = await EventModel.find().populate({
     path: 'rounds',
     model: 'Round'
@@ -571,6 +617,7 @@ const addBulkParticipants = (data, college) => {
 module.exports = {
   createRound,
   createScore,
+  createScores,
   createSlots,
   get,
   getAll,
