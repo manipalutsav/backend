@@ -25,7 +25,7 @@ const create = async (req, res) => {
   });
   return res.json({
     status: 200,
-    message: "Success",
+    message: "Succes",
     data: judge,
   });
 };

@@ -208,7 +208,6 @@ const createSlots = async (req, res) => {
     let index = Math.floor(Math.random() * teams.length);
     let team_id = teams[index];
     let team_name = teamNames[index];
-
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
@@ -393,7 +392,6 @@ const getSlot = async (req, res, next) => {
     round: req.params.round,
     team: req.params.team,
   });
-
   if (!slot) next();
 
   return res.json({
@@ -411,7 +409,6 @@ const getSlot = async (req, res, next) => {
 const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
   if (!slots) next();
-
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
@@ -551,31 +548,18 @@ const create = async (req, res) => {
 };
 
 const createJudge = async (req, res) => {
-  let { name } = req.body;
-  let { round } = req.params;
-
-  let judge = new JudgeModel({
+  let { name, round } = req.body;
+  let judge = await JudgeModel.create({
     name,
-    round,
+    rounds: [ round ],
   });
 
-  await judge.save(err => {
-    if (err) {
-      // eslint-disable-next-line no-console
-      console.poo(err);
-      return res.status(500).json({
-        status: 500,
-        message: "Internal server error",
-      });
-    }
-
-    return res.status(200).json({
-      status: 200,
-      message: "Success",
-      data: {
-        id: judge._id
-      }
-    });
+  return res.json({
+    status: 200,
+    message: "Succes",
+    data: {
+      id: judge._id
+    },
   });
 };
 
