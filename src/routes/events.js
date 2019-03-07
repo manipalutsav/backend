@@ -38,10 +38,14 @@ router.post("/", Events.create);
 router.post("/:event/rounds", Events.createRound);
 // Create a new judge for round
 router.post("/:event/rounds/:round/judge", Events.createJudge);
-// Create slotting for the given round in the given event
-router.post("/:event/rounds/:round/slots", Events.createSlots);
+// Create a new judge for round
+router.post("/:event/rounds/:round/judge", Events.createJudge);
+// TODO: Finalize the round scores and move teams to next round.
+// router.post("/:event/rounds/:round/finalize", Events.finalizeRound);
 // Add scores for the given team for the given round in the given event
 router.post("/:event/rounds/:round/teams/:team/scores", Events.createScore);
+// Add scores for the teams in the given round in the given event
+router.post("/:event/rounds/:round/teams/scores", Events.createScores);
 // Register a team to the given event
 router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team

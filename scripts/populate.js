@@ -66,7 +66,7 @@ async function populate() {
     event.rounds.push(round.id);
     await event.save();
 
-   
+
     let participant1 = await Participant.create({
       registrationID:'18090092',
       name:'Megh',
@@ -99,8 +99,9 @@ async function populate() {
       college:college.id,
       faculty:false
     });
-    
+
     let team1 = await Team.create({
+      name: college.name + " Alpha",
       event:event.id,
       college:college.id,
       members:[
@@ -108,6 +109,7 @@ async function populate() {
       ]
     });
     let team2 = await Team.create({
+      name: college.name + " Bravo",
       event:event.id,
       college:college.id,
       members:[
@@ -115,21 +117,23 @@ async function populate() {
       ]
     });
 
+    round.teams.push(team1.id);
+    round.teams.push(team2.id);
+    round.save();
+
     await Slot.create({
-      number:1,
-      round:round.id,
-      team:team2.id
+      number: 1,
+      round: round.id,
+      team: team2.id,
+      teamName: team2.name,
     });
 
     await Slot.create({
-      number:2,
-      round:round.id,
-      team:team1.id
+      number: 2,
+      round: round.id,
+      team: team1.id,
+      teamName: team1.name,
     });
-
-    
-    
-    
 
   } catch (e) {
     console.error(e);

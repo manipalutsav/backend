@@ -131,16 +131,62 @@ const createScore = async (req, res, next) => {
 
   if (!round.teams.includes(req.params.team)) next();
 
-  let score = await ScoreModel.create({
-    team: req.params.team,
+  let score = await ScoreModel.findOne({
+    team: req.params.event,
     round: req.params.round,
-    judges: req.body.judges,
   });
+
+  if (score) {
+    score.judges.concat(req.body.judges);
+    await score.save();
+  } else {
+    score = await ScoreModel.create({
+      team: req.params.team,
+      round: req.params.round,
+      judges: req.body.judges,
+    });
+  }
 
   return res.json({
     status: 200,
     message: "Success",
     data: score,
+  });
+};
+
+const createScore = async (req, res, next) => {
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+
+  if (!round.teams.includes(req.params.team)) next();
+
+  let scores = await ScoreModel.find({
+    round: req.params.round,
+  });
+
+  if (scores) {
+    // HACK: Improve this
+    for (let score of req.body) {
+      let score = ScoreModel.findOne({
+        team: score.team,
+        round: score.round,
+      });
+      score.judges.concat(score.judges);
+
+      await score.save();
+    }
+  } else {
+    scores = await ScoreModel.create(req.body);
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
   });
 };
 
@@ -153,7 +199,7 @@ const createSlots = async (req, res) => {
   let teamNames = teams.map(team => team.name);
   // TODO: Use team names
   teams = teams.map(team => team.id);
-  
+
   // Slotting
   let slots = [];
   let noOfTeams = teams.length;
@@ -206,23 +252,29 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-  let events = await EventModel.find();
 
-  events = events.map(event => ({
-    id: event.id,
-    name: event.name,
-    description: event.description,
-    college: event.college,
-    rounds: event.rounds,
-    teams: event.teams,
-    minParticipants: event.minParticipants,
-    maxParticipants: event.maxParticipants,
-    venue: event.venue,
-    duration: event.duration,
-    startDate: event.startDate,
-    endDate: event.endDate,
-    slottable: event.slottable,
-  }));
+  let events = await EventModel.find().populate({
+    path: 'rounds',
+    model: 'Round'
+  })
+  events = events.map(event => {
+    let roundId = event.rounds.map(round => round.id);
+    return {
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      college: event.college,
+      rounds: roundId,
+      teams: event.teams,
+      minParticipants: event.minParticipants,
+      maxParticipants: event.maxParticipants,
+      venue: event.venue,
+      duration: event.duration,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      slottable: event.slottable,
+    }
+  });
 
   return res.json({
     status: 200,
@@ -360,7 +412,7 @@ const getSlots = async (req, res, next) => {
     team: slot.team,
     teamName:slot.teamName,
   }));
-  
+
   return res.json({
     status: 200,
     message: "Success",
@@ -394,7 +446,7 @@ const getTeams = async (req, res) => {
   let teams = await TeamModel.find({ event: req.params.event });
 
   if (!teams) teams = [];
-  
+
   teams = teams.map(team => ({
     id: team.id,
     event: team.event,
@@ -403,7 +455,7 @@ const getTeams = async (req, res) => {
     name: team.name,
     disqualified: team.disqualified,
   }));
-  
+
   return res.json({
     status: 200,
     message: "Success",
@@ -412,14 +464,15 @@ const getTeams = async (req, res) => {
 };
 
 const getTeamsInRound = async (req, res) => {
-  let teams = await TeamModel.find({
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
     event: req.params.event,
-    round: req.params.round,
-  });
-
-  if (!teams) teams = [];
-
-  teams = teams.map(team => ({
+  }).populate({
+    path: 'teams',
+    model: 'Team'
+  })
+  
+  let teams = round.teams.map(team => ({
     id: team.id,
     event: team.event,
     college: team.college,
@@ -496,10 +549,13 @@ const createJudge = async (req, res) => {
     name,
     rounds: [ round ],
   });
+
   return res.json({
     status: 200,
     message: "Succes",
-    data: judge,
+    data: {
+      id: judge._id
+    },
   });
 };
 
@@ -542,6 +598,7 @@ const addBulkParticipants = (data, college) => {
 module.exports = {
   createRound,
   createScore,
+  createScores,
   createSlots,
   get,
   getAll,
