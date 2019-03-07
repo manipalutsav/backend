@@ -143,7 +143,10 @@ const createScore = async (req, res, next) => {
     score = await ScoreModel.create({
       team: req.params.team,
       round: req.params.round,
-      judges: [ req.body.judges ],
+      judges: [{
+        id: req.body.judges,
+        points: req.body.points,
+      }],
     });
   }
 
