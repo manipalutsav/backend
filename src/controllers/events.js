@@ -121,7 +121,7 @@ const createRound = async (req, res, next) => {
     });
 };
 
-const createScore = async (req, res, next) => { // NOT BEING USED
+const createScore = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -143,79 +143,6 @@ const createScore = async (req, res, next) => { // NOT BEING USED
     data: score,
   });
 };
-
-const createScores = async (req, res, next) => {
-  /**
-   * [{
-   * team:
-   * round:
-   * judge: [{
-   *   id:
-   *   points: []
-   * }]
-   * }
-   * ]
-   * 
-   * 
-   * [{
-   *  team:'aajbx',
-   * round:'dsjb',
-   * judge:'sadcxjahsb',
-   * points:[10,20,30]
-   * },
-   * {
-   *  team:'aajbx',
-   * round:'dsjb',
-   * judge:'sadcxjahsb',
-   * points:[10,20,30]
-   * }
-   * ]
-   * 
-   */
-  /* let data = [{
-    team: "Awcdkjw",
-    criteriaScores:[ 10, 20, 30, 40 ],
-    total: 100
-    judge : "wdkwckn",
-    round: "adscd",
-    event: "wCFEWC"
-  },{
-    team: "Awcdkjw",
-    criteriaScores:[ 10, 20, 30, 40 ],
-    total: 100
-    judge : "wdkwckn",
-    round: "adscd",
-    event: "wCFEWC"
-  }];
-  */
-  let round = await RoundModel.findOne({
-    _id: req.params.round,
-    event: req.params.event,
-  });
-  console.log(round);
-  if (!round) next();
-  let scores = req.body;
-  for(let i = 0;i < scores.length;i++){
-    // console.log(round.teams, scores[i].team);
-    if(!round.teams.includes(scores[i].team)){
-      next();
-      return;
-    }
-  }
-  await scores.forEach(async score => {
-    let scoreM = await RoundModel.findOne({
-      round: score.round,
-      team: score.team,
-    });
-    await ScoreModel.create(score);
-  });
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: scores,
-  });
-};
-
 
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
@@ -615,7 +542,6 @@ const addBulkParticipants = (data, college) => {
 module.exports = {
   createRound,
   createScore,
-  createScores, // This is being used
   createSlots,
   get,
   getAll,
