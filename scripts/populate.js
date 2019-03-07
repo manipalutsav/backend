@@ -117,6 +117,10 @@ async function populate() {
       ]
     });
 
+    round.teams.push(team1.id);
+    round.teams.push(team2.id);
+    round.save();
+
     await Slot.create({
       number: 1,
       round: round.id,
@@ -130,10 +134,6 @@ async function populate() {
       team: team1.id,
       teamName: team1.name,
     });
-
-
-
-
 
   } catch (e) {
     console.error(e);
