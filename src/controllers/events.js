@@ -137,16 +137,13 @@ const createScore = async (req, res, next) => {
   });
 
   if (score) {
-    score.judges.push(req.body.judges);
+    score.judges.concat(req.body.judges);
     await score.save();
   } else {
     score = await ScoreModel.create({
       team: req.params.team,
       round: req.params.round,
-      judges: [{
-        id: req.body.judges,
-        points: req.body.points,
-      }],
+      judges: req.body.judges,
     });
   }
 
@@ -178,8 +175,7 @@ const createScore = async (req, res, next) => {
         team: score.team,
         round: score.round,
       });
-
-      score.judges.push(score.judges);
+      score.judges.concat(score.judges);
 
       await score.save();
     }
