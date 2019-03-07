@@ -325,7 +325,7 @@ const getRoundLeaderboard = async (req, res, next) => {
   let scores = await ScoreModel.find({
     round: round.id,
   }).populate({
-    path: 'teams',
+    path: 'team',
     model: 'Team'
   });
 
