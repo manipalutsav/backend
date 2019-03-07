@@ -146,14 +146,30 @@ const createScore = async (req, res, next) => { // NOT BEING USED
 
 const createScores = async (req, res, next) => {
   /**
-   * {
-   *  team:
+   * [{
+   * team:
    * round:
-   * judge:{
-   *  id:
-   *  points:[11,11,11,11,11]
-   *  }
+   * judge: [{
+   *   id:
+   *   points: []
+   * }]
    * }
+   * ]
+   * 
+   * 
+   * [{
+   *  team:'aajbx',
+   * round:'dsjb',
+   * judge:'sadcxjahsb',
+   * points:[10,20,30]
+   * },
+   * {
+   *  team:'aajbx',
+   * round:'dsjb',
+   * judge:'sadcxjahsb',
+   * points:[10,20,30]
+   * }
+   * ]
    * 
    */
   /* let data = [{
