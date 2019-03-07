@@ -131,11 +131,21 @@ const createScore = async (req, res, next) => {
 
   if (!round.teams.includes(req.params.team)) next();
 
-  let score = await ScoreModel.create({
-    team: req.params.team,
+  let score = await ScoreModel.findOne({
+    team: req.params.event,
     round: req.params.round,
-    judges: req.body.judges,
   });
+
+  if (score) {
+    score.judges.push(req.body.judges);
+    await score.save();
+  } else {
+    score = await ScoreModel.create({
+      team: req.params.team,
+      round: req.params.round,
+      judges: [ req.body.judges ],
+    });
+  }
 
   return res.json({
     status: 200,
@@ -207,7 +217,7 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-  
+
   let events = await EventModel.find().populate({
     path: 'rounds',
     model: 'Round'
