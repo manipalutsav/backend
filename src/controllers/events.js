@@ -157,6 +157,43 @@ const createScore = async (req, res, next) => {
   });
 };
 
+const createScore = async (req, res, next) => {
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+
+  if (!round.teams.includes(req.params.team)) next();
+
+  let scores = await ScoreModel.find({
+    round: req.params.round,
+  });
+
+  if (scores) {
+    // HACK: Improve this
+    for (let score of req.body) {
+      let score = ScoreModel.findOne({
+        team: score.team,
+        round: score.round,
+      });
+
+      score.judges.push(score.judges);
+
+      await score.save();
+    }
+  } else {
+    scores = await ScoreModel.create(req.body);
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
+  });
+};
+
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
@@ -580,6 +617,7 @@ const addBulkParticipants = (data, college) => {
 module.exports = {
   createRound,
   createScore,
+  createScores,
   createSlots,
   get,
   getAll,
