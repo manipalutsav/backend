@@ -160,25 +160,24 @@ const createScores = async (req, res, next) => {
     _id: req.params.round,
     event: req.params.event,
   });
+  if (!round) return next();
 
-  if (!round) next();
-
-  if (!round.teams.includes(req.params.team)) next();
-
+  /*for(let score of req.body){
+    if (!round.teams.includes(score.team)) return next();
+  }*/
   let scores = await ScoreModel.find({
     round: req.params.round,
   });
-
-  if (scores) {
+  if (scores.length) {
     // HACK: Improve this
     for (let score of req.body) {
-      let score = ScoreModel.findOne({
+      let teamScore = await ScoreModel.findOne({
         team: score.team,
         round: score.round,
       });
-      score.judge = score.judges.concat(score.judges);
+      teamScore.judges = teamScore.judges.concat(score.judges);
 
-      await score.save();
+      await teamScore.save();
     }
   } else {
     scores = await ScoreModel.create(req.body);
@@ -208,6 +207,7 @@ const createSlots = async (req, res) => {
     let index = Math.floor(Math.random() * teams.length);
     let team_id = teams[index];
     let team_name = teamNames[index];
+    
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
@@ -257,7 +257,7 @@ const getAll = async (req, res) => {
   let events = await EventModel.find().populate({
     path: 'rounds',
     model: 'Round'
-  })
+  });
   events = events.map(event => {
     let roundId = event.rounds.map(round => round.id);
     return {
@@ -318,7 +318,7 @@ const getRoundLeaderboard = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
-  })
+  });
 
   if (!round) next();
 
@@ -474,7 +474,7 @@ const getTeamsInRound = async (req, res) => {
   }).populate({
     path: 'teams',
     model: 'Team'
-  })
+  });
   
   let teams = round.teams.map(team => ({
     id: team.id,
