@@ -272,6 +272,9 @@ const getRoundLeaderboard = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
+  }).populate({
+    path: 'teams',
+    model: 'Team'
   });
 
   if (!round) next();
