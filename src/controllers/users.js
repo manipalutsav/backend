@@ -51,6 +51,7 @@ const create = async (req, res, next) => {
         message: "Forbidden",
       });
     }
+    /*
     let isRealRequester = await hash.comparePasswordHash(req.body.requesterPassword, requester.password);
 
     if (!isRealRequester) {
@@ -73,7 +74,7 @@ const create = async (req, res, next) => {
     //     message: "Unauthorized",
     //   });
     // }
-
+*/
     let user = await UserModel.findOne({ email: req.body.email });
 
     if (user) {
