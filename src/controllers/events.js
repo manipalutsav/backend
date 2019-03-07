@@ -154,7 +154,7 @@ const createScore = async (req, res, next) => {
   });
 };
 
-const createScore = async (req, res, next) => {
+const createScores = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
