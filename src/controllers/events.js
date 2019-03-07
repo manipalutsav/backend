@@ -176,7 +176,7 @@ const createScores = async (req, res, next) => {
         team: score.team,
         round: score.round,
       });
-      score.judges.concat(score.judges);
+      score.judge = score.judges.concat(score.judges);
 
       await score.save();
     }
