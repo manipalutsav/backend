@@ -10,7 +10,7 @@ const JudgeModel = require("../models/Judge");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS } = require("../utils/constants");
 
-const createTeam = async (req, res) => {
+const createTeam = async (req, res, next) => {
   let {
     college,
     participants,
@@ -22,13 +22,18 @@ const createTeam = async (req, res) => {
   let participatedTeams = await TeamModel.find({ college: college });
   let collegeDoc = await CollegeModel.findById(college);
   let eventInfo = await EventModel.findById(event);
+
+  if(!eventInfo){
+    next();
+    return;
+  }
   if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
     return res.json({
       status: 416,
       message: "Max participation limit reached for college",
     });
   }
-  //TODO: Generate random team names, so we dont have to use
+  // TODO: Generate random team names, so we dont have to use
   // college models
   let names = [ "Team A", "Team B", "Team C" ];
   let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
@@ -114,7 +119,7 @@ const createRound = async (req, res, next) => {
     });
 };
 
-const createScore = async (req, res, next) => {
+const createScore = async (req, res, next) => { // NOT BEING USED
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -137,6 +142,41 @@ const createScore = async (req, res, next) => {
   });
 };
 
+const createScores = async (req, res, next) => {
+  /* let data = [{
+    team: "Awcdkjw",
+    criteriaScores:[ 10, 20, 30, 40 ],
+    total: 100
+    judge : "wdkwckn",
+    round: "adscd",
+    event: "wCFEWC"
+  }];
+  */
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+  let scores = req.body;
+  for(let i = 0;i < scores.length;i++){
+    console.log(round.teams, scores[i].team);
+    if(!round.teams.includes(scores[i].team)){
+      next();
+      return;
+    }
+  }
+  await scores.forEach(async score => {
+    await ScoreModel.create(score);
+  });
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
+  });
+};
+
+
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
@@ -154,7 +194,6 @@ const createSlots = async (req, res) => {
     let index = Math.floor(Math.random() * teams.length);
     let team_id = teams[index];
     let team_name = teamNames[index];
-    console.log(team_name);
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
@@ -330,7 +369,6 @@ const getSlot = async (req, res, next) => {
     round: req.params.round,
     team: req.params.team,
   });
-  console.log('SLOT',slot);
   if (!slot) next();
 
   return res.json({
@@ -348,7 +386,6 @@ const getSlot = async (req, res, next) => {
 const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
   if (!slots) next();
-  console.log(slots);
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
@@ -487,28 +524,15 @@ const create = async (req, res) => {
 };
 
 const createJudge = async (req, res) => {
-  let { name } = req.body;
-  let { round } = req.params;
-
-  let judge = new JudgeModel({
+  let { name, round } = req.body;
+  let judge = await JudgeModel.create({
     name,
-    round,
+    rounds: [ round ],
   });
-
-  await judge.save(err => {
-    if (err) {
-      // eslint-disable-next-line no-console
-      console.poo(err);
-      return res.status(500).json({
-        status: 500,
-        message: "Internal server error",
-      });
-    }
-
-    return res.status(200).json({
-      status: 200,
-      message: "Success",
-    });
+  return res.json({
+    status: 200,
+    message: "Succes",
+    data: judge,
   });
 };
 
@@ -551,6 +575,7 @@ const addBulkParticipants = (data, college) => {
 module.exports = {
   createRound,
   createScore,
+  createScores, // This is being used
   createSlots,
   get,
   getAll,

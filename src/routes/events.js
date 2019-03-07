@@ -42,6 +42,7 @@ router.post("/:event/rounds/:round/judge", Events.createJudge);
 router.post("/:event/rounds/:round/slots", Events.createSlots);
 // Add scores for the given team for the given round in the given event
 router.post("/:event/rounds/:round/teams/:team/scores", Events.createScore);
+router.post("/:event/rounds/:round/scores", Events.createScores);
 // Register a team to the given event
 router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team

@@ -18,7 +18,6 @@ const get = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  console.log("111");
   let { name, round } = req.body;
   let judge = await JudgeModel.create({
     name,
@@ -26,7 +25,7 @@ const create = async (req, res) => {
   });
   return res.json({
     status: 200,
-    message: "Success",
+    message: "Succes",
     data: judge,
   });
 };
