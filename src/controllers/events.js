@@ -14,6 +14,7 @@ const createTeam = async (req, res) => {
   let {
     college,
     participants,
+    name // Remove name after HUES
   } = req.body;
 
   let { event } = req.params;
@@ -30,14 +31,14 @@ const createTeam = async (req, res) => {
   }
   // TODO: Generate random team names, so we dont have to use
   // college models
-  let names = [ "Team A", "Team B", "Team C" ];
-  let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
-  if (participants.length > eventInfo.maxParticipants ) {
-    return res.json({
-      status: 416,
-      message: "Number of particpants exceeds max particpants for event",
-    });
-  }
+  // let names = [ "Team A", "Team B", "Team C" ];
+  // let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
+  // if (participants.length > eventInfo.maxParticipants ) {
+  //   return res.json({
+  //     status: 416,
+  //     message: "Number of particpants exceeds max particpants for event",
+  //   });
+  // }
 
   addBulkParticipants(participants, college).
     then(async members => {
