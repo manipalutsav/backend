@@ -192,6 +192,7 @@ const createScores = async (req, res, next) => {
 };
 
 const createSlots = async (req, res) => {
+  console.log(111);
   let teams = await TeamModel.find({
     event: req.params.event,
   });
@@ -208,6 +209,7 @@ const createSlots = async (req, res) => {
     let index = Math.floor(Math.random() * teams.length);
     let team_id = teams[index];
     let team_name = teamNames[index];
+    
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
@@ -257,7 +259,7 @@ const getAll = async (req, res) => {
   let events = await EventModel.find().populate({
     path: 'rounds',
     model: 'Round'
-  })
+  });
   events = events.map(event => {
     let roundId = event.rounds.map(round => round.id);
     return {
@@ -318,7 +320,7 @@ const getRoundLeaderboard = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
-  })
+  });
 
   if (!round) next();
 
@@ -474,7 +476,7 @@ const getTeamsInRound = async (req, res) => {
   }).populate({
     path: 'teams',
     model: 'Team'
-  })
+  });
   
   let teams = round.teams.map(team => ({
     id: team.id,
