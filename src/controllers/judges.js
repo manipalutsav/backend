@@ -3,19 +3,26 @@
 const JudgeModel = require("../models/Judge");
 
 const get = async (req, res) => {
-  let judges = await JudgeModel.find();
+  try {
+    let judges = await JudgeModel.find();
 
-  judges = judges.map(judge => ({
-    id: judge.id,
-    name: judge.name,
-    rounds: judge.rounds,
-  }));
+    judges = judges.map(judge => ({
+      id: judge.id,
+      name: judge.name,
+      rounds: judge.rounds,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: judges,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: judges,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 const create = async (req, res) => {
