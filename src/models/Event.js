@@ -10,7 +10,11 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  minMembersPerTeam: Number,
+  minMembersPerTeam: {
+    type: Number,
+    required: true,
+    default: 1,
+  },
   maxMembersPerTeam: Number,
   maxTeamsPerCollege: Number,
   venue: String,
@@ -18,7 +22,11 @@ const schema = {
   duration: Number,
   startDate: Date,
   endDate: Date,
-  isFaculty: Boolean,
+  faculty: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 };
 
 const options = {
