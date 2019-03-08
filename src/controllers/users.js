@@ -222,12 +222,19 @@ const update = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
+    if (!req.body.email || !req.body.password) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request. Invalid request body.",
+      });
+    }
+
     let user = await UserModel.findOne({ email: req.body.email });
 
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. No account exist with that email.",
       });
     }
 
@@ -239,7 +246,7 @@ const login = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. Invalid password.",
       });
     }
 
