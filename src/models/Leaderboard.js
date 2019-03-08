@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const schema = {
-  college: mongoose.Schema.Types.ObjectId,
+  college: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
   points: {
     type: Number,
     required: true,
