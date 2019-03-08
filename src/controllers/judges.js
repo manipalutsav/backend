@@ -8,6 +8,7 @@ const get = async (req, res) => {
   judges = judges.map(judge => ({
     id: judge.id,
     name: judge.name,
+    rounds: judge.rounds,
   }));
 
   return res.json({
@@ -18,16 +19,41 @@ const get = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  let { name, round } = req.body;
-  let judge = await JudgeModel.create({
-    name,
-    rounds: [ round ],
-  });
-  return res.json({
-    status: 200,
-    message: "Succes",
-    data: judge,
-  });
+  try {
+    if (!req.body.name || !req.body.round) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request",
+      });
+    }
+
+    let judge = await JudgeModel.findOne({ name: req.body.name });
+
+    if (judge) {
+      judge.rounds.push(req.body.round);
+      await judge.save();
+    } else {
+      judge = await JudgeModel.create({
+        name: req.body.name,
+        rounds: [ req.body.round ],
+      });
+    }
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: {
+        id: judge.id,
+        name: judge.name,
+        rounds: judge.rounds,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 module.exports = {
