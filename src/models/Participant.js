@@ -17,6 +17,7 @@ const schema = {
   faculty: {
     type: Boolean,
     required: true,
+    default: false,
   },
 };
 
