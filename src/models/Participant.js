@@ -2,22 +2,11 @@ const mongoose = require("mongoose");
 
 const schema = {
   registrationID: {
-    // TODO: Add `match: RegExp` to validate registration number.
     type: String,
     required: true,
+    match: /^(?:(?:MAHE[\d]{7})|(?:[\d]{9}))$/i,
   },
   name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    // TODO: Add `match: RegExp` to validate email.
-    type: String,
-    required: true,
-    lowercase: true,
-  },
-  mobile: {
-    // TODO: Add `match: RegExp` to validate mobile number.
     type: String,
     required: true,
   },
