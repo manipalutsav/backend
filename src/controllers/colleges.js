@@ -119,22 +119,27 @@ const getAll = async (req, res) => {
  * @returns {object} the response object
  */
 const getParticipants = async (req, res) => {
-  let participants = await ParticipantModel.find({ college: req.params.college });
+  try {
+    let participants = await ParticipantModel.find({ college: req.params.college });
 
-  participants = participants.map(participant => ({
-    registrationID: participant.registrationID,
-    name: participant.name,
-    email: participant.email,
-    mobile: participant.mobile,
-    college: participant.college,
-    faculty: participant.faculty,
-  }));
+    participants = participants.map(participant => ({
+      registrationID: participant.registrationID,
+      name: participant.name,
+      college: participant.college,
+      faculty: participant.faculty,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: participants,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: participants,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -144,20 +149,28 @@ const getParticipants = async (req, res) => {
  * @returns {object} the response object
  */
 const getTeams = async (req, res) => {
-  let teams = await TeamModel.find({ college: req.params.college });
+  try {
+    let teams = await TeamModel.find({ college: req.params.college });
 
-  teams = teams.map(team => ({
-    event: team.event,
-    college: team.college,
-    members: team.members,
-    disqualified: team.disqualified,
-  }));
+    teams = teams.map(team => ({
+      name: team.event,
+      event: team.event,
+      college: team.college,
+      members: team.members,
+      disqualified: team.disqualified,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: teams,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: teams,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 module.exports = {
