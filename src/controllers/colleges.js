@@ -11,35 +11,42 @@ const ParticipantModel = require("../models/Participant");
  * @returns {object} the response object
  */
 const create = async (req, res) => {
-  let { name, location } = req.body;
-
-  let college = await CollegeModel.findOne({ name: req.body.name });
-  if(college) {
-    return res.status(400).json({
-      status: 400,
-      message: "Bad request",
-    });
-  }
-
-  let collegeDocument = new CollegeModel({
-    name,
-    location,
-  });
-
-  collegeDocument.save((err) => {
-    if (err) {
-      return res.status(500).json({
-        status: 500,
-        message: "Internal server error",
+  try {
+    if (!req.body.name || !req.body.location) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request. Invalid request body.",
       });
     }
 
+    let college = await CollegeModel.findOne({ name: req.body.name });
+
+    if (college) {
+      return res.status(404).json({
+        status: 404,
+        message: "Not Found. No college was found for the specified name.",
+      });
+    }
+
+    college = await CollegeModel.create({
+      name: req.body.name,
+      location: req.body.location,
+    });
+
     return res.status(200).json({
       status: 200,
-      message: "Success",
-      data: { name, location },
+      message: "Success. New college created.",
+      data: {
+        name: college.name,
+        location: college.location,
+      },
     });
-  });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 /**
