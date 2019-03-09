@@ -56,24 +56,31 @@ const create = async (req, res) => {
  * @returns {object} the response object
  */
 const get = async (req, res) => {
+  try {
+    let college = await CollegeModel.findById(req.params.college);
 
-  let college = await CollegeModel.findById(req.params.college);
+    if (!college) {
+      return res.json({
+        status: 404,
+        message: "Not Found. No college was found for the specified ID.",
+      });
+    }
 
-  if(!college) {
     return res.json({
-      status: 404,
-      message: "No college registered under this id",
+      status: 200,
+      message: "Success",
+      data: {
+        id: college.id,
+        name: college.name,
+        location: college.location,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
     });
   }
-
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: {
-      name: college.name,
-      location: college.location,
-    },
-  });
 };
 
 /**
@@ -83,19 +90,26 @@ const get = async (req, res) => {
  * @returns {object} the response object
  */
 const getAll = async (req, res) => {
-  let colleges = await CollegeModel.find();
+  try {
+    let colleges = await CollegeModel.find();
 
-  colleges = colleges.map(clg => ({
-    id: clg.id,
-    name: clg.name,
-    location: clg.location,
-  }));
+    colleges = colleges.map(college => ({
+      id: college.id,
+      name: college.name,
+      location: college.location,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: colleges,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: colleges,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 /**
