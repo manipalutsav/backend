@@ -1,5 +1,7 @@
 "use strict";
 
+// TODO: @k3rn31p4nic review this entirely
+
 const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
