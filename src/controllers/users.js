@@ -40,7 +40,7 @@ const get = async (req, res, next) => {
  * @param {function} next call the next handler in route
  * @returns {object} the response object
  */
-const create = async (req, res, next) => {
+const create = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(403).json({
@@ -132,14 +132,14 @@ const update = async (req, res) => {
     if (!req.body.oldUser || !req.body.newUser) {
       return res.status(400).json({
         status: 400,
-        message : "Bad request",
+        message : "Bad request. Invalid request body.",
       });
     }
 
     if (req.params.user !== req.body.oldUser.id) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. User mismatch.",
       });
     }
 
@@ -148,7 +148,7 @@ const update = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. User doesn't exist.",
       });
     }
 
@@ -160,7 +160,7 @@ const update = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. Invalid credentials.",
       });
     }
 
@@ -172,37 +172,27 @@ const update = async (req, res) => {
     let hashedNewPassword = await hash.generatePasswordHash(req.body.newUser.password);
     if (user.password !== hashedNewPassword) user.password = hashedNewPassword;
 
-    await user.save().
-      then(async user => {
-        const token = await jwt.generateToken({
-          id: user.id,
-          email: user.email,
-          password: user.password,
-          type: user.type,
-        });
+    await user.save();
 
-        return res.cookie("token", token).json({
-          status: 200,
-          message: "User details updated",
-          data: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            mobile: user.mobile,
-            type: user.type,
-            college: user.college,
-          },
-        });
-      }).
-      catch((e) => {
-        // eslint-disable-next-line no-console
-        console.poo(e);
+    const token = await jwt.generateToken({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      type: user.type,
+    });
 
-        return res.status(500).json({
-          status: 500,
-          message: "Internal Server Error",
-        });
-      });
+    return res.cookie("token", token).json({
+      status: 200,
+      message: "Success. User updated.",
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        type: user.type,
+        college: user.college,
+      },
+    });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.poo(e);
