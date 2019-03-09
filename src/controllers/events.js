@@ -6,7 +6,6 @@ const RoundModel = require("../models/Round");
 const ScoreModel = require("../models/Score");
 const SlotModel = require("../models/Slot");
 const TeamModel = require("../models/Team");
-const JudgeModel = require("../models/Judge");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS } = require("../utils/constants");
 
@@ -207,7 +206,7 @@ const createSlots = async (req, res) => {
     let index = Math.floor(Math.random() * teams.length);
     let team_id = teams[index];
     let team_name = teamNames[index];
-    
+
     await SlotModel.create({
       number: i + 1,
       round: req.params.round,
@@ -475,7 +474,7 @@ const getTeamsInRound = async (req, res) => {
     path: 'teams',
     model: 'Team'
   });
-  
+
   let teams = round.teams.map(team => ({
     id: team.id,
     event: team.event,
@@ -547,22 +546,6 @@ const create = async (req, res) => {
     });
 };
 
-const createJudge = async (req, res) => {
-  let { name, round } = req.body;
-  let judge = await JudgeModel.create({
-    name,
-    rounds: [ round ],
-  });
-
-  return res.json({
-    status: 200,
-    message: "Succes",
-    data: {
-      id: judge._id
-    },
-  });
-};
-
 /**
  * Insert Participants in bulk.
  * @param {object} data The request object
@@ -616,6 +599,5 @@ module.exports = {
   getTeams,
   getTeamsInRound,
   create,
-  createJudge,
   createTeam,
 };
