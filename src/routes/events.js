@@ -52,8 +52,6 @@ router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team
 // router.post("/:event/teams/:team/members", noop);
 
-router.post("/:event/rounds/:round/slots", Events.createSlots)
-
 // Modify the given team's details for the given event
 // router.patch("/:event/teams/:team", noop);
 
