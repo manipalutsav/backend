@@ -40,53 +40,56 @@ const get = async (req, res, next) => {
  * @param {function} next call the next handler in route
  * @returns {object} the response object
  */
-const create = async (req, res, next) => {
+const create = async (req, res) => {
   try {
-    // TODO: We don't need to get requester anymore after auth middleware is
-    // implemented as we can get the requester from `req.user`.
-    let requester = await UserModel.findById(req.body.requesterID);
+    if (!req.user) {
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden. Requester not authenticated.",
+      });
+    }
+
+    if (!req.body.name || !req.body.email || !req.body.type || !req.body.password) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request. Invalid request body.",
+      });
+    }
+
+    let requester = await UserModel.findById(req.user.id);
     if (!requester) {
       return res.status(403).json({
         status: 403,
-        message: "Forbidden",
+        message: "Forbidden. Requester not found.",
       });
     }
-    /*
-    let isRealRequester = await hash.comparePasswordHash(req.body.requesterPassword, requester.password);
 
-    if (!isRealRequester) {
+    if (requester.password !== req.user.password) {
       return res.status(403).json({
         status: 403,
-        message: "Forbidden",
+        message: "Forbidden. Requester's password is not valid.",
       });
     }
 
-    if (requester.type !== USER_TYPES.ADMINISTRATOR){
+    if (requester.type !== USER_TYPES.ADMINISTRATOR) {
       return res.status(401).json({
         status: 401,
-        message: "Unauthorized",
+        message: "Unauthorized. Only administrators can create users.",
       });
     }
 
-    // if(requester.type <= req.body.type) {
-    //   return res.status(401).json({
-    //     status: 401,
-    //     message: "Unauthorized",
-    //   });
-    // }
-*/
     let user = await UserModel.findOne({ email: req.body.email });
 
     if (user) {
       return res.status(400).json({
         status: 400,
-        message: "Bad request",
+        message: "Bad request. An account with that email already exist.",
       });
     }
 
     let hashedPassword = await hash.generatePasswordHash(req.body.password);
 
-    let userDocument = new UserModel({
+    user = await UserModel.create({
       name: req.body.name,
       email: req.body.email,
       mobile: req.body.mobile || null,
@@ -95,34 +98,26 @@ const create = async (req, res, next) => {
       college: req.body.college || null,
     });
 
-    await userDocument.save().
-      then(user => {
-        return res.json({
-          status: 200,
-          message: "New user created",
-          data: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            mobile: user.mobile,
-            type: user.type,
-            college: user.college,
-          },
-        });
-      }).
-      catch((e) => {
-        // eslint-disable-next-line no-console
-        console.poo(e);
-
-        return res.status(500).json({
-          status: 500,
-          message: "Internal Server Error",
-        });
-      });
+    return res.json({
+      status: 200,
+      message: "Success. New user created.",
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        type: user.type,
+        college: user.college,
+      },
+    });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.poo(e);
-    next();
+
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
   }
 };
 
@@ -137,14 +132,14 @@ const update = async (req, res) => {
     if (!req.body.oldUser || !req.body.newUser) {
       return res.status(400).json({
         status: 400,
-        message : "Bad request",
+        message : "Bad request. Invalid request body.",
       });
     }
 
     if (req.params.user !== req.body.oldUser.id) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. User mismatch.",
       });
     }
 
@@ -153,7 +148,7 @@ const update = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. User doesn't exist.",
       });
     }
 
@@ -165,7 +160,7 @@ const update = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized",
+        message : "Unauthorized. Invalid credentials.",
       });
     }
 
@@ -177,37 +172,27 @@ const update = async (req, res) => {
     let hashedNewPassword = await hash.generatePasswordHash(req.body.newUser.password);
     if (user.password !== hashedNewPassword) user.password = hashedNewPassword;
 
-    await user.save().
-      then(async user => {
-        const token = await jwt.generateToken({
-          id: user.id,
-          email: user.email,
-          password: user.password,
-          type: user.type,
-        });
+    await user.save();
 
-        return res.cookie("token", token).json({
-          status: 200,
-          message: "User details updated",
-          data: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            mobile: user.mobile,
-            type: user.type,
-            college: user.college,
-          },
-        });
-      }).
-      catch((e) => {
-        // eslint-disable-next-line no-console
-        console.poo(e);
+    const token = await jwt.generateToken({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      type: user.type,
+    });
 
-        return res.status(500).json({
-          status: 500,
-          message: "Internal Server Error",
-        });
-      });
+    return res.cookie("token", token).json({
+      status: 200,
+      message: "Success. User updated.",
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        type: user.type,
+        college: user.college,
+      },
+    });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.poo(e);
@@ -227,12 +212,19 @@ const update = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
+    if (!req.body.email || !req.body.password) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request. Invalid request body.",
+      });
+    }
+
     let user = await UserModel.findOne({ email: req.body.email });
 
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized: User not found",
+        message : "Unauthorized. No account exist with that email.",
       });
     }
 
@@ -244,7 +236,7 @@ const login = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized: Invalid Password",
+        message : "Unauthorized. Invalid Password.",
       });
     }
 

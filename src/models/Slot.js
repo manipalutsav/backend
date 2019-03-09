@@ -5,9 +5,14 @@ const schema = {
     type: Number,
     required: true,
   },
-  round: mongoose.Schema.Types.ObjectId,
-  team: mongoose.Schema.Types.ObjectId,
-  teamName: String,
+  round: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  team: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
 };
 
 const options = {

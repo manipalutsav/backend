@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const schema = {
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   event: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
