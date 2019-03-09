@@ -16,7 +16,7 @@ const headers = require("./middlewares/headers");
 const auth = require("./middlewares/auth");
 
 // Configure application
-app.use(logger("dev"));
+app.use(logger("combined"));
 app.use(cors({
   origin: [
     "http://manipalutsav.com",
