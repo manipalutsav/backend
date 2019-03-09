@@ -15,7 +15,6 @@ const createTeam = async (req, res) => {
   let {
     college,
     participants,
-    name // Remove name after HUES
   } = req.body;
 
   let { event } = req.params;
@@ -30,16 +29,17 @@ const createTeam = async (req, res) => {
       message: "Max participation limit reached for college",
     });
   }
+
   // TODO: Generate random team names, so we dont have to use
   // college models
-  // let names = [ "Team A", "Team B", "Team C" ];
-  // let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
-  // if (participants.length > eventInfo.maxParticipants ) {
-  //   return res.json({
-  //     status: 416,
-  //     message: "Number of particpants exceeds max particpants for event",
-  //   });
-  // }
+  let names = [ "Team A", "Team B", "Team C" ];
+  let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
+  if (participants.length > eventInfo.maxParticipants ) {
+    return res.json({
+      status: 416,
+      message: "Number of particpants exceeds max particpants for event",
+    });
+  }
 
   addBulkParticipants(participants, college).
     then(async members => {
@@ -163,9 +163,10 @@ const createScores = async (req, res, next) => {
   });
   if (!round) return next();
 
-  /*for(let score of req.body){
+  for(let score of req.body){
     if (!round.teams.includes(score.team)) return next();
-  }*/
+  }
+
   let scores = await ScoreModel.find({
     round: req.params.round,
   });
@@ -254,11 +255,11 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-
   let events = await EventModel.find().populate({
-    path: 'rounds',
-    model: 'Round'
+    path: "rounds",
+    model: "Round",
   });
+
   events = events.map(event => {
     let roundId = event.rounds.map(round => round.id);
     return {
@@ -275,7 +276,7 @@ const getAll = async (req, res) => {
       startDate: event.startDate,
       endDate: event.endDate,
       slottable: event.slottable,
-    }
+    };
   });
 
   return res.json({
@@ -326,8 +327,8 @@ const getRoundLeaderboard = async (req, res, next) => {
   let scores = await ScoreModel.find({
     round: round.id,
   }).populate({
-    path: 'team',
-    model: 'Team'
+    path: "team",
+    model: "Team",
   });
 
   scores = scores.map(score => ({
@@ -473,8 +474,8 @@ const getTeamsInRound = async (req, res) => {
     _id: req.params.round,
     event: req.params.event,
   }).populate({
-    path: 'teams',
-    model: 'Team'
+    path: "teams",
+    model: "Team",
   });
 
   let teams = round.teams.map(team => ({
