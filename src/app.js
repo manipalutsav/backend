@@ -17,7 +17,13 @@ const auth = require("./middlewares/auth");
 
 // Configure application
 app.use(logger("dev"));
-app.use(cors());
+app.use(cors({
+  origin: [
+    /manipalutsav\.com$/,
+    /^localhost$/,
+  ],
+  credentials: true,
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(headers);
