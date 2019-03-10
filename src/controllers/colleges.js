@@ -37,6 +37,7 @@ const create = async (req, res) => {
       status: 200,
       message: "Success. New college created.",
       data: {
+        id: college.id,
         name: college.name,
         location: college.location,
       },
