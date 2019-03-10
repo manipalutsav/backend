@@ -37,7 +37,7 @@ router.post("/", Events.create);
 // Create a new round in the given event
 router.post("/:event/rounds", Events.createRound);
 // Create a new judge for round
-router.post("/:event/rounds/:round/judge", Events.createJudge);
+// router.post("/:event/rounds/:round/judge", Events.createJudge);
 
 // TODO: Finalize the round scores and move teams to next round.
 // router.post("/:event/rounds/:round/finalize", Events.finalizeRound);

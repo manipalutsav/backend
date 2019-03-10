@@ -1,7 +1,7 @@
 "use strict";
 
 const UserModel = require("../models/User");
-const { USER_TYPES } = require("../utils/constants");
+// const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
@@ -236,7 +236,7 @@ const login = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. Invalid password.",
+        message : "Unauthorized. Invalid Password.",
       });
     }
 
