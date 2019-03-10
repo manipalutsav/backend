@@ -229,7 +229,10 @@ const createSlots = async (req, res) => {
 };
 
 const get = async (req, res, next) => {
-  let event = await EventModel.findById(req.params.event);
+  let event = await EventModel.findById(req.params.event).populate({
+    path: "college",
+    model: "College",
+  });
 
   if (!event) return next();
 
