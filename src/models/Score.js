@@ -1,8 +1,14 @@
 const mongoose = require("mongoose");
 
 const schema = {
-  team: mongoose.Schema.Types.ObjectId,
-  round: mongoose.Schema.Types.ObjectId,
+  team: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  round: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
   judges: [
     {
       id: mongoose.Schema.Types.ObjectId,

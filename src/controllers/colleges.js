@@ -11,35 +11,42 @@ const ParticipantModel = require("../models/Participant");
  * @returns {object} the response object
  */
 const create = async (req, res) => {
-  let { name, location } = req.body;
-
-  let college = await CollegeModel.findOne({ name: req.body.name });
-  if(college) {
-    return res.status(400).json({
-      status: 400,
-      message: "Bad request",
-    });
-  }
-
-  let collegeDocument = new CollegeModel({
-    name,
-    location,
-  });
-
-  collegeDocument.save((err) => {
-    if (err) {
-      return res.status(500).json({
-        status: 500,
-        message: "Internal server error",
+  try {
+    if (!req.body.name || !req.body.location) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request. Invalid request body.",
       });
     }
 
+    let college = await CollegeModel.findOne({ name: req.body.name });
+
+    if (college) {
+      return res.status(404).json({
+        status: 404,
+        message: "Not Found. No college was found for the specified name.",
+      });
+    }
+
+    college = await CollegeModel.create({
+      name: req.body.name,
+      location: req.body.location,
+    });
+
     return res.status(200).json({
       status: 200,
-      message: "Success",
-      data: { name, location },
+      message: "Success. New college created.",
+      data: {
+        name: college.name,
+        location: college.location,
+      },
     });
-  });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -49,24 +56,31 @@ const create = async (req, res) => {
  * @returns {object} the response object
  */
 const get = async (req, res) => {
+  try {
+    let college = await CollegeModel.findById(req.params.college);
 
-  let college = await CollegeModel.findById(req.params.college);
+    if (!college) {
+      return res.json({
+        status: 404,
+        message: "Not Found. No college was found for the specified ID.",
+      });
+    }
 
-  if(!college) {
     return res.json({
-      status: 404,
-      message: "No college registered under this id",
+      status: 200,
+      message: "Success",
+      data: {
+        id: college.id,
+        name: college.name,
+        location: college.location,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
     });
   }
-
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: {
-      name: college.name,
-      location: college.location,
-    },
-  });
 };
 
 /**
@@ -76,19 +90,26 @@ const get = async (req, res) => {
  * @returns {object} the response object
  */
 const getAll = async (req, res) => {
-  let colleges = await CollegeModel.find();
+  try {
+    let colleges = await CollegeModel.find();
 
-  colleges = colleges.map(clg => ({
-    id: clg.id,
-    name: clg.name,
-    location: clg.location,
-  }));
+    colleges = colleges.map(college => ({
+      id: college.id,
+      name: college.name,
+      location: college.location,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: colleges,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: colleges,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -98,22 +119,27 @@ const getAll = async (req, res) => {
  * @returns {object} the response object
  */
 const getParticipants = async (req, res) => {
-  let participants = await ParticipantModel.find({ college: req.params.college });
+  try {
+    let participants = await ParticipantModel.find({ college: req.params.college });
 
-  participants = participants.map(participant => ({
-    registrationID: participant.registrationID,
-    name: participant.name,
-    email: participant.email,
-    mobile: participant.mobile,
-    college: participant.college,
-    faculty: participant.faculty,
-  }));
+    participants = participants.map(participant => ({
+      registrationID: participant.registrationID,
+      name: participant.name,
+      college: participant.college,
+      faculty: participant.faculty,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: participants,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: participants,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -123,20 +149,28 @@ const getParticipants = async (req, res) => {
  * @returns {object} the response object
  */
 const getTeams = async (req, res) => {
-  let teams = await TeamModel.find({ college: req.params.college });
+  try {
+    let teams = await TeamModel.find({ college: req.params.college });
 
-  teams = teams.map(team => ({
-    event: team.event,
-    college: team.college,
-    members: team.members,
-    disqualified: team.disqualified,
-  }));
+    teams = teams.map(team => ({
+      name: team.event,
+      event: team.event,
+      college: team.college,
+      members: team.members,
+      disqualified: team.disqualified,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: teams,
-  });
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: teams,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
 };
 
 module.exports = {

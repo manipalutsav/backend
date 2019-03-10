@@ -10,22 +10,28 @@ const CollegeModel = require("../models/College");
  * @returns {object} the response object
  */
 const get = async (req, res) => {
-  let leaderboard = await LeaderboardModel.find()
-  .populate({
-    path: 'college',
-    model: 'College'
-  });
-  
-  leaderboard = leaderboard.map(lb => ({
-    college: lb.college,
-    points: lb.points,
-  }));
+  try {
+    let leaderboard = await LeaderboardModel.find().populate({
+      path: 'college',
+      model: 'College'
+    });
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: leaderboard,
-  });
+    leaderboard = leaderboard.map(lb => ({
+      college: lb.college,
+      points: lb.points,
+    }));
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: leaderboard,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 /**
@@ -35,21 +41,29 @@ const get = async (req, res) => {
  * @returns {object} the response object
  */
 const init = async (req, res) => {
-  let colleges = await CollegeModel.find();
-  colleges = colleges.map(clg => clg.id);
+  try {
+    let colleges = await CollegeModel.find();
 
-  let leaderboard = colleges.map(clg => ({
-    college: clg,
-    points: 0,
-  }));
+    colleges = colleges.map(college => college.id);
 
-  await LeaderboardModel.create(leaderboard);
+    let leaderboard = colleges.map(college => ({
+      college: college,
+      points: 0,
+    }));
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: leaderboard,
-  });
+    await LeaderboardModel.create(leaderboard);
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: leaderboard,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 /**
@@ -59,31 +73,34 @@ const init = async (req, res) => {
  * @returns {object} the response object
  */
 const update = async (req, res) => {
-  let college = await LeaderboardModel.findOne({ college: req.params.college });
-
-  college.points = req.body.points;
-
-  await college.save().
-    then(lb => {
-      return res.json({
-        status: 200,
-        message: "Success",
-        data: {
-          college: lb.college,
-          points: lb.points,
-        },
+  try {
+    if (!req.body.points) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request. Invalid request body.",
       });
-    }).
-    catch(e => {
-      // eslint-disable-next-line no-console
-      console.poo(e);
+    }
 
-      return res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
-      });
+    let collegeLeaderboard = await LeaderboardModel.findOne({ college: req.params.college });
+
+    collegeLeaderboard.points = req.body.points;
+
+    await collegeLeaderboard.save();
+
+    return res.json({
+      status: 200,
+      message: "Success. Points updated.",
+      data: {
+        college: collegeLeaderboard.college,
+        points: collegeLeaderboard.points,
+      },
     });
-
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 module.exports = {

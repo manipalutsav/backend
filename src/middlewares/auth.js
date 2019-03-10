@@ -5,7 +5,7 @@ const UserModel = require("../models/User");
 const { HTTP_STATUS } = require("../utils/constants");
 
 module.exports = async (req, res, next) => {
-  if (req.url === "/users/login" && req.method === "POST") next();
+  if (req.url === "/users/login" && req.method === "POST") return next();
 
   const token = req.cookies && req.cookies.token;
 
