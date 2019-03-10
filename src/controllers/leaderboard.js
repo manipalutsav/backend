@@ -10,7 +10,12 @@ const CollegeModel = require("../models/College");
  * @returns {object} the response object
  */
 const get = async (req, res) => {
-  let leaderboard = await LeaderboardModel.find();
+  let leaderboard = await LeaderboardModel.find()
+  .populate({
+    path: 'college',
+    model: 'College'
+  });
+  
   leaderboard = leaderboard.map(lb => ({
     college: lb.college,
     points: lb.points,
