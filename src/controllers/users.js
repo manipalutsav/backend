@@ -33,6 +33,30 @@ const get = async (req, res, next) => {
   }
 };
 
+const getAll = async (req, res, next) => {
+  try {
+    let users = await UserModel.find();
+
+    users = users.map(user => ({
+      id: user.id,
+      name: user.name,
+      type: user.type,
+      college: user.college,
+    }));
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: users,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 /**
  * Create a user
  * @param {object} req the request object
@@ -271,6 +295,7 @@ const login = async (req, res) => {
 
 module.exports = {
   get,
+  getAll,
   create,
   update,
   login,
