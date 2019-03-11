@@ -5,6 +5,8 @@ const router = express.Router();
 
 const Users = require("../controllers/users");
 
+// Returns all users
+router.get("/", Users.getAll);
 // Returns the user for the given id
 router.get("/:user", Users.get);
 
