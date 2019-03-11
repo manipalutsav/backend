@@ -1,7 +1,7 @@
 "use strict";
 
 const UserModel = require("../models/User");
-// const { USER_TYPES } = require("../utils/constants");
+const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
@@ -33,7 +33,7 @@ const get = async (req, res, next) => {
   }
 };
 
-const getAll = async (req, res, next) => {
+const getAll = async (req, res) => {
   try {
     let users = await UserModel.find();
 
