@@ -25,6 +25,7 @@ const schema = {
   },
   college: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
   },
 };
 
