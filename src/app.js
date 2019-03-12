@@ -32,7 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(headers);
-/* if (process.env.NODE_ENV !== "development"){*/ 
+/* if (process.env.NODE_ENV !== "development"){*/
 app.use(auth);
 //  eslint-disable-next-line no-console
 console.log("💳  Auth activated");
