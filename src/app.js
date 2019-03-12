@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 dotenv.config();
@@ -29,8 +30,13 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(headers);
-if (process.env.NODE_ENV !== "development") app.use(auth);
+/* if (process.env.NODE_ENV !== "development"){*/ 
+app.use(auth);
+//  eslint-disable-next-line no-console
+console.log("💳  Auth activated");
+/* }*/
 
 // Routes
 const collegesRouter = require("./routes/colleges");
