@@ -261,6 +261,9 @@ const getAll = async (req, res) => {
   let events = await EventModel.find().populate({
     path: "rounds",
     model: "Round",
+  }).populate({
+    path: "college",
+    model: "College",
   });
 
   events = events.map(event => {
