@@ -27,7 +27,7 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    if (!req.body.name || !req.body.round) {
+    if (!req.body.name) {
       return res.status(400).json({
         status: 400,
         message: "Bad Request",
@@ -37,12 +37,14 @@ const create = async (req, res) => {
     let judge = await JudgeModel.findOne({ name: req.body.name });
 
     if (judge) {
-      judge.rounds.push(req.body.round);
-      await judge.save();
+      if (req.body.round) {
+        judge.rounds.push(req.body.round);
+        await judge.save();
+      }
     } else {
       judge = await JudgeModel.create({
         name: req.body.name,
-        rounds: [ req.body.round ],
+        rounds: req.body.round ? [ req.body.round ] : [],
       });
     }
 
