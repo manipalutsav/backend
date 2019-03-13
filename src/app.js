@@ -20,6 +20,8 @@ const auth = require("./middlewares/auth");
 app.use(logger("combined"));
 app.use(cors({
   origin: [
+    "http://manipalutsav.github.io",
+    "https://manipalutsav.github.io",
     "http://manipalutsav.com",
     "https://manipalutsav.com",
     "https://manipalutsav.github.io",
@@ -33,11 +35,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(headers);
-/* if (process.env.NODE_ENV !== "development"){*/
-app.use(auth);
-//  eslint-disable-next-line no-console
-console.log("💳  Auth activated");
-/* }*/
+
+if (process.env.NODE_ENV !== "development") app.use(auth);
 
 // Routes
 const collegesRouter = require("./routes/colleges");
