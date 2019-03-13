@@ -34,7 +34,7 @@ const createTeam = async (req, res) => {
   // college models
   let names = [ "Team A", "Team B", "Team C" ];
   let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
-  if (participants.length > eventInfo.maxParticipants ) {
+  if (participants.length > eventInfo.maxMembersPerTeam ) {
     return res.json({
       status: 416,
       message: "Number of particpants exceeds max particpants for event",
@@ -246,8 +246,9 @@ const get = async (req, res, next) => {
       college: event.college,
       rounds: event.rounds,
       teams: event.teams,
-      minParticipants: event.minParticipants,
-      maxParticipants: event.maxParticipants,
+      minMembersPerTeam: event.minMembersPerTeam,
+      maxMembersPerTeam: event.maxMembersPerTeam,
+      maxTeamsPerCollege: event.maxTeamsPerCollege,
       venue: event.venue,
       duration: event.duration,
       startDate: event.startDate,
@@ -275,8 +276,9 @@ const getAll = async (req, res) => {
       college: event.college,
       rounds: roundId,
       teams: event.teams,
-      minParticipants: event.minParticipants,
-      maxParticipants: event.maxParticipants,
+      minMembersPerTeam: event.minMembersPerTeam,
+      maxMembersPerTeam: event.maxMembersPerTeam,
+      maxTeamsPerCollege: event.maxTeamsPerCollege,
       venue: event.venue,
       duration: event.duration,
       startDate: event.startDate,
@@ -507,12 +509,12 @@ const create = async (req, res) => {
     teams,
     minMembersPerTeam,
     maxMembersPerTeam,
+    maxTeamsPerCollege,
     venue,
     description,
     duration,
     startDate,
     endDate,
-    maxTeamsPerCollege,
     slottable } = req.body;
 
   let event = new EventModel({
@@ -521,12 +523,12 @@ const create = async (req, res) => {
     teams,
     minMembersPerTeam,
     maxMembersPerTeam,
+    maxTeamsPerCollege,
     venue,
     description,
     duration,
     startDate,
     endDate,
-    maxTeamsPerCollege,
     slottable,
   });
 
