@@ -254,6 +254,7 @@ const get = async (req, res, next) => {
       startDate: event.startDate,
       endDate: event.endDate,
       slottable: event.slottable,
+      faculty: event.faculty,
     },
   });
 };
