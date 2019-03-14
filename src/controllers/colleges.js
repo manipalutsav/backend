@@ -151,7 +151,10 @@ const getParticipants = async (req, res) => {
  */
 const getTeams = async (req, res) => {
   try {
-    let teams = await TeamModel.find({ college: req.params.college });
+    let teams = await TeamModel.find({ college: req.params.college }).populate({
+      path: "event",
+      model: "Event",
+    });
 
     teams = teams.map(team => ({
       name: team.name,
