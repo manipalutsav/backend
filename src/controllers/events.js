@@ -557,6 +557,60 @@ const create = async (req, res) => {
     });
 };
 
+const edit = async (req, res) => {
+  let {
+    name,
+    college,
+    teams,
+    minMembersPerTeam,
+    maxMembersPerTeam,
+    maxTeamsPerCollege,
+    venue,
+    description,
+    duration,
+    startDate,
+    endDate,
+    slottable } = req.body;
+  
+  let event = await EventModel.findById(req.params.event);
+  event.name = name;
+  event.college = college;
+  event.teams = teams;
+  event.minMembersPerTeam = minMembersPerTeam;
+  event.maxMembersPerTeam = maxMembersPerTeam;
+  event.maxTeamsPerCollege = maxTeamsPerCollege;
+  event.venue = venue;
+  event.description = description;
+  event.duration = duration;
+  event.startDate = startDate;
+  event.endDate = endDate;
+  event.slottable = slottable;
+
+  await event.save().
+    then(event => {
+      return res.json({
+        status: 200,
+        message: "event updated",
+        data: {
+          id: event.id,
+          name: event.name,
+          description: event.description,
+          startDate: event.startDate,
+          endDate: event.endDate,
+        },
+      });
+    }).
+    catch((e) => {
+      // eslint-disable-next-line no-console
+      console.poo(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    });
+};
+
 /**
  * Insert Participants in bulk.
  * @param {object} data The request object
@@ -608,5 +662,6 @@ module.exports = {
   getTeams,
   getTeamsInRound,
   create,
+  edit,
   createTeam,
 };
