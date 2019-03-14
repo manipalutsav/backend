@@ -570,8 +570,12 @@ const edit = async (req, res) => {
     duration,
     startDate,
     endDate,
-    slottable } = req.body;
-  
+    slottable,
+    criteria1,
+    criteria2,
+    criteria3,
+    criteria4,
+  } = req.body;
   let event = await EventModel.findById(req.params.event);
   event.name = name;
   event.college = college;
@@ -584,7 +588,8 @@ const edit = async (req, res) => {
   event.duration = duration;
   event.startDate = startDate;
   event.endDate = endDate;
-  event.slottable = slottable;
+  event.slottable = !!slottable;
+  event.criterias = [ criteria1, criteria2, criteria3, criteria4 ];
 
   await event.save().
     then(event => {
