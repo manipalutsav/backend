@@ -574,8 +574,6 @@ const addBulkParticipants = (data, college) => {
         let participant = new ParticipantModel({
           registrationID: each.registrationID,
           name: each.name,
-          email: each.email,
-          mobile: each.mobile,
           college: college,
           faculty: each.faculty,
         });
