@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
+const chalk = require("chalk");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -17,14 +18,23 @@ const headers = require("./middlewares/headers");
 const auth = require("./middlewares/auth");
 
 // Configure application
-app.use(logger("combined"));
+
+app.use(logger(function (tokens, req, res) {
+  return chalk.redBright(tokens["remote-addr"](req, res))
+    + " " + chalk.blue(tokens.date(req, res))
+    + " " + chalk.green(tokens.method(req, res))
+    + " " + chalk.white(tokens.url(req, res))
+    + " " + chalk.green(tokens.status(req, res))
+    + " " + chalk.redBright(tokens.referrer(req, res))
+    + " " + chalk.yellow(tokens["user-agent"](req, res))
+    + " " + chalk.cyan(tokens["response-time"](req, res));
+}));
 app.use(cors({
   origin: [
     "http://manipalutsav.github.io",
     "https://manipalutsav.github.io",
     "http://manipalutsav.com",
     "https://manipalutsav.com",
-    "https://manipalutsav.github.io",
     /\.manipalutsav\.com$/,
     /^(https?:\/\/)(localhost|(192\.168\.\d{1,3}\.\d{1,3}))(:\d{1,5})*$/,
     // /^(?:https?:\/\/)?(?:localhost|(?:192\.168(?:\.(?:\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])){2})(?::(?:[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))$/,
