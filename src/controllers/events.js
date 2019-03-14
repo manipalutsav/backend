@@ -20,7 +20,7 @@ const createTeam = async (req, res) => {
   let { event } = req.params;
 
   // Check if participation limit reached
-  let participatedTeams = await TeamModel.find({ college: college });
+  let participatedTeams = await TeamModel.find({ college: college, event: event });
   let collegeDoc = await CollegeModel.findById(college);
   let eventInfo = await EventModel.findById(event);
   if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
