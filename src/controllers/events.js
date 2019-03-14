@@ -577,18 +577,20 @@ const edit = async (req, res) => {
     criteria3,
     criteria4,
   } = req.body;
+
   let event = await EventModel.findById(req.params.event);
-  event.name = name;
-  event.college = college;
-  event.teams = teams;
-  event.minMembersPerTeam = minMembersPerTeam;
-  event.maxMembersPerTeam = maxMembersPerTeam;
-  event.maxTeamsPerCollege = maxTeamsPerCollege;
-  event.venue = venue;
-  event.description = description;
-  event.duration = duration;
-  event.startDate = startDate;
-  event.endDate = endDate;
+
+  event.name = name ? name : event.name;
+  event.college = college ? college : event.college;
+  event.teams = teams ? teams : event.teams;
+  event.minMembersPerTeam = minMembersPerTeam ? minMembersPerTeam : event.minMembersPerTeam;
+  event.maxMembersPerTeam = maxMembersPerTeam ? maxMembersPerTeam : event.maxMembersPerTeam;
+  event.maxTeamsPerCollege = maxTeamsPerCollege ? maxTeamsPerCollege : event.maxTeamsPerCollege;
+  event.venue = venue ? venue : event.venue;
+  event.description = description ? description : event.description;
+  event.duration = duration ? duration : event.duration;
+  event.startDate = startDate ? startDate : event.startDate;
+  event.endDate = endDate ? endDate : event.endDate;
   event.slottable = !!slottable;
   event.criterias = [ criteria1, criteria2, criteria3, criteria4 ];
 
