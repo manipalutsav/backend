@@ -35,6 +35,7 @@ router.get("/:event/teams/:team", Events.getTeam);
 // Create a new event
 router.post("/", Events.create);
 // Create a new round in the given event
+router.post("/:event/edit", Events.edit);
 router.post("/:event/rounds", Events.createRound);
 // Create a new judge for round
 // router.post("/:event/rounds/:round/judge", Events.createJudge);
