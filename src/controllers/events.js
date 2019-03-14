@@ -20,7 +20,7 @@ const createTeam = async (req, res) => {
   let { event } = req.params;
 
   // Check if participation limit reached
-  let participatedTeams = await TeamModel.find({ college: college });
+  let participatedTeams = await TeamModel.find({ college: college, event: event });
   let collegeDoc = await CollegeModel.findById(college);
   let eventInfo = await EventModel.findById(event);
   if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
@@ -34,7 +34,7 @@ const createTeam = async (req, res) => {
   // college models
   let names = [ "Team A", "Team B", "Team C" ];
   let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
-  if (participants.length > eventInfo.maxParticipants ) {
+  if (participants.length > eventInfo.maxMembersPerTeam ) {
     return res.json({
       status: 416,
       message: "Number of particpants exceeds max particpants for event",
@@ -246,8 +246,9 @@ const get = async (req, res, next) => {
       college: event.college,
       rounds: event.rounds,
       teams: event.teams,
-      minParticipants: event.minParticipants,
-      maxParticipants: event.maxParticipants,
+      minMembersPerTeam: event.minMembersPerTeam,
+      maxMembersPerTeam: event.maxMembersPerTeam,
+      maxTeamsPerCollege: event.maxTeamsPerCollege,
       venue: event.venue,
       duration: event.duration,
       startDate: event.startDate,
@@ -275,8 +276,9 @@ const getAll = async (req, res) => {
       college: event.college,
       rounds: roundId,
       teams: event.teams,
-      minParticipants: event.minParticipants,
-      maxParticipants: event.maxParticipants,
+      minMembersPerTeam: event.minMembersPerTeam,
+      maxMembersPerTeam: event.maxMembersPerTeam,
+      maxTeamsPerCollege: event.maxTeamsPerCollege,
       venue: event.venue,
       duration: event.duration,
       startDate: event.startDate,
@@ -505,28 +507,28 @@ const create = async (req, res) => {
     name,
     college,
     teams,
-    minParticipants,
-    maxParticipants,
+    minMembersPerTeam,
+    maxMembersPerTeam,
+    maxTeamsPerCollege,
     venue,
     description,
     duration,
     startDate,
     endDate,
-    maxTeamsPerCollege,
     slottable } = req.body;
 
   let event = new EventModel({
     name,
     college,
     teams,
-    minParticipants,
-    maxParticipants,
+    minMembersPerTeam,
+    maxMembersPerTeam,
+    maxTeamsPerCollege,
     venue,
     description,
     duration,
     startDate,
     endDate,
-    maxTeamsPerCollege,
     slottable,
   });
 
@@ -572,8 +574,6 @@ const addBulkParticipants = (data, college) => {
         let participant = new ParticipantModel({
           registrationID: each.registrationID,
           name: each.name,
-          email: each.email,
-          mobile: each.mobile,
           college: college,
           faculty: each.faculty,
         });

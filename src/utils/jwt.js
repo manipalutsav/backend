@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
  * @type {number}
  * @default
  */
-const EXPIRY_TIME = 60 * 60;
+const EXPIRY_TIME = 6 * 60 * 60;
 
 /**
  * Generates a JWT for the payload with a given expiry time.

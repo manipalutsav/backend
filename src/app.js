@@ -3,8 +3,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
+const chalk = require("chalk");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 dotenv.config();
@@ -16,9 +18,21 @@ const headers = require("./middlewares/headers");
 const auth = require("./middlewares/auth");
 
 // Configure application
-app.use(logger("combined"));
+
+app.use(logger(function (tokens, req, res) {
+  return chalk.redBright(tokens["remote-addr"](req, res))
+    + " " + chalk.blue(tokens.date(req, res))
+    + " " + chalk.green(tokens.method(req, res))
+    + " " + chalk.white(tokens.url(req, res))
+    + " " + chalk.green(tokens.status(req, res))
+    + " " + chalk.redBright(tokens.referrer(req, res))
+    + " " + chalk.yellow(tokens["user-agent"](req, res))
+    + " " + chalk.cyan(tokens["response-time"](req, res));
+}));
 app.use(cors({
   origin: [
+    "http://manipalutsav.github.io",
+    "https://manipalutsav.github.io",
     "http://manipalutsav.com",
     "https://manipalutsav.com",
     /\.manipalutsav\.com$/,
@@ -29,7 +43,9 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(headers);
+
 if (process.env.NODE_ENV !== "development") app.use(auth);
 
 // Routes
