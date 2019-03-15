@@ -188,10 +188,10 @@ const update = async (req, res) => {
       });
     }
 
-    if (user.name !== req.body.newUser.name) user.name = req.body.newUser.name;
-    if (user.email !== req.body.newUser.email) user.email = req.body.newUser.email;
-    if (user.mobile !== req.body.newUser.mobile) user.mobile = req.body.newUser.mobile;
-    if (user.college !== req.body.newUser.college) user.college = req.body.newUser.college;
+    if (req.body.newUser.name && user.name !== req.body.newUser.name) user.name = req.body.newUser.name;
+    if (req.body.newUser.email && user.email !== req.body.newUser.email) user.email = req.body.newUser.email;
+    if (req.body.newUser.mobile && user.mobile !== req.body.newUser.mobile) user.mobile = req.body.newUser.mobile;
+    if (req.body.newUser.college && user.college !== req.body.newUser.college) user.college = req.body.newUser.college;
 
     let hashedNewPassword = await hash.generatePasswordHash(req.body.newUser.password);
     if (user.password !== hashedNewPassword) user.password = hashedNewPassword;
