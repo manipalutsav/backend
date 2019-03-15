@@ -162,6 +162,7 @@ const getTeams = async (req, res) => {
       college: team.college,
       members: team.members,
       disqualified: team.disqualified,
+      id:team.id,
     }));
 
     return res.json({
