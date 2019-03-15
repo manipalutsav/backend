@@ -124,6 +124,7 @@ const getParticipants = async (req, res) => {
     let participants = await ParticipantModel.find({ college: req.params.college });
 
     participants = participants.map(participant => ({
+      id:participant.id,
       registrationID: participant.registrationID,
       name: participant.name,
       college: participant.college,
