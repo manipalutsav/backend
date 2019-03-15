@@ -33,7 +33,7 @@ const createTeam = async (req, res) => {
   // TODO: Generate random team names, so we dont have to use
   // college models
   let names = [ "Team A", "Team B", "Team C" ];
-  let name = collegeDoc.name + " (" + names[participatedTeams.length] + ")";
+  let name = collegeDoc.name + " " +  collegeDoc.location + " (" + names[participatedTeams.length] + ")";
   if (participants.length > eventInfo.maxMembersPerTeam ) {
     return res.json({
       status: 416,
