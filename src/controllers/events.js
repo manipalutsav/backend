@@ -595,6 +595,7 @@ const edit = async (req, res) => {
       event.rounds = event.rounds.map(async round => {
         round.criteria = criteria;
 
+        // eslint-disable-next-line no-console
         await round.save().catch(console.poo);
       });
     }

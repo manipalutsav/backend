@@ -12,8 +12,8 @@ const CollegeModel = require("../models/College");
 const get = async (req, res) => {
   try {
     let leaderboard = await LeaderboardModel.find().populate({
-      path: 'college',
-      model: 'College'
+      path: "college",
+      model: "College",
     });
 
     leaderboard = leaderboard.map(lb => ({
