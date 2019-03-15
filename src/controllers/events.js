@@ -592,12 +592,13 @@ const edit = async (req, res) => {
 
   if (criteria) {
     if (event.rounds && event.rounds.length) {
-      event.rounds = event.rounds.map(async round => {
-        round.criteria = criteria;
+      for (let round of event.rounds) {
+        let roundDoc = await RoundModel.findById(round);
+        roundDoc.criteria = criteria;
 
         // eslint-disable-next-line no-console
-        await round.save().catch(console.poo);
-      });
+        await roundDoc.save();
+      }
     }
   }
 
