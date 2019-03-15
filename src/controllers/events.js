@@ -572,10 +572,7 @@ const edit = async (req, res) => {
     startDate,
     endDate,
     slottable,
-    criteria1,
-    criteria2,
-    criteria3,
-    criteria4,
+    criteria,
   } = req.body;
 
   let event = await EventModel.findById(req.params.event);
@@ -592,13 +589,22 @@ const edit = async (req, res) => {
   event.startDate = startDate ? startDate : event.startDate;
   event.endDate = endDate ? endDate : event.endDate;
   event.slottable = !!slottable;
-  event.criterias = [ criteria1, criteria2, criteria3, criteria4 ];
+
+  if (criteria) {
+    if (event.rounds && event.rounds.length) {
+      event.rounds = event.rounds.map(async round => {
+        round.criteria = criteria;
+
+        await round.save().catch(console.poo);
+      });
+    }
+  }
 
   await event.save().
     then(event => {
       return res.json({
         status: 200,
-        message: "event updated",
+        message: "Success. Event Updated",
         data: {
           id: event.id,
           name: event.name,
