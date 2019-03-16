@@ -144,6 +144,79 @@ const create = async (req, res) => {
     });
   }
 };
+/**
+ * Update user details
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @returns {object} the response object
+ */
+const updateUser = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden. Requester not authenticated.",
+      });
+    }
+
+    if (!req.body.name || !req.body.email || !req.body.type ) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request. Invalid request body.",
+      });
+    }
+
+    let requester = await UserModel.findById(req.user.id);
+    if (!requester) {
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden. Requester not found.",
+      });
+    }
+
+    if (requester.type !== USER_TYPES.ADMINISTRATOR) {
+      return res.status(401).json({
+        status: 401,
+        message: "Unauthorized. Only administrators can create users.",
+      });
+    }
+
+    let user = await UserModel.findOne({ email: req.body.email });
+
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.college = req.body.college;
+    user.type = req.body.type;
+    user.save(err => {
+      if(err){
+        return res.json({
+          status: 400,
+          message: "Something happened.",
+        });
+      }
+      return res.json({
+        status: 200,
+        message: "Success. New user created.",
+        data: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          mobile: user.mobile,
+          type: user.type,
+          college: user.college,
+        },
+      });
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 /**
  * Update a user
@@ -298,5 +371,6 @@ module.exports = {
   getAll,
   create,
   update,
+  updateUser,
   login,
 };

@@ -17,5 +17,6 @@ router.post("/login", Users.login);
 
 // Modify the requester's user details.
 router.patch("/:user", Users.update);
+router.post("/:user", Users.updateUser);
 
 module.exports = router;
