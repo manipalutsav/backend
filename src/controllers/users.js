@@ -278,7 +278,10 @@ const update = async (req, res) => {
       type: user.type,
     });
 
-    return res.cookie("token", token).json({
+    return res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 6 * 60 * 60 * 1000,
+    }).json({
       status: 200,
       message: "Success. User updated.",
       data: {
@@ -345,7 +348,10 @@ const login = async (req, res) => {
       type: user.type,
     });
 
-    res.cookie("token", token).json({
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 6 * 60 * 60 * 1000,
+    }).json({
       status: 200,
       message: "Success. User successfully logged it.",
       data: {
