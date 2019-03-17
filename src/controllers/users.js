@@ -288,6 +288,7 @@ const update = async (req, res) => {
         mobile: user.mobile,
         type: user.type,
         college: user.college,
+        token: token,
       },
     });
   } catch (e) {
@@ -346,6 +347,7 @@ const login = async (req, res) => {
 
     res.cookie("token", token).json({
       status: 200,
+      message: "Success. User successfully logged it.",
       data: {
         id: user.id,
         name: user.name,
@@ -353,6 +355,7 @@ const login = async (req, res) => {
         mobile: user.mobile,
         type: user.type,
         college: user.college,
+        token: token,
       },
     });
   } catch (e) {
