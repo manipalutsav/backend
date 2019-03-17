@@ -7,7 +7,7 @@ const { HTTP_STATUS } = require("../utils/constants");
 module.exports = async (req, res, next) => {
   if (req.url === "/users/login" && req.method === "POST") return next();
 
-  const token;
+  let token;
   const bearer = req.get("Authorization");
   if (bearer) token = bearer;
   else token = req.cookies && req.cookies.token;
