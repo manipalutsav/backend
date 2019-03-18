@@ -56,4 +56,6 @@ router.post("/:event/teams", Events.createTeam);
 // Modify the given team's details for the given event
 // router.patch("/:event/teams/:team", noop);
 
+router.delete("/:event/teams/:team", Events.deleteTeam);
+
 module.exports = router;
