@@ -278,7 +278,10 @@ const update = async (req, res) => {
       type: user.type,
     });
 
-    return res.cookie("token", token).json({
+    return res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 6 * 60 * 60 * 1000,
+    }).json({
       status: 200,
       message: "Success. User updated.",
       data: {
@@ -288,6 +291,7 @@ const update = async (req, res) => {
         mobile: user.mobile,
         type: user.type,
         college: user.college,
+        token: token,
       },
     });
   } catch (e) {
@@ -344,8 +348,12 @@ const login = async (req, res) => {
       type: user.type,
     });
 
-    res.cookie("token", token).json({
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 6 * 60 * 60 * 1000,
+    }).json({
       status: 200,
+      message: "Success. User successfully logged it.",
       data: {
         id: user.id,
         name: user.name,
@@ -353,6 +361,7 @@ const login = async (req, res) => {
         mobile: user.mobile,
         type: user.type,
         college: user.college,
+        token: token,
       },
     });
   } catch (e) {
