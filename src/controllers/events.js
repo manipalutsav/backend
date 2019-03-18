@@ -14,11 +14,16 @@ const { ROUND_STATUS } = require("../utils/constants");
 const deleteTeam = async (req, res) => {
   try {
     let team = await TeamModel.findOne({
+      _id: req.params.team,
       event: req.params.event,
-      team: req.params.team,
     });
 
-    // if (!team)
+    if (!team) {
+      return res.status(404).json({
+        status: 400,
+        message: "Not Found. Team doesn't exist.",
+      })
+    }
 
     let members = team.members;
 
