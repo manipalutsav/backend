@@ -144,6 +144,45 @@ const create = async (req, res) => {
     });
   }
 };
+
+/**
+ * Delete a user
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @param {function} next call the next handler in route
+ * @returns {object} the response object
+ */
+const remove = async (req, res, next) => {
+  try {
+    if (!req.params.user) return next();
+
+    let user = await UserModel.findByIdAndDelete(req.params.user);
+
+    if (!user) return next();
+
+    return res.json({
+      status: 200,
+      message: "Success. Deleted user.",
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        type: user.type,
+        college: user.college,
+      },
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 /**
  * Update user details
  * @param {object} req the request object
@@ -379,6 +418,7 @@ module.exports = {
   get,
   getAll,
   create,
+  remove,
   update,
   updateUser,
   login,
