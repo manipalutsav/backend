@@ -157,6 +157,27 @@ const createRound = async (req, res, next) => {
     });
 };
 
+const deleteRound = async (req, res, next) => {
+  try {
+    // TODO: Use req.params.event too
+    let round = await RoundModel.findByIdAndDelete(req.params.round);
+
+    return res.json({
+      status: 200,
+      message: "Success. Round deleted.",
+      data: round,
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 const createScore = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
@@ -697,6 +718,7 @@ const addBulkParticipants = (data, college) => {
 
 module.exports = {
   deleteTeam,
+  deleteRound,
   createRound,
   createScore,
   createScores,
