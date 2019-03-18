@@ -11,6 +11,35 @@ const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS } = require("../utils/constants");
 
+const deleteTeam = async (req, res) => {
+  try {
+    let team = await TeamModel.findOne({
+      event: req.params.event,
+      team: req.params.team,
+    });
+
+    // if (!team)
+
+    let members = team.members;
+
+    await TeamModel.findByIdAndDelete(team.id);
+
+    for (let member of members) {
+      await ParticipantModel.findByIdAndDelete(member);
+    }
+
+    return res.json({
+      status: 200,
+      message: "Success. Deleted team.",
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 const createTeam = async (req, res) => {
   let {
     college,
@@ -662,6 +691,7 @@ const addBulkParticipants = (data, college) => {
 };
 
 module.exports = {
+  deleteTeam,
   createRound,
   createScore,
   createScores,
