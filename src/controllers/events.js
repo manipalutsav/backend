@@ -22,7 +22,7 @@ const deleteTeam = async (req, res) => {
       return res.status(404).json({
         status: 400,
         message: "Not Found. Team doesn't exist.",
-      })
+      });
     }
 
     let members = team.members;
@@ -157,7 +157,7 @@ const createRound = async (req, res, next) => {
     });
 };
 
-const deleteRound = async (req, res, next) => {
+const deleteRound = async (req, res) => {
   try {
     // TODO: Use req.params.event too
     let round = await RoundModel.findByIdAndDelete(req.params.round);
