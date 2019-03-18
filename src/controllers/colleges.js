@@ -121,10 +121,16 @@ const getAll = async (req, res) => {
  */
 const getParticipants = async (req, res) => {
   try {
-    let participants = await ParticipantModel.find({ college: req.params.college });
+    let participants;
+
+    if (req.params.college) {
+      participants = await ParticipantModel.find({ college: req.params.college });
+    } else {
+      participants = await ParticipantModel.find();
+    }
 
     participants = participants.map(participant => ({
-      id:participant.id,
+      id: participant.id,
       registrationID: participant.registrationID,
       name: participant.name,
       college: participant.college,
