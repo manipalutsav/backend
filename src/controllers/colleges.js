@@ -121,10 +121,16 @@ const getAll = async (req, res) => {
  */
 const getParticipants = async (req, res) => {
   try {
-    let participants = await ParticipantModel.find({ college: req.params.college });
+    let participants;
+
+    if (req.params.college) {
+      participants = await ParticipantModel.find({ college: req.params.college });
+    } else {
+      participants = await ParticipantModel.find();
+    }
 
     participants = participants.map(participant => ({
-      id:participant.id,
+      id: participant.id,
       registrationID: participant.registrationID,
       name: participant.name,
       college: participant.college,
@@ -152,18 +158,24 @@ const getParticipants = async (req, res) => {
  */
 const getTeams = async (req, res) => {
   try {
-    let teams = await TeamModel.find({ college: req.params.college }).populate({
-      path: "event",
-      model: "Event",
-    });
+    let teams;
+
+    if (req.params.college) {
+      teams = await TeamModel.find({ college: req.params.college }).populate({
+        path: "event",
+        model: "Event",
+      });
+    } else {
+      teams = await TeamModel.find();
+    }
 
     teams = teams.map(team => ({
+      id: team.id,
       name: team.name,
       event: team.event,
       college: team.college,
       members: team.members,
       disqualified: team.disqualified,
-      id:team.id,
     }));
 
     return res.json({

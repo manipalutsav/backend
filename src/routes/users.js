@@ -19,4 +19,7 @@ router.post("/login", Users.login);
 router.patch("/:user", Users.update);
 router.post("/:user", Users.updateUser);
 
+// Delete a user
+router.delete("/:user", Users.remove);
+
 module.exports = router;
