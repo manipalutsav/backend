@@ -7,6 +7,7 @@ const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
 const ScoreModel = require("../models/Score");
 const SlotModel = require("../models/Slot");
+const Slot2Model = require("../models/Slot2");
 const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS } = require("../utils/constants");
@@ -22,7 +23,7 @@ const deleteTeam = async (req, res) => {
       return res.status(404).json({
         status: 400,
         message: "Not Found. Team doesn't exist.",
-      })
+      });
     }
 
     let members = team.members;
@@ -262,6 +263,36 @@ const createSlots = async (req, res) => {
   });
 };
 
+const createSlots2 = async (req, res) => {
+  let colleges = await CollegeModel.find();
+  let event = await EventModel.findById(req.params.event);
+  let maxTeamsPerCollege = event.maxTeamsPerCollege;
+  let teams = [];
+  let names = [ "A", "B", "C", "D", "E" ];
+  colleges.forEach(college => {
+    for(let i = 0;i < maxTeamsPerCollege;i++){
+      teams.push(`${college.name}, ${college.location} (Team ${names[i]})`);
+    }
+  });
+  let count = teams.length;
+  let slots = [];
+  for(let i = 0;i < count;i++){
+    let index = Math.floor(Math.random() * 100) % teams.length;
+    let teamName =  teams.splice(index, 1)[0];
+    await Slot2Model.create({
+      number: i + 1,
+      round: req.params.round,
+      teamName: teamName,
+    });
+    slots.push({ number: i + 1, teamName });
+  }
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: slots,
+  });
+};
+
 const get = async (req, res, next) => {
   let event = await EventModel.findById(req.params.event).populate({
     path: "college",
@@ -466,6 +497,32 @@ const getSlots = async (req, res, next) => {
     status: 200,
     message: "Success",
     data: slots,
+  });
+};
+
+const getSlots2 = async (req, res, next) => {
+  let slots = await Slot2Model.find({ round: req.params.round });
+  if (!slots) next();
+  slots = slots.map(slot => ({
+    id: slot.id,
+    number: slot.number,
+    round: slot.round,
+    teamName:slot.teamName,
+  }));
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: slots,
+  });
+};
+
+
+const deleteSlots2 = async (req, res) => {
+  await Slot2Model.deleteMany({ round: req.params.round });
+  return res.json({
+    status: 200,
+    message: "Success"
   });
 };
 
@@ -701,6 +758,7 @@ module.exports = {
   createScore,
   createScores,
   createSlots,
+  createSlots2,
   get,
   getAll,
   getRound,
@@ -709,6 +767,8 @@ module.exports = {
   getRounds,
   getSlot,
   getSlots,
+  getSlots2,
+  deleteSlots2,
   getTeam,
   getTeams,
   getTeamsInRound,
