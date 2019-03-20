@@ -162,8 +162,11 @@ const deleteRound = async (req, res, next) => {
   try {
     let event = await EventModel.findById(req.params.event);
 
-    // If round doesn't exist in the event
-    if (!event || !event.rounds.includes(req.params.round)) return next();
+    if (!event) return next();
+
+    // TODO: If round doesn't exist in the event
+    // This doesn't work. Why??
+    // if (!event.rounds.includes(req.params.round)) return next();
 
     // Delete round
     let round = await RoundModel.findByIdAndDelete(req.params.round);
