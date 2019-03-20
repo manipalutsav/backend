@@ -158,7 +158,7 @@ const createRound = async (req, res, next) => {
     });
 };
 
-const deleteRound = async (req, res) => {
+const deleteRound = async (req, res, next) => {
   try {
     let event = await EventModel.findById(req.params.event);
 
@@ -553,7 +553,7 @@ const deleteSlots2 = async (req, res) => {
   await Slot2Model.deleteMany({ round: req.params.round });
   return res.json({
     status: 200,
-    message: "Success"
+    message: "Success",
   });
 };
 
