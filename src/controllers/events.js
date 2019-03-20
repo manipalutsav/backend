@@ -160,8 +160,18 @@ const createRound = async (req, res, next) => {
 
 const deleteRound = async (req, res) => {
   try {
-    // TODO: Use req.params.event too
+    let event = await EventModel.findById(req.params.event);
+
+    // If round doesn't exist in the event
+    if (!even || !event.rounds.includes(req.params.round)) return next();
+
+    // Delete round
     let round = await RoundModel.findByIdAndDelete(req.params.round);
+
+    // Remove reference to round from the event.
+    event.rounds.splice(event.rounds.indexOf(req.params.round), 1);
+
+    await event.save();
 
     return res.json({
       status: 200,
