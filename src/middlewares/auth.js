@@ -6,7 +6,11 @@ const { HTTP_STATUS } = require("../utils/constants");
 
 module.exports = async (req, res, next) => {
   if (req.url === "/users/login" && req.method === "POST") return next();
-
+  if (req.url === "/app/events" && req.method === "GET") return next();
+  if (req.url === "/app/slots" && req.method === "GET") return next();
+  if (req.url === "/app/users" && req.method === "GET") return next();
+  if (req.url === "/app/result" && req.method === "GET") return next();
+  
   let token;
   const bearer = req.get("Authorization");
   if (bearer) token = bearer;
