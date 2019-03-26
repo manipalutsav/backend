@@ -12,18 +12,18 @@ const getEvents = async (req, res) => {
     model: "College",
   });
 
+
   events = events.map(event => {
     return {
       id: event.id,
       name: event.name,
       description: event.description,
-      college: event.college,
+      college: event.college.name,
       venue: event.venue,
       duration: event.duration,
       startDate: event.startDate,
       endDate: event.endDate,
-      faculty: event.faculty,
-      round: event.rounds[0].id,
+      round: event.rounds[0],
     };
   });
 
@@ -63,7 +63,9 @@ const getUsers = async (req, res) => {
 };
 
 const getSlots = async (req, res) => {
+  console.log(req.params)
   let slots = await SlotModel.find({ round: req.params.round });
+  console.log(slots)
   if (!slots) next();
   slots = slots.map(slot => ({
     id: slot.id,
@@ -72,6 +74,7 @@ const getSlots = async (req, res) => {
     team: slot.team,
     teamName:slot.teamName,
   }));
+
 
   return res.json({
     status: 200,
