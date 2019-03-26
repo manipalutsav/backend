@@ -37,10 +37,11 @@ const getEvents = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     let users = await UserModel.find();
-
-    users = users.map(user => {
+    let result = [];
+    users.map(user => {
+      console.log(user.type)
       if(user.type === USER_TYPES.FACULTY_COORDINATOR) {
-        return ({
+        result.push({
           id: user.id,
           name: user.name,
           type: user.type,
@@ -52,7 +53,7 @@ const getUsers = async (req, res) => {
     return res.json({
       status: 200,
       message: "Success",
-      data: users,
+      data: result,
     });
   } catch (e) {
     return res.status(500).json({
