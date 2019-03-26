@@ -39,7 +39,6 @@ const getUsers = async (req, res) => {
     let users = await UserModel.find();
     let result = [];
     users.map(user => {
-      console.log(user.type)
       if(user.type === USER_TYPES.FACULTY_COORDINATOR) {
         result.push({
           id: user.id,
