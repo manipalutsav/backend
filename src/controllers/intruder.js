@@ -37,13 +37,13 @@ const getUsers = async (req, res) => {
     let users = await UserModel.find();
 
     users = users.map(user => {
-      if(user.type !== USER_TYPES.FACULTY_COORDINATOR) {
-        return (
-          id: user.id,
-          name: user.name,
-          type: user.type,
-          college: user.college,
-        );
+      if(users.type !== USER_TYPES.FACULTY_COORDINATOR) {
+        return ({
+          id: users.id,
+          name: users.name,
+          type: users.type,
+          college: users.college,
+        });
       }
     });
 
