@@ -39,7 +39,7 @@ const getUsers = async (req, res) => {
     let users = await UserModel.find();
 
     users = users.map(user => {
-      if(user.type !== USER_TYPES.FACULTY_COORDINATOR) {
+      if(user.type === USER_TYPES.FACULTY_COORDINATOR) {
         return ({
           id: user.id,
           name: user.name,
