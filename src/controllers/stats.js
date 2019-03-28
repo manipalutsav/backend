@@ -20,12 +20,28 @@ const get = async (req, res) => {
       status: 200,
       message: "Success",
       data: {
-        users: users.length,
-        events: events.length,
-        colleges: colleges.length,
-        participants: [ ...new Set(participants.map(p => p.registrationID)) ].length,
-        teams: teams.filter(t => t.members.length > 1).length,
-        judges: [ ...new Set(judges.map(j => j.name)) ].length,
+        users: {
+          total: users.length,
+        },
+        events: {
+          total: events.length,
+          staff: events.filter(e => e.faculty).length,
+          venues: [ ...new Set(events.map(e => e.venue)) ].length,
+        },
+        colleges: {
+          total: colleges.length,
+          locations: [ ...new Set(colleges.map(c => c.location)) ].length,
+        },
+        participants: {
+          total: [ ...new Set(participants.map(p => p.registrationID)) ].length,
+          staff: [ ...new Set(participants.filter(p => p.faculty).map(p => p.registrationID)) ].length,
+        },
+        teams: {
+          total: teams.filter(t => t.members.length > 1).length,
+        },
+        judges: {
+          total: [ ...new Set(judges.map(j => j.name)) ].length
+        },
       },
     });
   } catch (e) {
