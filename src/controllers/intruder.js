@@ -41,9 +41,7 @@ const getUsers = async (req, res) => {
       model: "College",
     });
 
-    let result = [];
-
-    users.filter(u => u.type === USER_TYPES.FACULTY_COORDINATOR).map(u => ({
+    users = users.filter(u => u.type === USER_TYPES.FACULTY_COORDINATOR).map(u => ({
       id: u.id,
       name: u.name,
       type: u.type,
@@ -53,7 +51,7 @@ const getUsers = async (req, res) => {
     return res.json({
       status: 200,
       message: "Success",
-      data: result,
+      data: users,
     });
   } catch (e) {
     return res.status(500).json({
