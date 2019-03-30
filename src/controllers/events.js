@@ -555,8 +555,13 @@ const getSlot = async (req, res, next) => {
 };
 
 const getSlots = async (req, res, next) => {
-  let slots = await SlotModel.find({ round: req.params.round });
+  let slots = await SlotModel.find({ round: req.params.round }).populate({
+    path: "team",
+    model: "Team",
+  });
+
   if (!slots) next();
+
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
