@@ -62,7 +62,7 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getSlots = async (req, res) => {
+const getSlots = async (req, res, next) => {
   let slots = await SlotModel.find({ round: req.params.round });
   if (!slots) return next();
 
@@ -80,10 +80,10 @@ const getSlots = async (req, res) => {
     message: "Success",
     data: slots,
   });
-}
+};
 
 module.exports = {
   getEvents,
   getUsers,
-  getSlots
-}
+  getSlots,
+};
