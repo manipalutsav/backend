@@ -157,6 +157,43 @@ const createRound = async (req, res, next) => {
     });
 };
 
+const updateRound = async (req, res, next) => {
+  let event = await EventModel.findById(req.params.event);
+
+  if (!event) next();
+
+  let roundDocument = await  RoundModel.findById(req.params.round);
+  roundDocument.criteria = req.body.criteria;
+  roundDocument.slottable = req.body.slottable;
+
+  await roundDocument.save().
+    then(async round => {
+      event.rounds.push(round.id);
+      await event.save();
+
+      return res.json({
+        status: 200,
+        message: "Round updated",
+        data: {
+          id: round.id,
+          event: req.params.event,
+          teams: [],
+          criteria: round.criteria,
+          slottable: round.slottable,
+        },
+      });
+    }).
+    catch((e) => {
+      // eslint-disable-next-line no-console
+      console.poo(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    });
+};
+
 const deleteRound = async (req, res, next) => {
   try {
     let event = await EventModel.findById(req.params.event);
@@ -815,4 +852,5 @@ module.exports = {
   create,
   edit,
   createTeam,
+  updateRound,
 };
