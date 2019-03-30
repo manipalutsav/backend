@@ -62,17 +62,18 @@ const getUsers = async (req, res) => {
 };
 
 const getSlots = async (req, res, next) => {
-  let slots = await SlotModel.find({ round: req.params.round });
+  let slots = await SlotModel.find({ round: req.params.round }).populate({
+    path: "team",
+    model: "Team",
+  });
   if (!slots) return next();
 
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
     round: slot.round,
-    team: slot.team,
-    teamName:slot.teamName,
+    team: slot.team.name,
   }));
-
 
   return res.json({
     status: 200,
