@@ -36,18 +36,19 @@ const getEvents = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    let users = await UserModel.find();
-    let result = [];
-    users.map(user => {
-      if(user.type === USER_TYPES.FACULTY_COORDINATOR) {
-        result.push({
-          id: user.id,
-          name: user.name,
-          type: user.type,
-          college: user.college,
-        });
-      }
+    let users = await UserModel.find().populate({
+      path: "college",
+      model: "College",
     });
+
+    let result = [];
+
+    users.filter(u => u.type === USER_TYPES.FACULTY_COORDINATOR).map(u => ({
+      id: u.id,
+      name: u.name,
+      type: u.type,
+      college: u.college.name + " " + u.college.location,
+    }));
 
     return res.json({
       status: 200,
