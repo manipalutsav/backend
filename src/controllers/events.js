@@ -268,9 +268,10 @@ const createScores = async (req, res, next) => {
   });
   if (!round) return next();
 
-  for (let score of req.body) {
-    if (!round.teams.includes(new mongoose.mongo.ObjectId(score.team))) return next();
-  }
+  // TODO: This doesn't work. Why??
+  // for (let score of req.body) {
+  //   if (!round.teams.includes(score.team)) return next();
+  // }
 
   let scores = await ScoreModel.find({
     round: req.params.round,
