@@ -1,7 +1,6 @@
 "use strict";
 
-// TODO: @k3rn31p4nic review this entirely
-
+const mongoose = require("mongoose");
 const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
@@ -232,8 +231,8 @@ const createScores = async (req, res, next) => {
   });
   if (!round) return next();
 
-  for(let score of req.body){
-    if (!round.teams.includes(score.team)) return next();
+  for (let score of req.body) {
+    if (!round.teams.includes(new mongoose.mongo.ObjectId(score.team))) return next();
   }
 
   let scores = await ScoreModel.find({
