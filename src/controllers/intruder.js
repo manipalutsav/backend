@@ -63,10 +63,9 @@ const getUsers = async (req, res) => {
 };
 
 const getSlots = async (req, res) => {
-  console.log(req.params)
   let slots = await SlotModel.find({ round: req.params.round });
-  console.log(slots)
-  if (!slots) next();
+  if (!slots) return next();
+
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
