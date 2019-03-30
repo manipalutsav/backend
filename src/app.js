@@ -54,6 +54,7 @@ const eventsRouter = require("./routes/events");
 const leaderboardRouter = require("./routes/leaderboard");
 const usersRouter = require("./routes/users");
 const judgesRouter = require("./routes/judges");
+const intruderRouter = require("./routes/intruder");
 const statsRouter = require("./routes/stats");
 
 app.use("/colleges", collegesRouter);
@@ -61,6 +62,7 @@ app.use("/events", eventsRouter);
 app.use("/leaderboard", leaderboardRouter);
 app.use("/users", usersRouter);
 app.use("/judges", judgesRouter);
+app.use("/intruder", intruderRouter);
 app.use("/stats", statsRouter);
 
 // Error handlers

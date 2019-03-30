@@ -40,7 +40,7 @@ const get = async (req, res) => {
           total: teams.filter(t => t.members.length > 1).length,
         },
         judges: {
-          total: [ ...new Set(judges.map(j => j.name)) ].length
+          total: [ ...new Set(judges.map(j => j.name)) ].length,
         },
       },
     });

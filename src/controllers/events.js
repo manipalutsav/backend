@@ -1,6 +1,5 @@
 "use strict";
 
-const mongoose = require("mongoose");
 const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
