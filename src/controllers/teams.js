@@ -9,7 +9,7 @@ const EventModel = require("../models/Event");
  * @param {object} res The response object
  * @returns {void}
  */
-exports.createTeam = async (req, res) => {
+const create = async (req, res) => {
   let {
     event,
     college,
@@ -55,7 +55,7 @@ exports.createTeam = async (req, res) => {
  * @param {object} res The response object
  * @returns {void}
  */
-exports.getTeam = async (req, res) => {
+const get = async (req, res) => {
   let team = await TeamModel.findById({ id: req.params.id });
 
   return res.json({
@@ -63,4 +63,27 @@ exports.getTeam = async (req, res) => {
     message: "Success",
     data: { team },
   });
+};
+
+const getAll = async (req, res) => {
+  try {
+    let teams = await TeamModel.find();
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: teams,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+module.exports = {
+  create,
+  get,
+  getAll,
 };

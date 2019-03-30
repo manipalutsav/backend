@@ -39,6 +39,7 @@ router.post("/", Events.create);
 // Create a new round in the given event
 router.post("/:event/edit", Events.edit);
 router.post("/:event/rounds", Events.createRound);
+router.post("/:event/rounds/:round", Events.updateRound);
 // Create a new judge for round
 // router.post("/:event/rounds/:round/judge", Events.createJudge);
 

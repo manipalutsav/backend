@@ -1,7 +1,6 @@
 "use strict";
 
-// TODO: @k3rn31p4nic review this entirely
-
+const mongoose = require("mongoose");
 const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
@@ -158,6 +157,43 @@ const createRound = async (req, res, next) => {
     });
 };
 
+const updateRound = async (req, res, next) => {
+  let event = await EventModel.findById(req.params.event);
+
+  if (!event) next();
+
+  let roundDocument = await  RoundModel.findById(req.params.round);
+  roundDocument.criteria = req.body.criteria;
+  roundDocument.slottable = req.body.slottable;
+
+  await roundDocument.save().
+    then(async round => {
+      event.rounds.push(round.id);
+      await event.save();
+
+      return res.json({
+        status: 200,
+        message: "Round updated",
+        data: {
+          id: round.id,
+          event: req.params.event,
+          teams: [],
+          criteria: round.criteria,
+          slottable: round.slottable,
+        },
+      });
+    }).
+    catch((e) => {
+      // eslint-disable-next-line no-console
+      console.poo(e);
+
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    });
+};
+
 const deleteRound = async (req, res, next) => {
   try {
     let event = await EventModel.findById(req.params.event);
@@ -232,9 +268,10 @@ const createScores = async (req, res, next) => {
   });
   if (!round) return next();
 
-  for(let score of req.body){
-    if (!round.teams.includes(score.team)) return next();
-  }
+  // TODO: This doesn't work. Why??
+  // for (let score of req.body) {
+  //   if (!round.teams.includes(score.team)) return next();
+  // }
 
   let scores = await ScoreModel.find({
     round: req.params.round,
@@ -518,8 +555,13 @@ const getSlot = async (req, res, next) => {
 };
 
 const getSlots = async (req, res, next) => {
-  let slots = await SlotModel.find({ round: req.params.round });
+  let slots = await SlotModel.find({ round: req.params.round }).populate({
+    path: "team",
+    model: "Team",
+  });
+
   if (!slots) next();
+
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
@@ -811,4 +853,5 @@ module.exports = {
   create,
   edit,
   createTeam,
+  updateRound,
 };
