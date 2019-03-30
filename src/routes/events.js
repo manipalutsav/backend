@@ -50,6 +50,8 @@ router.post("/:event/rounds/:round/teams/:team/scores", Events.createScore);
 // Add scores for the teams in the given round in the given event
 router.post("/:event/rounds/:round/slots", Events.createSlots);
 router.post("/:event/rounds/:round/slots2", Events.createSlots2);
+// Add bias to teams
+router.post("/:event/rounds/:round/bias", Events.addBias);
 
 router.post("/:event/rounds/:round/scores", Events.createScores);
 // Register a team to the given event

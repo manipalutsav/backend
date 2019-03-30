@@ -297,6 +297,33 @@ const createScores = async (req, res, next) => {
   });
 };
 
+const addBias = async (req, res) => {
+  let bias = req.body;
+  if(!bias || bias.length === 0){
+    res.status(400);
+    return res.json({
+      status: 400,
+      message: "Bad Request",
+    });
+  }
+
+  await bias.forEach(async team => {
+    let teamDoc = await TeamModel.findById(team.id);
+    if(!teamDoc){
+      return false;
+    }
+    teamDoc.overtime = team.overtime;
+    teamDoc.disqualified = team.disqualified;
+    await teamDoc.save();
+  });
+     
+
+  return res.json({
+    status: 200,
+    message: "Success",
+  });
+};
+
 const createSlots = async (req, res) => {
   let teams = await TeamModel.find({
     event: req.params.event,
@@ -853,4 +880,5 @@ module.exports = {
   edit,
   createTeam,
   updateRound,
+  addBias,
 };
