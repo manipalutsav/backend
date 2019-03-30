@@ -6,11 +6,8 @@ const { HTTP_STATUS } = require("../utils/constants");
 
 module.exports = async (req, res, next) => {
   if (req.url === "/users/login" && req.method === "POST") return next();
-  if (req.url === "/intruder/events" && req.method === "GET") return next();
-  if (req.url === "/intruder/slots" && req.method === "GET") return next();
-  if (req.url === "/intruder/users" && req.method === "GET") return next();
-  if (req.url === "/intruder/result" && req.method === "GET") return next();
-  
+  if (req.url.startsWith("/intruder/") && req.method === "GET") return next();
+
   let token;
   const bearer = req.get("Authorization");
   if (bearer) token = bearer;
