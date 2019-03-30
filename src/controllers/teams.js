@@ -9,7 +9,7 @@ const EventModel = require("../models/Event");
  * @param {object} res The response object
  * @returns {void}
  */
-exports.createTeam = (req, res) => {
+exports.createTeam = async (req, res) => {
   let {
     event,
     college,
@@ -24,7 +24,7 @@ exports.createTeam = (req, res) => {
     return res.status(401).json({
       status: 416,
       message: "Max participation limit reached",
-    })
+    });
   }
 
   let team = new TeamModel({
@@ -64,4 +64,3 @@ exports.getTeam = async (req, res) => {
     data: { team },
   });
 };
-
