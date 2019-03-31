@@ -15,6 +15,11 @@ const schema = {
       points: [ Number ],
     },
   ],
+  overtime: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 };
 
 const options = {

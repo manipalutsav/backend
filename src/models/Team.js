@@ -19,7 +19,6 @@ const schema = {
     required: true,
     default: false,
   },
-  overtime: Number,
 };
 
 const options = {
