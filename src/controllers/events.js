@@ -490,7 +490,7 @@ const getLeaderboard = async (req, res, next) => {
   }));
 
   let mappedScores = scores.reduce((acc, curr) => {
-    let points = acc.get(curr.team) || 0;
+    let points = acc.get(curr.team) || { original: 0, final: 0 };
     acc.set(curr.team, {
       original: curr.points.original + points.original,
       final: curr.points.final + points.final,
