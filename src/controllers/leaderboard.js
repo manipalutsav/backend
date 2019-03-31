@@ -39,7 +39,10 @@ const get = async (req, res) => {
 
   let finalLeaderboard = {};
   for (let score of overallLeaderboard) {
-    let team = await TeamModel.findById(score.team).populate("event");
+    let team = await TeamModel.findById(score.team).populate({
+      path: "event",
+      model: "Event",
+    });
 
     if (finalLeaderboard.hasOwnProperty(team.college)) {
       if (team.event.maxMembersPerTeam === 1) {
