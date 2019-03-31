@@ -53,7 +53,7 @@ const get = async (req, res) => {
       }
     }
 
-    overallLeaderboard.concat(Object.values(leaderboard));
+    overallLeaderboard = overallLeaderboard.concat(Object.values(leaderboard));
   }
 
   // TODO: Calculate college scores.
