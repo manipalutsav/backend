@@ -503,10 +503,16 @@ const getRoundLeaderboard = async (req, res, next) => {
     model: "Team",
   });
 
-  scores = scores.map(score => ({
-    team: score.team,
-    round: score.round,
-    points: score.points,
+  scores = await Promise.all(scores.map(async score => {
+    let team = await TeamModel.findById(score.team);
+    let bias = team.overtime > 0 ? 5 * (Math.floor(team.overtime / 5) + 1) : 0;
+    return({
+      team: score.team,
+      round: score.round,
+      judgePoints: score.points,
+      points: score.points - bias,
+      overtime: team.overtime,
+    });
   }));
 
   return res.json({
@@ -855,6 +861,24 @@ const addBulkParticipants = (data, college) => {
   });
 };
 
+const publishRoundLeaderboard = async (req, res) => {
+  let round = await RoundModel.findById(req.params.round);
+
+  if (!round){
+    res.status(404);
+    return res.json({
+      status: 404,
+      message: "Round Not Found",
+    });
+  }
+  round.published = true;
+  await round.save();
+  return res.json({
+    status: 200,
+    message: "Success",
+  });
+};
+
 module.exports = {
   deleteTeam,
   deleteRound,
@@ -881,4 +905,5 @@ module.exports = {
   createTeam,
   updateRound,
   addBias,
+  publishRoundLeaderboard,
 };

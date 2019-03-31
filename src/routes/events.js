@@ -54,6 +54,9 @@ router.post("/:event/rounds/:round/slots2", Events.createSlots2);
 router.post("/:event/rounds/:round/bias", Events.addBias);
 
 router.post("/:event/rounds/:round/scores", Events.createScores);
+
+// publish round leaderboard
+router.post("/:event/rounds/:round/leaderboard", Events.publishRoundLeaderboard);
 // Register a team to the given event
 router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team

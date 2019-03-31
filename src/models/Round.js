@@ -17,6 +17,10 @@ const schema = {
     type: Number,
     default: ROUND_STATUS.SCHEDULED,
   },
+  published: {
+    type: Boolean,
+    default: false,
+  },
 };
 
 const options = {
