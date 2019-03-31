@@ -123,9 +123,66 @@ const getRoundLeaderboard = async (req, res, next) => {
   });
 };
 
+const getEventLeaderboard = async (req, res) => {
+  let event = await EventModel.findById(req.params.event);
+
+  if (!event) {
+    return res.status(404).json({
+      status: 404,
+      message: "Not Found. Event doesn't exist.",
+    });
+  }
+
+  let scores = await ScoreModel.find({
+    round: { $in: event.rounds },
+  }).populate({
+    path: "team",
+    model: "Team",
+  });
+
+  scores = scores.map(score => {
+    let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
+
+    return {
+      round: score.round,
+      team: score.team,
+      overtime: score.overtime,
+      points: {
+        judge: score.points,
+        final: score.points - bias,
+      },
+    };
+  });
+
+  let leaderboard = {};
+  for (let score of scores) {
+    if (!leaderboard.hasOwnProperty(score.team.id)) {
+      leaderboard[score.team.id] = {
+        team: score.team,
+        points: score.points,
+      };
+    } else {
+      leaderboard[score.team.id] = {
+        ...leaderboard[score.team.id],
+        points: {
+          judge: leaderboard[score.team.id].points.judge + score.points.judge,
+          final: leaderboard[score.team.id].points.final + score.points.final,
+        },
+      };
+    }
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: Object.values(leaderboard),
+  });
+};
+
 module.exports = {
   getEvents,
   getUsers,
   getSlots,
   getRoundLeaderboard,
+  getEventLeaderboard,
 };
