@@ -316,7 +316,7 @@ const addBias = async (req, res) => {
     teamDoc.disqualified = team.disqualified;
     await teamDoc.save();
   });
-     
+
 
   return res.json({
     status: 200,
@@ -867,18 +867,18 @@ const addBulkParticipants = (data, college) => {
 const publishRoundLeaderboard = async (req, res) => {
   let round = await RoundModel.findById(req.params.round);
 
-  if (!round){
-    res.status(404);
-    return res.json({
-      status: 404,
-      message: "Round Not Found",
-    });
-  }
+  if (!round) return res.status(404).json({
+    status: 404,
+    message: "Round Not Found",
+  });
+
   round.published = true;
   await round.save();
+
   return res.json({
     status: 200,
     message: "Success",
+    data: round,
   });
 };
 
