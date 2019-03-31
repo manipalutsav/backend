@@ -512,6 +512,7 @@ const getRoundLeaderboard = async (req, res, next) => {
       judgePoints: score.points,
       points: score.points - bias,
       overtime: team.overtime,
+      disqualified: team.disqualified,
     });
   }));
 
@@ -538,6 +539,7 @@ const getRound = async (req, res, next) => {
       id: round.id,
       event: round.event,
       criteria: round.criteria,
+      published: round.published,
       teams: round.teams,
       duration: round.duration,
       slottable: round.slottable,
@@ -555,6 +557,7 @@ const getRounds = async (req, res) => {
     id: round.id,
     event: round.event,
     teams: round.teams,
+    published: round.published,
     duration: round.duration,
     slottable: round.slottable,
     status: round.status,

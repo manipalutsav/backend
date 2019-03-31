@@ -2,6 +2,9 @@
 
 const EventModel = require("../models/Event");
 const SlotModel = require("../models/Slot");
+const RoundModel = require("../models/Round");
+const ScoreModel = require("../models/Score");
+const TeamModel = require("../models/Team");
 const UserModel = require("../models/User");
 
 const { USER_TYPES } = require("../utils/constants");
@@ -82,8 +85,46 @@ const getSlots = async (req, res, next) => {
   });
 };
 
+const getRoundLeaderboard = async (req, res, next) => {
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
+    event: req.params.event,
+  });
+
+  if (!round) next();
+
+  if(!round.published) next();
+
+  let scores = await ScoreModel.find({
+    round: round.id,
+  }).populate({
+    path: "team",
+    model: "Team",
+  });
+
+  scores = await Promise.all(scores.map(async score => {
+    let team = await TeamModel.findById(score.team);
+    let bias = team.overtime > 0 ? 5 * (Math.floor(team.overtime / 5) + 1) : 0;
+    return({
+      team: score.team,
+      round: score.round,
+      judgePoints: score.points,
+      points: score.points - bias,
+      overtime: team.overtime,
+      disqualified: team.disqualified,
+    });
+  }));
+  scores = scores.filter(slot => !slot.disqualified);
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
+  });
+};
+
 module.exports = {
   getEvents,
   getUsers,
   getSlots,
+  getRoundLeaderboard,
 };
