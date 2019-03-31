@@ -11,9 +11,9 @@ router.get("/", Events.getAll);
 // Returns the event for the given id
 router.get("/:event", Events.get);
 // Returns the leaderboard for the given event id
-// TODO: Get this shit together
 router.get("/:event/leaderboard", Events.getLeaderboard);
 // Returns the leaderboard for the given event id
+// Same as above but I wrote it again because I forgot I wrote the above one!
 // router.get("/:event/leaderboard", Events.getEventLeaderboard);
 // Returns the list of rounds in the given event id
 router.get("/:event/rounds", Events.getRounds);
