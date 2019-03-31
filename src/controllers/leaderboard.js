@@ -9,52 +9,48 @@ const get = async (req, res) => {
   let events = await EventModel.find();
 
   let overallLeaderboard = [];
+
   for (let event of events) {
     let scores = await ScoreModel.find({
       round: { $in: event.rounds },
-    }).populate({
-      path: "team",
-      model: "Team",
-      populate: {
-        path: "event",
-        model: "Event",
-      },
     });
 
-    scores = scores.map(score => {
-      let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
+    scores = scores.map(score => ({
+      team: score.team,
+      points: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
+    }));
 
-      return {
-        round: score.round,
-        team: score.team,
-        overtime: score.overtime,
-        points: {
-          judge: score.points,
-          final: score.points - bias,
-        },
-      };
-    });
+    let mappedScores = scores.reduce((acc, curr) => {
+      let points = acc.get(curr.team) || 0;
+      acc.set(curr.team, curr.points + points);
+      return acc;
+    }, new Map());
 
-    let leaderboard = {};
-    for (let score of scores) {
-      if (!leaderboard.hasOwnProperty(score.team.id)) {
-        leaderboard[score.team.id] = {
-          team: score.team,
-          points: score.points,
-        };
-      } else {
-        leaderboard[score.team.id] = {
-          ...leaderboard[score.team.id],
-          points: {
-            judge: leaderboard[score.team.id].points.judge + score.points.judge,
-            final: leaderboard[score.team.id].points.final + score.points.final,
-          },
-        };
-      }
-    }
+    let leaderboard = [ ...mappedScores ].map(([ team, points ]) => ({ team, points }));
+    leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
+    leaderboard = leaderboard.map(lb => ({
+      ...lb,
+      rank: Array.from(new Set(leaderboard.map(team => team.points))).indexOf(lb.points) + 1,
+    }));
 
-    overallLeaderboard = overallLeaderboard.concat(Object.values(leaderboard));
+    overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
+
+  // let finalLeaderboard = {};
+  // for (let score of overallLeaderboard) {
+  //   if (finalLeaderboard.hasOwnProperty(score.team.college)) {
+  //     if (score.team.event.minMembersPerTeam === 1) {
+  //       // For individual events
+  //
+  //     } else {
+  //       // For group events
+  //
+  //     }
+  //     finalLeaderboard[score.team.college] = ;
+  //   } else {
+  //
+  //   }
+  // }
 
   // TODO: Calculate college scores.
 
