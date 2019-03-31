@@ -4,12 +4,12 @@ const LeaderboardModel = require("../models/Leaderboard");
 const CollegeModel = require("../models/College");
 const EventModel = require("../models/Event");
 const ScoreModel = require("../models/Score");
+const TeamModel = require("../models/Team");
 
 const get = async (req, res) => {
   let events = await EventModel.find();
 
   let overallLeaderboard = [];
-
   for (let event of events) {
     let scores = await ScoreModel.find({
       round: { $in: event.rounds },
@@ -32,32 +32,38 @@ const get = async (req, res) => {
       ...lb,
       rank: Array.from(new Set(leaderboard.map(team => team.points))).indexOf(lb.points) + 1,
     }));
+    leaderboard = leaderboard.filter(lb => [ 1, 2, 3 ].includes(lb.rank));
 
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
 
-  // let finalLeaderboard = {};
-  // for (let score of overallLeaderboard) {
-  //   if (finalLeaderboard.hasOwnProperty(score.team.college)) {
-  //     if (score.team.event.minMembersPerTeam === 1) {
-  //       // For individual events
-  //
-  //     } else {
-  //       // For group events
-  //
-  //     }
-  //     finalLeaderboard[score.team.college] = ;
-  //   } else {
-  //
-  //   }
-  // }
+  let finalLeaderboard = {};
+  for (let score of overallLeaderboard) {
+    let team = await TeamModel.findById(score.team).populate("event");
 
-  // TODO: Calculate college scores.
+    if (finalLeaderboard.hasOwnProperty(team.college)) {
+      if (team.event.maxMembersPerTeam === 1) {
+        // For individual events
+        finalLeaderboard[team.college] += score.rank === 1 ? 10 : score.rank === 2 ? 8 : 6;
+      } else {
+        // For group events
+        finalLeaderboard[team.college] += score.rank === 1 ? 14 : score.rank === 2 ? 10 : 8;
+      }
+    } else {
+      if (team.event.maxMembersPerTeam === 1) {
+        // For individual events
+        finalLeaderboard[team.college] = score.rank === 1 ? 10 : score.rank === 2 ? 8 : 6;
+      } else {
+        // For group events
+        finalLeaderboard[team.college] = score.rank === 1 ? 14 : score.rank === 2 ? 10 : 8;
+      }
+    }
+  }
 
   return res.json({
     status: 200,
     message: "Success",
-    data: overallLeaderboard,
+    data: finalLeaderboard,
   });
 };
 
