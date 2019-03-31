@@ -63,10 +63,20 @@ const get = async (req, res) => {
     }
   }
 
+  let leaderboard = [];
+  for (let college of Object.keys(finalLeaderboard)) {
+    let collegeDoc = await CollegeModel.findById(college);
+
+    leaderboard.push({
+      college: collegeDoc,
+      points: finalLeaderboard[college],
+    });
+  }
+
   return res.json({
     status: 200,
     message: "Success",
-    data: finalLeaderboard,
+    data: leaderboard,
   });
 };
 
