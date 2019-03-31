@@ -33,14 +33,14 @@ const get = async (req, res) => {
           locations: [ ...new Set(colleges.map(c => c.location)) ].length,
         },
         participants: {
-          total: [ ...new Set(participants.map(p => p.registrationID)) ].length,
-          staff: [ ...new Set(participants.filter(p => p.faculty).map(p => p.registrationID)) ].length,
+          total: participants.map(p => p.registrationID).length,
+          staff: participants.filter(p => p.faculty).map(p => p.registrationID).length,
         },
         teams: {
           total: teams.filter(t => t.members.length > 1).length,
         },
         judges: {
-          total: [ ...new Set(judges.map(j => j.name)) ].length,
+          total: judges.map(j => j.name).length,
         },
       },
     });
