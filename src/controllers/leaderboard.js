@@ -2,17 +2,21 @@
 
 const LeaderboardModel = require("../models/Leaderboard");
 const CollegeModel = require("../models/College");
+const EventModel = require("../models/Event");
+const ScoreModel = require("../models/Score");
 
 const get = async (req, res) => {
   let event = await EventModel.findById(req.params.event);
 
-  if (!event) return res.status(404).json({
-    status: 404,
-    message: "Not Found. Event doesn't exist.",
-  });
+  if (!event) {
+    return res.status(404).json({
+      status: 404,
+      message: "Not Found. Event doesn't exist.",
+    });
+  }
 
   let scores = await ScoreModel.find({
-    round: { $in: event.rounds }
+    round: { $in: event.rounds },
   }).populate({
     path: "team",
     model: "Team",
@@ -43,8 +47,7 @@ const get = async (req, res) => {
         team: score.team,
         points: score.points,
       };
-    }
-    else {
+    } else {
       leaderboard[score.team.id] = {
         ...leaderboard[score.team.id],
         points: {
