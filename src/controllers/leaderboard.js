@@ -180,9 +180,35 @@ const update = async (req, res) => {
   }
 };
 
+const publish = async (req, res) => {
+  try {
+    if (!req.body.length) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request. Invalid request body.",
+      });
+    }
+
+    await LeaderboardModel.remove();
+    let leaderboard = await LeaderboardModel.create(req.body);
+
+    return res.json({
+      status: 200,
+      message: "Success. Leaderboard published.",
+      data: leaderboard,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   get,
   getPublic,
   init,
+  publish,
   update,
 };
