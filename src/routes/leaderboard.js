@@ -13,6 +13,8 @@ router.get("/public", Leaderboard.getPublic);
 
 // Create the leaderboard with initial scores
 router.post("/", Leaderboard.init);
+// Publish the leaderboard to public
+router.post("/publish", Leaderboard.publish);
 
 // Modify the leaderboard with updated scores of the given college
 router.patch("/:college", Leaderboard.update);
