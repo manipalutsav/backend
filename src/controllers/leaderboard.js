@@ -3,13 +3,74 @@
 const LeaderboardModel = require("../models/Leaderboard");
 const CollegeModel = require("../models/College");
 
+const get = async (req, res) => {
+  let event = await EventModel.findById(req.params.event);
+
+  if (!event) return res.status(404).json({
+    status: 404,
+    message: "Not Found. Event doesn't exist.",
+  });
+
+  let scores = await ScoreModel.find({
+    round: { $in: event.rounds }
+  }).populate({
+    path: "team",
+    model: "Team",
+    populate: {
+      path: "event",
+      model: "Event",
+    },
+  });
+
+  scores = scores.map(score => {
+    let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
+
+    return {
+      round: score.round,
+      team: score.team,
+      overtime: score.overtime,
+      points: {
+        judge: score.points,
+        final: score.points - bias,
+      },
+    };
+  });
+
+  let leaderboard = {};
+  for (let score of scores) {
+    if (!leaderboard.hasOwnProperty(score.team.id)) {
+      leaderboard[score.team.id] = {
+        team: score.team,
+        points: score.points,
+      };
+    }
+    else {
+      leaderboard[score.team.id] = {
+        ...leaderboard[score.team.id],
+        points: {
+          judge: leaderboard[score.team.id].points.judge + score.points.judge,
+          final: leaderboard[score.team.id].points.final + score.points.final,
+        },
+      };
+    }
+  }
+
+  // TODO: Calculate college scores.
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: Object.values(leaderboard),
+  });
+};
+
 /**
  * Returns the leaderboard
  * @param {object} req the request object
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const get = async (req, res) => {
+const getPublic = async (req, res) => {
   try {
     let leaderboard = await LeaderboardModel.find().populate({
       path: "college",
@@ -105,6 +166,7 @@ const update = async (req, res) => {
 
 module.exports = {
   get,
+  getPublic,
   init,
   update,
 };
