@@ -55,8 +55,6 @@ router.post("/:event/rounds/:round/bias", Events.addBias);
 
 router.post("/:event/rounds/:round/scores", Events.createScores);
 
-// publish round leaderboard
-router.post("/:event/rounds/:round/leaderboard", Events.publishRoundLeaderboard);
 // Register a team to the given event
 router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team
@@ -64,6 +62,8 @@ router.post("/:event/teams", Events.createTeam);
 
 // Modify the given team's details for the given event
 // router.patch("/:event/teams/:team", noop);
+// Publish round leaderboard
+router.patch("/:event/rounds/:round/leaderboard", Events.publishRoundLeaderboard);
 
 // Deletes the specified team from the given event
 router.delete("/:event/teams/:team", Events.deleteTeam);
