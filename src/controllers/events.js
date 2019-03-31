@@ -524,7 +524,7 @@ const getRoundLeaderboard = async (req, res, next) => {
       round: score.round,
       judgePoints: score.points,
       points: score.points - bias,
-      overtime: team.overtime,
+      overtime: score.overtime,
       disqualified: team.disqualified,
     });
   }));
