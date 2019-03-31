@@ -297,30 +297,42 @@ const createScores = async (req, res, next) => {
   });
 };
 
-const addBias = async (req, res) => {
-  let bias = req.body;
-  if(!bias || bias.length === 0){
-    res.status(400);
-    return res.json({
-      status: 400,
-      message: "Bad Request",
-    });
-  }
+const updateTeamScores = async (req, res) => {
+  if (!req.body) req.body = [];
 
-  await bias.forEach(async team => {
-    let teamDoc = await TeamModel.findById(team.id);
-    if(!teamDoc){
-      return false;
-    }
-    teamDoc.overtime = team.overtime;
-    teamDoc.disqualified = team.disqualified;
-    await teamDoc.save();
+  if (req.body.length === 0) return res.status(400).json({
+    status: 400,
+    message: "Bad Request",
   });
 
+  for (let team of req.body) {
+    let teamDoc = await TeamModel.findOne({
+      _id: team.id,
+      event: req.params.event,
+    });
+    if (teamDoc) {
+      teamDoc.disqualified = team.disqualified;
+      await teamDoc.save();
+    }
+
+    let scoreDoc = await ScoreModel.findOne({
+      team: team.id,
+      round: req.params.round,
+    });
+    if (scoreDoc) {
+      scoreDoc.overtime = team.overtime;
+      await scoreDoc.save();
+    }
+  }
 
   return res.json({
     status: 200,
     message: "Success",
+    data: {
+      event: req.params.event,
+      round: req.params.round,
+      teams: req.body
+    },
   });
 };
 
@@ -907,6 +919,6 @@ module.exports = {
   edit,
   createTeam,
   updateRound,
-  addBias,
+  updateTeamScores,
   publishRoundLeaderboard,
 };
