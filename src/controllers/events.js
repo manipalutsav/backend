@@ -300,10 +300,12 @@ const createScores = async (req, res, next) => {
 const updateTeamScores = async (req, res) => {
   if (!req.body) req.body = [];
 
-  if (req.body.length === 0) return res.status(400).json({
-    status: 400,
-    message: "Bad Request",
-  });
+  if (req.body.length === 0) {
+    return res.status(400).json({
+      status: 400,
+      message: "Bad Request",
+    });
+  }
 
   for (let team of req.body) {
     let teamDoc = await TeamModel.findOne({
@@ -331,7 +333,7 @@ const updateTeamScores = async (req, res) => {
     data: {
       event: req.params.event,
       round: req.params.round,
-      teams: req.body
+      teams: req.body,
     },
   });
 };
@@ -476,18 +478,23 @@ const getLeaderboard = async (req, res, next) => {
   if (!event) next();
 
   let scores = await ScoreModel.find({
-    // TODO: $or doesn't work here. Fix this shit!
-    round: { $or: event.rounds },
+    round: { $in: event.rounds },
   });
 
   scores = scores.map(score => ({
     team: score.team,
-    points: score.points,
+    points: {
+      original: score.points,
+      final: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
+    },
   }));
 
   let mappedScores = scores.reduce((acc, curr) => {
-    let point = acc.get(curr.team) || 0;
-    acc.set(curr.team, curr.points + point);
+    let points = acc.get(curr.team) || 0;
+    acc.set(curr.team, {
+      original: curr.points.original + points.original,
+      final: curr.points.final + points.final,
+    });
     return acc;
   }, new Map());
 
@@ -539,13 +546,15 @@ const getRoundLeaderboard = async (req, res, next) => {
 const getEventLeaderboard = async (req, res) => {
   let event = await EventModel.findById(req.params.event);
 
-  if (!event) return res.status(404).json({
-    status: 404,
-    message: "Not Found. Event doesn't exist.",
-  });
+  if (!event) {
+    return res.status(404).json({
+      status: 404,
+      message: "Not Found. Event doesn't exist.",
+    });
+  }
 
   let scores = await ScoreModel.find({
-    round: { $in: event.rounds }
+    round: { $in: event.rounds },
   }).populate({
     path: "team",
     model: "Team",
@@ -572,8 +581,7 @@ const getEventLeaderboard = async (req, res) => {
         team: score.team,
         points: score.points,
       };
-    }
-    else {
+    } else {
       leaderboard[score.team.id] = {
         ...leaderboard[score.team.id],
         points: {
@@ -935,10 +943,12 @@ const addBulkParticipants = (data, college) => {
 const publishRoundLeaderboard = async (req, res) => {
   let round = await RoundModel.findById(req.params.round);
 
-  if (!round) return res.status(404).json({
-    status: 404,
-    message: "Round Not Found",
-  });
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round Not Found",
+    });
+  }
 
   round.published = true;
   await round.save();
