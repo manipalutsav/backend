@@ -517,7 +517,7 @@ const getRoundLeaderboard = async (req, res, next) => {
 
   scores = await Promise.all(scores.map(async score => {
     let team = await TeamModel.findById(score.team);
-    let bias = team.overtime > 0 ? 5 * (Math.ceil(team.overtime / 15)) : 0;
+    let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
     return({
       team: score.team,
