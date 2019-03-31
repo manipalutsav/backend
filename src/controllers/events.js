@@ -515,19 +515,18 @@ const getRoundLeaderboard = async (req, res, next) => {
     model: "Team",
   });
 
-  scores = await Promise.all(scores.map(async score => {
-    let team = await TeamModel.findById(score.team);
+  scores = scores.map(score => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
-    return({
+    return {
       team: score.team,
       round: score.round,
       judgePoints: score.points,
       points: score.points - bias,
       overtime: score.overtime,
-      disqualified: team.disqualified,
-    });
-  }));
+      disqualified: score.team.disqualified,
+    };
+  });
 
   return res.json({
     status: 200,
