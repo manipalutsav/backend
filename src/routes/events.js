@@ -50,8 +50,6 @@ router.post("/:event/rounds/:round/teams/:team/scores", Events.createScore);
 // Add scores for the teams in the given round in the given event
 router.post("/:event/rounds/:round/slots", Events.createSlots);
 router.post("/:event/rounds/:round/slots2", Events.createSlots2);
-// Add bias to teams
-router.post("/:event/rounds/:round/bias", Events.addBias);
 
 router.post("/:event/rounds/:round/scores", Events.createScores);
 
@@ -64,6 +62,8 @@ router.post("/:event/teams", Events.createTeam);
 // router.patch("/:event/teams/:team", noop);
 // Publish round leaderboard
 router.patch("/:event/rounds/:round/leaderboard", Events.publishRoundLeaderboard);
+// Update team scores (overtime, disqualification)
+router.patch("/:event/rounds/:round/scores", Events.updateTeamScores);
 
 // Deletes the specified team from the given event
 router.delete("/:event/teams/:team", Events.deleteTeam);
