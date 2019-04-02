@@ -7,7 +7,7 @@ const ScoreModel = require("../models/Score");
 const TeamModel = require("../models/Team");
 
 const get = async (req, res) => {
-  let events = await EventModel.find();
+  let events = await EventModel.find({ faculty: false });
 
   let overallLeaderboard = [];
   for (let event of events) {
