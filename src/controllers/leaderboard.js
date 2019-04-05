@@ -48,6 +48,8 @@ const get = async (req, res) => {
       model: "Event",
     });
 
+    if (team.disqualified) continue;
+
     if (finalLeaderboard.hasOwnProperty(team.college)) {
       if (team.event.maxMembersPerTeam === 1) {
         // For individual events
