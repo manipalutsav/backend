@@ -9,12 +9,16 @@ const TeamModel = require("../models/Team");
 const get = async (req, res) => {
   let events = await EventModel.find({ faculty: false });
 
+  let disqulifiedTeams = await TeamModel.find({ disqualified: true });
+  disqulifiedTeams = disqulifiedTeams.map(team => team._id.toString());
+
   let overallLeaderboard = [];
   for (let event of events) {
     let scores = await ScoreModel.find({
       round: { $in: event.rounds },
     });
 
+    scores = scores.filter(score => !disqulifiedTeams.includes(score.team.toString()));
     scores = scores.map(score => ({
       team: score.team,
       points: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
