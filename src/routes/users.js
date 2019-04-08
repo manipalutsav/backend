@@ -14,10 +14,13 @@ router.get("/:user", Users.get);
 router.post("/", Users.create);
 // Authenticate a user into the system
 router.post("/login", Users.login);
+// Modify the requester's user details.
+router.post("/:user", Users.updateUser);
 
+// Reset password of another user.
+router.patch("/", Users.resetPassword);
 // Modify the requester's user details.
 router.patch("/:user", Users.update);
-router.post("/:user", Users.updateUser);
 
 // Delete a user
 router.delete("/:user", Users.remove);
