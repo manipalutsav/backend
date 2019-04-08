@@ -361,7 +361,7 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    let user = await UserModel.find({ email: req.body.email });
+    let user = await UserModel.findOne({ email: req.body.email });
 
     if (!user) {
       return res.status(404).json({
