@@ -344,6 +344,71 @@ const update = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    if (!req.body.email || !req.body.password) {
+      return res.status(400).json({
+        status: 400,
+        message : "Bad request. Invalid request body.",
+      });
+    }
+
+    let admin = await UserModel.findById(req.user.id);
+    if (admin.type !== USER_TYPES.ADMINISTRATOR) {
+      return res.status(401).json({
+        status: 401,
+        message : "Unauthorized. Not an administrator.",
+      });
+    }
+
+    let user = await UserModel.find({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message : "Not Found. User doesn't exist.",
+      });
+    }
+
+    let hashedNewPassword = await hash.generatePasswordHash(req.body.password);
+    if (user.password !== hashedNewPassword) user.password = hashedNewPassword;
+
+    await user.save();
+
+    const token = await jwt.generateToken({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      type: user.type,
+    });
+
+    return res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 6 * 60 * 60 * 1000,
+    }).json({
+      status: 200,
+      message: "Success. User updated.",
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        type: user.type,
+        college: user.college,
+        token: token,
+      },
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.poo(e);
+
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 /**
  * Authenticate a user into the system
  * @param {object} req The request object
@@ -422,4 +487,5 @@ module.exports = {
   update,
   updateUser,
   login,
+  resetPassword,
 };
