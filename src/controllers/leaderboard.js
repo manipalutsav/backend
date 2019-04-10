@@ -154,6 +154,9 @@ const getWinners = async (req, res) => {
 
   for (let score of overallLeaderboard) {
     let team = await TeamModel.findById(score.team).populate({
+      path: "members",
+      model: "Participant",
+    }).populate({
       path: "event",
       model: "Event",
     }).populate({
