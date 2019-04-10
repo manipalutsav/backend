@@ -152,7 +152,6 @@ const getWinners = async (req, res) => {
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
 
-  let finalLeaderboard = {};
   for (let score of overallLeaderboard) {
     let team = await TeamModel.findById(score.team).populate({
       path: "event",
@@ -170,7 +169,7 @@ const getWinners = async (req, res) => {
   return res.json({
     status: 200,
     message: "Success",
-    data: finalLeaderboard,
+    data: overallLeaderboard,
   });
 };
 
