@@ -117,6 +117,63 @@ const getPublic = async (req, res) => {
   }
 };
 
+const getWinners = async (req, res) => {
+  let events = await EventModel.find({ faculty: false });
+
+  let disqulifiedTeams = await TeamModel.find({ disqualified: true });
+  disqulifiedTeams = disqulifiedTeams.map(team => team._id.toString());
+
+  let overallLeaderboard = [];
+  for (let event of events) {
+    let scores = await ScoreModel.find({
+      round: { $in: event.rounds },
+    });
+
+    scores = scores.filter(score => !disqulifiedTeams.includes(score.team.toString()));
+    scores = scores.map(score => ({
+      team: score.team,
+      points: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
+    }));
+
+    let mappedScores = scores.reduce((acc, curr) => {
+      let points = acc.get(curr.team) || 0;
+      acc.set(curr.team, curr.points + points);
+      return acc;
+    }, new Map());
+
+    let leaderboard = [ ...mappedScores ].map(([ team, points ]) => ({ team, points }));
+    leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
+    leaderboard = leaderboard.map(lb => ({
+      ...lb,
+      rank: Array.from(new Set(leaderboard.map(team => team.points))).indexOf(lb.points) + 1,
+    }));
+    leaderboard = leaderboard.filter(lb => [ 1, 2, 3 ].includes(lb.rank));
+
+    overallLeaderboard = overallLeaderboard.concat(leaderboard);
+  }
+
+  let finalLeaderboard = {};
+  for (let score of overallLeaderboard) {
+    let team = await TeamModel.findById(score.team).populate({
+      path: "event",
+      model: "Event",
+    }).populate({
+      path: "college",
+      model: "College",
+    });
+
+    if (team.disqualified) continue;
+
+    score.team = team;
+  }
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: finalLeaderboard,
+  });
+};
+
 /**
  * Create the leaderboard with initial scores
  * @param {object} req the request object
@@ -214,6 +271,7 @@ const publish = async (req, res) => {
 module.exports = {
   get,
   getPublic,
+  getWinners,
   init,
   publish,
   update,
