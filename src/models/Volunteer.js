@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const schema = {
+    college: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+      },
     name1: {
         type: String,
         required: true,
