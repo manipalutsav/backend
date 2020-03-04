@@ -1,6 +1,6 @@
 "use strict";
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 /**
  * bcrypt will go through 2^SALT_ROUNDS iterations to hash the password.
