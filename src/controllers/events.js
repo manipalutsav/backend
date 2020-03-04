@@ -436,7 +436,7 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-  let events = await EventModel.find().populate({
+  let events = await EventModel.find({bool:true}).populate({
     path: "rounds",
     model: "Round",
   }).populate({
@@ -698,6 +698,7 @@ const getSlots2 = async (req, res, next) => {
     teamName:slot.teamName,
   }));
 
+  console.log(slots);
   return res.json({
     status: 200,
     message: "Success",
