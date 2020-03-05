@@ -11,23 +11,10 @@ const VolunteerModel = require('../models/Volunteer');
  */
 exports.create = async (req, res) => {
     try {
-
+        const { college, list } = req.body;
         let volunteer = await VolunteerModel.create({
-            name1: req.body.name1,
-            regno1: req.body.regno1,
-            size1: req.body.size1,
-            name2: req.body.name2,
-            regno2: req.body.regno2,
-            size2: req.body.size2,
-            name3: req.body.name3,
-            regno3: req.body.regno3,
-            size3: req.body.size3,
-            name4: req.body.name4,
-            regno4: req.body.regno4,
-            size4: req.body.size4,
-            name5: req.body.name5,
-            regno5: req.body.regno5,
-            size5: req.body.size5,
+            college,
+            list
         });
 
         return res.json({
@@ -44,29 +31,59 @@ exports.create = async (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         let volunteer = await VolunteerModel.find();
-        console.log(volunteer);
+        let list = [];
+        volunteer.forEach(v => list.push(...v.list));
 
-        volunteer = volunteer.map(v => ({
-            name1: v.name1,
-            regno1: v.regno1,
-            size1: v.size1,
-            name2: v.name2,
-            regno2: v.regno2,
-            size2: v.size2,
-            name3: v.name3,
-            regno3: v.regno3,
-            size3: v.size3,
-            name4: v.name4,
-            regno4: v.regno4,
-            size4: v.size4,
-            name5: v.name5,
-            regno5: v.regno5,
-            size5: v.size5,
-        }));
         return res.json({
             status: 200,
             message: "Success",
-            data: volunteer,
+            data: list,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+exports.getAllWithCollegeId = async (req, res) => {
+    try {
+        let volunteer = await VolunteerModel.find();
+        let list = [];
+        volunteer.forEach(v => {
+            const vlist = v.list.map(i => i.college = v.college)
+            list.push(...vlist)
+        });
+
+        return res.json({
+            status: 200,
+            message: "Success",
+            data: list,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+exports.getAllFromCollege = async (req, res) => {
+    try {
+        const { college } = req.body;
+        let volunteer = await VolunteerModel.find({ college });
+        let list = [];
+        volunteer.forEach(v => {
+            list.push(...v.list)
+        });
+
+        return res.json({
+            status: 200,
+            message: "Success",
+            data: list,
         });
     }
     catch (e) {

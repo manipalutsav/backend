@@ -198,7 +198,7 @@ const updateUser = async (req, res) => {
       });
     }
 
-    if (!req.body.name || !req.body.email || !req.body.type ) {
+    if (!req.body.name || !req.body.email || !req.body.type) {
       return res.status(400).json({
         status: 400,
         message: "Bad Request. Invalid request body.",
@@ -227,7 +227,7 @@ const updateUser = async (req, res) => {
     user.college = req.body.college;
     user.type = req.body.type;
     user.save(err => {
-      if(err){
+      if (err) {
         return res.json({
           status: 400,
           message: "Something happened.",
@@ -268,14 +268,14 @@ const update = async (req, res) => {
     if (!req.body.oldUser || !req.body.newUser) {
       return res.status(400).json({
         status: 400,
-        message : "Bad request. Invalid request body.",
+        message: "Bad request. Invalid request body.",
       });
     }
 
     if (req.params.user !== req.body.oldUser.id) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. User mismatch.",
+        message: "Unauthorized. User mismatch.",
       });
     }
 
@@ -284,7 +284,7 @@ const update = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. User doesn't exist.",
+        message: "Unauthorized. User doesn't exist.",
       });
     }
 
@@ -296,7 +296,7 @@ const update = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. Invalid credentials.",
+        message: "Unauthorized. Invalid credentials.",
       });
     }
 
@@ -349,7 +349,7 @@ const resetPassword = async (req, res) => {
     if (!req.body.email || !req.body.password) {
       return res.status(400).json({
         status: 400,
-        message : "Bad request. Invalid request body.",
+        message: "Bad request. Invalid request body.",
       });
     }
 
@@ -357,7 +357,7 @@ const resetPassword = async (req, res) => {
     if (admin.type !== USER_TYPES.ADMINISTRATOR) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. Not an administrator.",
+        message: "Unauthorized. Not an administrator.",
       });
     }
 
@@ -366,7 +366,7 @@ const resetPassword = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         status: 404,
-        message : "Not Found. User doesn't exist.",
+        message: "Not Found. User doesn't exist.",
       });
     }
 
@@ -429,7 +429,7 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. No account exist with that email.",
+        message: "Unauthorized. No account exist with that email.",
       });
     }
 
@@ -441,7 +441,7 @@ const login = async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         status: 401,
-        message : "Unauthorized. Invalid Password.",
+        message: "Unauthorized. Invalid Password.",
       });
     }
 
