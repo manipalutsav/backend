@@ -29,7 +29,10 @@ exports.addVolunteer = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   try {
-    let volunteer = await EventVolunteerModel.find();
+    let volunteer = await EventVolunteerModel.find().populate({
+      path: "college",
+      model: "College",
+    });
 
     return res.json({
       status: 200,
