@@ -31,7 +31,10 @@ exports.addVolunteer = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   try {
-    let volunteer = await CoreVolunteerModel.find();
+    let volunteer = await CoreVolunteerModel.find().populate({
+      path: "college",
+      model: "College",
+    });;
 
     return res.json({
       status: 200,
