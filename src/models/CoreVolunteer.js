@@ -9,6 +9,10 @@ const schema = {
         type: Number,
         required: true,
     },
+    shirtSize: {
+        type: String,
+        required: true,
+    },
     college: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
@@ -18,6 +22,6 @@ const schema = {
 const options = {
     autoCreate: true,
 };
-const eventVolunteerSchema = new mongoose.Schema(schema, options);
+const coreVolunteerSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("EventVolunteer", eventVolunteerSchema);
+module.exports = mongoose.model("CoreVolunteer", coreVolunteerSchema);
