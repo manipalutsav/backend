@@ -18,7 +18,7 @@ exports.create = async (req, res) => {
         if (existingVolunteer) {
             return res.status(400).json({
               status: 400,
-              message: "Bad request. An account with that email already exist.",
+              message: "Bad request. Volunteer for your college is already added",
             });
           }
         
@@ -42,6 +42,9 @@ exports.create = async (req, res) => {
             name6: req.body.name6,
             regno6: req.body.regno6,
             size6: req.body.size6,
+            name7: req.body.name7,
+            regno7: req.body.regno7,
+            size7: req.body.size7,
         });
 
         return res.json({

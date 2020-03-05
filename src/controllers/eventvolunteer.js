@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
         if (existingVolunteer) {
             return res.status(400).json({
               status: 400,
-              message: "Bad request. An account with that email already exist.",
+              message: "Bad request. Volunteer for your college is already added",
             });
           }
 

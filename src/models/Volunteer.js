@@ -77,6 +77,18 @@ const schema = {
         type: String,
         
     },
+    name7: {
+        type: String,
+        
+    },
+    regno7: {
+        type: Number,
+        
+    },
+    size7: {
+        type: String,
+        
+    },
 };
 
 const options = {
