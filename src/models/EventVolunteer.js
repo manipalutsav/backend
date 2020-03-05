@@ -5,59 +5,18 @@ const schema = {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
-    name1: {
-        type: String,
-        required: true,
-    },
-    regno1: {
-        type: Number,
-        required: true,
-    },
-
-    name2: {
-        type: String,
-
-    },
-    regno2: {
-        type: Number,
-
-    },
-
-    name3: {
-        type: String,
-
-    },
-    regno3: {
-        type: Number,
-
-    },
-
-    name4: {
-        type: String,
-
-    },
-    regno4: {
-        type: Number,
-
-    },
-
-    name5: {
-        type: String,
-
-    },
-    regno5: {
-        type: Number,
-
-    },
-    name6: {
-        type: String,
-
-    },
-    regno6: {
-        type: Number,
-
-    },
-
+    list: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            regno: {
+                type: Number,
+                required: true
+            },
+        }
+    ]
 };
 
 const options = {

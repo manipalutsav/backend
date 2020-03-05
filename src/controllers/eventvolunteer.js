@@ -1,46 +1,95 @@
-"use strict";
+'use strict';
 
-const EventVolunteer = require("../models/EventVolunteer");
+const VolunteerModel = require('../models/EventVolunteer');
 
+/**
+ * Create function which adds a new volunteer detail
+ * @param {object} req the request object
+ * @param {object} res the response object
+ * @param {function} next call the next handler in route
+ * @returns {object} the response object
+ */
 exports.create = async (req, res) => {
     try {
-
-        let existingVolunteer = await EventVolunteer.findOne({college: req.body.college})
-        if (existingVolunteer) {
-            return res.status(400).json({
-              status: 400,
-              message: "Bad request. Volunteer for your college is already added",
-            });
-          }
-
-        let volunteer = await EventVolunteer.create({
-            college: req.body.college,
-            name1: req.body.name1,
-            regno1: req.body.regno1,
-
-            name2: req.body.name2,
-            regno2: req.body.regno2,
-
-            name3: req.body.name3,
-            regno3: req.body.regno3,
-
-            name4: req.body.name4,
-            regno4: req.body.regno4,
-
-            name5: req.body.name5,
-            regno5: req.body.regno5,
-
-            name6: req.body.name6,
-            regno6: req.body.regno6,
-
+        const { college, list } = req.body;
+        let volunteer = await VolunteerModel.create({
+            college,
+            list
         });
 
         return res.json({
             status: 200,
-            message: "Success. New Event Volunteer created.",
-            user_added: volunteer.name_v1,
+            message: "Success. New Volunteer created.",
+            data: volunteer,
         });
     } catch (error) {
-        console.log("Error while creating event volunteer", error);
+        console.log("Error while creating volunteer", error);
     }
+
 }
+
+exports.getAll = async (req, res) => {
+    try {
+        let volunteer = await VolunteerModel.find();
+        let list = [];
+        volunteer.forEach(v => list.push(...v.list));
+
+        return res.json({
+            status: 200,
+            message: "Success",
+            data: list,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+exports.getAllWithCollegeId = async (req, res) => {
+    try {
+        let volunteer = await VolunteerModel.find();
+        let list = [];
+        volunteer.forEach(v => {
+            const vlist = v.list.map(i => i.college = v.college)
+            list.push(...vlist)
+        });
+
+        return res.json({
+            status: 200,
+            message: "Success",
+            data: volunteer,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+exports.getAllFromCollege = async (req, res) => {
+    try {
+        const { college } = req.body;
+        let volunteer = await VolunteerModel.find({ college });
+        let list = [];
+        volunteer.forEach(v => {
+            list.push(...v.list)
+        });
+
+        return res.json({
+            status: 200,
+            message: "Success",
+            data: volunteer,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
