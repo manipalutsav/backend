@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "yarn test:lint",
-    "test:lint": "./node_modules/.bin/eslint --ignore-pattern node_modules* .",
+    "test:lint": "./node_modules/.bin/eslint .",
     "start": "node ."
   },
   "dependencies": {

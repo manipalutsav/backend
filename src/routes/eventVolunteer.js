@@ -8,7 +8,7 @@ const { addVolunteer, getAll } = require("../controllers/eventVolunteer");
 // Create a new Volunteer
 router.post("/add", addVolunteer);
 
-//get all volunteers
+// get all volunteers
 router.get("/", getAll);
 
 
