@@ -34,7 +34,7 @@ exports.getAll = async (req, res) => {
     let volunteer = await CoreVolunteerModel.find().populate({
       path: "college",
       model: "College",
-    });;
+    });
 
     return res.json({
       status: 200,
