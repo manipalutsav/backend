@@ -3,10 +3,10 @@
 const express = require("express");
 const router = express.Router();
 
-const {create, getAll} = require("../controllers/volunteer");
+const { addVolunteer, getAll } = require("../controllers/coreVolunteer");
 
 // Create a new Volunteer
-router.post("/addVolunteer",create);
+router.post("/add", addVolunteer);
 
 //get all users
 router.get("/", getAll);

@@ -1,19 +1,22 @@
 'use strict';
 
-const EventVolunteerModel = require('../models/EventVolunteer');
+const CoreVolunteerModel = require('../models/CoreVolunteer');
 
 exports.addVolunteer = async (req, res) => {
     try {
-        const { name, registerNumber, college } = req.body;
+        const { name, registerNumber, shirtSize, college } = req.body;
         if (!name || name.length === 0)
             throw Error("Please enter name.");
         if (!registerNumber || registerNumber.length === 0)
             throw Error("Please enter register number.");
+        if (!shirtSize || shirtSize.length === 0)
+            throw Error("Please select shirt size.");
         if (!college || college.length === 0)
             throw Error("Please select the college.");
-        let volunteer = await EventVolunteerModel.create({
+        let volunteer = await CoreVolunteerModel.create({
             name,
             registerNumber,
+            shirtSize,
             college
         });
 
@@ -32,7 +35,7 @@ exports.addVolunteer = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
-        let volunteer = await EventVolunteerModel.find();
+        let volunteer = await CoreVolunteerModel.find();
 
         return res.json({
             status: 200,

@@ -3,10 +3,10 @@
 const express = require("express");
 const router = express.Router();
 
-const {create} = require("../controllers/eventvolunteer");
+const { addVolunteer } = require("../controllers/eventvolunteer");
 
 // Create a new Volunteer
-router.post("/addEventVolunteer",create);
+router.post("/add", addVolunteer);
 
 
 module.exports = router;

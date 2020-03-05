@@ -57,7 +57,7 @@ const judgesRouter = require("./routes/judges");
 const intruderRouter = require("./routes/intruder");
 const participantsRouter = require("./routes/participants");
 const statsRouter = require("./routes/stats");
-const volunteerRouter = require("./routes/volunteer");
+const coreVolunteerRouter = require("./routes/coreVolunteer");
 const eventVolunteerRouter = require("./routes/eventVolunteer");
 
 app.use("/colleges", collegesRouter);
@@ -69,8 +69,8 @@ app.use("/intruder", intruderRouter);
 app.use("/participants", participantsRouter);
 app.use("/stats", statsRouter);
 
-app.use("/volunteer",volunteerRouter);
-app.use("/eventVolunteer",eventVolunteerRouter);
+app.use("/coreVolunteer", coreVolunteerRouter);
+app.use("/eventVolunteer", eventVolunteerRouter);
 
 // Error handlers
 app.use(handle404);
