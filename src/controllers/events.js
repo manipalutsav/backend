@@ -698,7 +698,6 @@ const getSlots2 = async (req, res, next) => {
     teamName:slot.teamName,
   }));
 
-  console.log(slots);
   return res.json({
     status: 200,
     message: "Success",
