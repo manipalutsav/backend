@@ -3,7 +3,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { addVolunteer, getAll } = require("../controllers/eventVolunteer");
+const { addVolunteer, getAll } = require("../controllers/eventvolunteer");
 
 // Create a new Volunteer
 router.post("/add", addVolunteer);
