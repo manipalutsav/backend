@@ -436,7 +436,7 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-  let events = await EventModel.find().populate({
+  let events = await EventModel.find({bool:true}).populate({
     path: "rounds",
     model: "Round",
   }).populate({

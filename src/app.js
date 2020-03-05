@@ -71,6 +71,7 @@ app.use("/stats", statsRouter);
 
 app.use("/coreVolunteer", coreVolunteerRouter);
 app.use("/eventVolunteer", eventVolunteerRouter);
+app.use("/vol", volRoute);
 
 // Error handlers
 app.use(handle404);
