@@ -4,17 +4,31 @@
 
 const app = require("../src/app");
 const http = require("http");
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const commands = require("../src/utils/constants").COMMANDS;
+
 
 // Create custom commands for emoji logging
 commands.forEach(({ name, emoji }) => console[name] = (...args) => console.log(emoji + "  " + args.join(", ")));
 
 const db = require("../src/utils/dbHelper");
 
+
+
 const port = normalizePort(process.env.PORT || 3003);
 app.set("port", port);
 
-const server = http.createServer(app);
+const cert = path.resolve("ssl/cert.pem");
+const key = path.resolve("ssl/key.pem");
+const useSSL = (fs.existsSync(cert) && fs.existsSync(key));
+if (useSSL)
+  console.tick("Using SSL");
+const server = useSSL ? https.createServer({
+  key: fs.readFileSync(key),
+  cert: fs.readFileSync(cert)
+}, app) : http.createServer(app);
 
 server.listen(port);
 
