@@ -65,9 +65,9 @@ const createTeam = async (req, res) => {
 
   // TODO: Generate random team names, so we dont have to use
   // college models
-  let names = [ "Team A", "Team B", "Team C" ];
-  let name = collegeDoc.name + " " +  collegeDoc.location + " (" + names[participatedTeams.length] + ")";
-  if (participants.length > eventInfo.maxMembersPerTeam ) {
+  let names = ["Team A", "Team B", "Team C"];
+  let name = collegeDoc.name + " " + collegeDoc.location + " (" + names[participatedTeams.length] + ")";
+  if (participants.length > eventInfo.maxMembersPerTeam) {
     return res.json({
       status: 416,
       message: "Number of particpants exceeds max particpants for event",
@@ -161,7 +161,7 @@ const updateRound = async (req, res, next) => {
 
   if (!event) next();
 
-  let roundDocument = await  RoundModel.findById(req.params.round);
+  let roundDocument = await RoundModel.findById(req.params.round);
   roundDocument.criteria = req.body.criteria;
   roundDocument.slottable = req.body.slottable;
 
@@ -362,7 +362,7 @@ const createSlots = async (req, res) => {
       team: team_id,
       teamName: team_name,
     });
-    slots.push({ id:team_id, name: team_name, number: i + 1 });
+    slots.push({ id: team_id, name: team_name, number: i + 1 });
     teams.splice(teams.indexOf(team_id), 1);
     teamNames.splice(teamNames.indexOf(team_name), 1);
   }
@@ -379,17 +379,17 @@ const createSlots2 = async (req, res) => {
   let event = await EventModel.findById(req.params.event);
   let maxTeamsPerCollege = event.maxTeamsPerCollege;
   let teams = [];
-  let names = [ "A", "B", "C", "D", "E" ];
+  let names = ["A", "B", "C", "D", "E"];
   colleges.forEach(college => {
-    for(let i = 0;i < maxTeamsPerCollege;i++){
+    for (let i = 0; i < maxTeamsPerCollege; i++) {
       teams.push(`${college.name}, ${college.location} (Team ${names[i]})`);
     }
   });
   let count = teams.length;
   let slots = [];
-  for(let i = 0;i < count;i++){
+  for (let i = 0; i < count; i++) {
     let index = Math.floor(Math.random() * 100) % teams.length;
-    let teamName =  teams.splice(index, 1)[0];
+    let teamName = teams.splice(index, 1)[0];
     await Slot2Model.create({
       number: i + 1,
       round: req.params.round,
@@ -498,7 +498,7 @@ const getLeaderboard = async (req, res, next) => {
     return acc;
   }, new Map());
 
-  let cumulatedScores = [ ...mappedScores ].map(([ team, score ]) => ({ team, score }));
+  let cumulatedScores = [...mappedScores].map(([team, score]) => ({ team, score }));
 
   return res.json({
     status: 200,
@@ -678,7 +678,7 @@ const getSlots = async (req, res, next) => {
     number: slot.number,
     round: slot.round,
     team: slot.team,
-    teamName:slot.teamName,
+    teamName: slot.teamName,
   }));
 
   return res.json({
@@ -695,7 +695,7 @@ const getSlots2 = async (req, res, next) => {
     id: slot.id,
     number: slot.number,
     round: slot.round,
-    teamName:slot.teamName,
+    teamName: slot.teamName,
   }));
 
   return res.json({
@@ -727,7 +727,7 @@ const getTeam = async (req, res, next) => {
     message: "Success",
     data: {
       id: team.id,
-      name:team.name,
+      name: team.name,
       event: team.event,
       college: team.college,
       members: team.members,
@@ -770,7 +770,7 @@ const getTeamsInRound = async (req, res) => {
     id: team.id,
     event: team.event,
     college: team.college,
-    name:team.name,
+    name: team.name,
     members: team.members,
     disqualified: team.disqualified,
   }));
@@ -795,7 +795,8 @@ const create = async (req, res) => {
     duration,
     startDate,
     endDate,
-    slottable } = req.body;
+    slottable,
+    faculty } = req.body;
 
   let event = new EventModel({
     name,
@@ -810,6 +811,7 @@ const create = async (req, res) => {
     startDate,
     endDate,
     slottable,
+    faculty
   });
 
   await event.save().
@@ -852,6 +854,7 @@ const edit = async (req, res) => {
     endDate,
     slottable,
     criteria,
+    faculty
   } = req.body;
 
   let event = await EventModel.findById(req.params.event);
@@ -868,6 +871,7 @@ const edit = async (req, res) => {
   event.startDate = startDate ? startDate : event.startDate;
   event.endDate = endDate ? endDate : event.endDate;
   event.slottable = !!slottable;
+  event.faculty = faculty != undefined ? faculty : event.faculty;
 
   if (criteria) {
     if (event.rounds && event.rounds.length) {
@@ -928,7 +932,7 @@ const addBulkParticipants = (data, college) => {
         });
         members.push(participant._id);
         participant.save(err => {
-          if(err) {
+          if (err) {
             throw err;
           }
         });
