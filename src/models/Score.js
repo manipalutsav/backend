@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
+const Team = require("./Team");
 
 const schema = {
   team: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Slot2',
     required: true,
   },
   round: {
@@ -12,7 +14,7 @@ const schema = {
   judges: [
     {
       id: mongoose.Schema.Types.ObjectId,
-      points: [ Number ],
+      points: [Number],
     },
   ],
   overtime: {
@@ -28,7 +30,7 @@ const options = {
 
 const scoreSchema = new mongoose.Schema(schema, options);
 
-scoreSchema.virtual("points").get(function() {
+scoreSchema.virtual("points").get(function () {
   return this.judges.reduce((acc, curr) => acc + curr.points.reduce((a, c) => a + c, 0), 0);
 });
 

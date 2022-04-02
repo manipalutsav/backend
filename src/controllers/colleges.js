@@ -164,7 +164,7 @@ const getTeams = async (req, res) => {
       teams = await TeamModel.find({ college: req.params.college }).populate({
         path: "event",
         model: "Event",
-      });
+      }).populate('college');
     } else {
       teams = await TeamModel.find();
     }

@@ -9,6 +9,11 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
+  college: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "College",
+    required: true,
+  },
   teamName: {
     type: String,
     required: true,

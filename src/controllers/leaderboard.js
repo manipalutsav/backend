@@ -5,6 +5,7 @@ const CollegeModel = require("../models/College");
 const EventModel = require("../models/Event");
 const ScoreModel = require("../models/Score");
 const TeamModel = require("../models/Team");
+const Slot2 = require("../models/Slot2");
 
 const get = async (req, res) => {
   let events = await EventModel.find({ faculty: false });
@@ -30,25 +31,26 @@ const get = async (req, res) => {
       return acc;
     }, new Map());
 
-    let leaderboard = [ ...mappedScores ].map(([ team, points ]) => ({ team, points }));
+    let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points }));
     leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
     leaderboard = leaderboard.map(lb => ({
       ...lb,
       rank: Array.from(new Set(leaderboard.map(team => team.points))).indexOf(lb.points) + 1,
     }));
-    leaderboard = leaderboard.filter(lb => [ 1, 2, 3 ].includes(lb.rank));
+    leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank));
 
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
 
   let finalLeaderboard = {};
   for (let score of overallLeaderboard) {
-    let team = await TeamModel.findById(score.team).populate({
+    let slot2 = await Slot2.find(score.team);
+    let team = await TeamModel.find({ name: slot2.teamName, college: slot2.college }).populate({
       path: "event",
       model: "Event",
     });
 
-    if (team.disqualified) continue;
+    // if (team.disqualified) continue;
 
     if (finalLeaderboard.hasOwnProperty(team.college)) {
       if (team.event.maxMembersPerTeam === 1) {
@@ -141,13 +143,13 @@ const getWinners = async (req, res) => {
       return acc;
     }, new Map());
 
-    let leaderboard = [ ...mappedScores ].map(([ team, points ]) => ({ team, points }));
+    let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points }));
     leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
     leaderboard = leaderboard.map(lb => ({
       ...lb,
       rank: Array.from(new Set(leaderboard.map(team => team.points))).indexOf(lb.points) + 1,
     }));
-    leaderboard = leaderboard.filter(lb => [ 1, 2, 3 ].includes(lb.rank));
+    leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank));
 
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
@@ -164,7 +166,7 @@ const getWinners = async (req, res) => {
       model: "College",
     });
 
-    if (team.disqualified) continue;
+    // if (team.disqualified) continue;
 
     score.team = team;
   }

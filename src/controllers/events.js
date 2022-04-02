@@ -66,7 +66,8 @@ const createTeam = async (req, res) => {
   // TODO: Generate random team names, so we dont have to use
   // college models
   let names = ["Team A", "Team B", "Team C"];
-  let name = collegeDoc.name + " " + collegeDoc.location + " (" + names[participatedTeams.length] + ")";
+  // let name = collegeDoc.name + " " + collegeDoc.location + " (" + names[participatedTeams.length] + ")";
+  let name = names[participatedTeams.length];
   if (participants.length > eventInfo.maxMembersPerTeam) {
     return res.json({
       status: 416,
@@ -167,8 +168,8 @@ const updateRound = async (req, res, next) => {
 
   await roundDocument.save().
     then(async round => {
-      event.rounds.push(round.id);
-      await event.save();
+      // event.rounds.push(round.id);
+      // await event.save();
 
       return res.json({
         status: 200,
@@ -266,7 +267,7 @@ const createScores = async (req, res, next) => {
     event: req.params.event,
   });
   if (!round) return next();
-
+  console.log(req.params)
   // TODO: This doesn't work. Why??
   // for (let score of req.body) {
   //   if (!round.teams.includes(score.team)) return next();
@@ -382,20 +383,21 @@ const createSlots2 = async (req, res) => {
   let names = ["A", "B", "C", "D", "E"];
   colleges.forEach(college => {
     for (let i = 0; i < maxTeamsPerCollege; i++) {
-      teams.push(`${college.name}, ${college.location} (Team ${names[i]})`);
+      teams.push({ teamName: `Team ${names[i]}`, college: college });
     }
   });
   let count = teams.length;
   let slots = [];
   for (let i = 0; i < count; i++) {
     let index = Math.floor(Math.random() * 100) % teams.length;
-    let teamName = teams.splice(index, 1)[0];
+    let team = teams.splice(index, 1)[0];
     await Slot2Model.create({
       number: i + 1,
       round: req.params.round,
-      teamName: teamName,
+      teamName: team.teamName,
+      college: team.college._id
     });
-    slots.push({ number: i + 1, teamName });
+    slots.push({ number: i + 1, ...team });
   }
   return res.json({
     status: 200,
@@ -517,21 +519,17 @@ const getRoundLeaderboard = async (req, res, next) => {
 
   let scores = await ScoreModel.find({
     round: round.id,
-  }).populate({
-    path: "team",
-    model: "Team",
-  });
+  }).populate({ path: "team", populate: { path: "college" } });
 
   scores = scores.map(score => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
-
     return {
       team: score.team,
       round: score.round,
       judgePoints: score.points,
       points: score.points - bias,
       overtime: score.overtime,
-      disqualified: score.team.disqualified,
+      // disqualified: score.team.disqualified,
     };
   });
 
@@ -689,13 +687,14 @@ const getSlots = async (req, res, next) => {
 };
 
 const getSlots2 = async (req, res, next) => {
-  let slots = await Slot2Model.find({ round: req.params.round });
+  let slots = await Slot2Model.find({ round: req.params.round }).populate('college');
   if (!slots) next();
   slots = slots.map(slot => ({
     id: slot.id,
     number: slot.number,
     round: slot.round,
     teamName: slot.teamName,
+    college: slot.college
   }));
 
   return res.json({
@@ -737,7 +736,7 @@ const getTeam = async (req, res, next) => {
 };
 
 const getTeams = async (req, res) => {
-  let teams = await TeamModel.find({ event: req.params.event });
+  let teams = await TeamModel.find({ event: req.params.event }).populate("college");
 
   if (!teams) teams = [];
 
@@ -748,7 +747,7 @@ const getTeams = async (req, res) => {
     members: team.members,
     name: team.name,
     disqualified: team.disqualified,
-  }));
+  }))
 
   return res.json({
     status: 200,

@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const College = require("./College");
+const Event = require("./Event");
 
 const schema = {
   name: {
@@ -7,13 +9,15 @@ const schema = {
   },
   event: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Event',
     required: true,
   },
   college: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'College',
     required: true,
   },
-  members: [ mongoose.Schema.Types.ObjectId ],
+  members: [mongoose.Schema.Types.ObjectId],
   disqualified: {
     type: Boolean,
     required: true,
