@@ -58,16 +58,18 @@ const get = async (req, res) => {
 
   let finalLeaderboard = {};
 
-  let team;
+
   for (let score of overallLeaderboard) {
 
     //get the slot using it's id on score schema
     let slot = await Slot2.findOne(score.team);
-
+    let team;
     if (slot.college == null) {
+      console.log("SLOT COLLEGE MISSING")
       let start = slot.teamName.lastIndexOf("(") + 1;
       let end = slot.teamName.lastIndexOf(")");
       if (start > 0) {
+
         let comma = slot.teamName.lastIndexOf(",");
         let collegeName = slot.teamName.substring(0, comma).trim();;
         let location = slot.teamName.substring(comma + 1, start - 1).trim();
