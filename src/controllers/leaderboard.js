@@ -79,9 +79,9 @@ const get = async (req, res) => {
           console.error("College not found", slot);
           continue;
         }
-        console.log({ teamName, college, type: 1 })
-        team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
 
+        team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
+        console.log({ teamName, college, type: 1, team })
       }
       else {
         console.error("No way to find team", slot);
@@ -89,8 +89,9 @@ const get = async (req, res) => {
       }
     }
     else {
-      console.log({ teamName: slot.teamName, college: slot.college, type: 2 })
+
       team = await TeamModel.findOne({ name: slot.teamName, college: slot.college }).populate("event");
+      console.log({ teamName: slot.teamName, college: slot.college, type: 2, team })
     }
 
     if (!team) {
