@@ -525,17 +525,21 @@ const getRoundLeaderboard = async (req, res, next) => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
     if (!score.team.college) {
+      console.log("SLOT COLLEGE MISSING", score)
       let start = score.team.teamName.lastIndexOf("(") + 1;
       if (start > 0) {
         let comma = score.team.teamName.lastIndexOf(",");
         let collegeName = score.team.teamName.substring(0, comma).trim();;
         let location = score.team.teamName.substring(comma + 1, start - 1).trim();
         score.team.college = CollegeModel.findOne({ name: collegeName, location });
+        console.log(college: score.team.college, location, collegeName);
         if (!score.team.college) {
+          console.error("College not found", score);
           return null;
         }
       }
       else {
+        console.error("No way to find college", score);
         return null;
       }
     }
