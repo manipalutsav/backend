@@ -521,7 +521,7 @@ const getRoundLeaderboard = async (req, res, next) => {
     round: round.id,
   }).populate({ path: "team", populate: { path: "college" } });
 
-  scores = scores.map(score => {
+  scores = await Promise.all(scores.map(async score => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
     if (!score.team.college) {
@@ -552,7 +552,7 @@ const getRoundLeaderboard = async (req, res, next) => {
       overtime: score.overtime,
       // disqualified: score.team.disqualified,
     };
-  }).filter(score => !!score);
+  })).filter(score => !!score);
 
   return res.json({
     status: 200,
