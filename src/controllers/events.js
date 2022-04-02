@@ -523,6 +523,23 @@ const getRoundLeaderboard = async (req, res, next) => {
 
   scores = scores.map(score => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
+
+    if (!score.team.college) {
+      let start = score.team.teamName.lastIndexOf("(") + 1;
+      if (start > 0) {
+        let comma = score.team.teamName.lastIndexOf(",");
+        let collegeName = score.team.teamName.substring(0, comma).trim();;
+        let location = score.team.teamName.substring(comma + 1, start - 1).trim();
+        score.team.college = CollegeModel.findOne({ name: collegeName, location });
+        if (!score.team.college) {
+          return null;
+        }
+      }
+      else {
+        return null;
+      }
+    }
+
     return {
       team: score.team,
       round: score.round,
@@ -531,7 +548,7 @@ const getRoundLeaderboard = async (req, res, next) => {
       overtime: score.overtime,
       // disqualified: score.team.disqualified,
     };
-  });
+  }).filter(score => !!score);
 
   return res.json({
     status: 200,
