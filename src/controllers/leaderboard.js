@@ -80,7 +80,8 @@ const get = async (req, res) => {
           continue;
         }
 
-        team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
+
+        team = await TeamModel.findOne({ name: teamName, college: college._id.toString() }).populate("event");
         console.log({ teamName, college, type: 1, team })
       }
       else {
