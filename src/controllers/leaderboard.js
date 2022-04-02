@@ -10,6 +10,7 @@ const Slot2 = require("../models/Slot2");
 const get = async (req, res) => {
   let events = await EventModel.find({ faculty: false });
 
+
   let disqulifiedTeams = await TeamModel.find({ disqualified: true });
   disqulifiedTeams = disqulifiedTeams.map(team => team._id.toString());
 
@@ -20,37 +21,80 @@ const get = async (req, res) => {
     });
 
     scores = scores.filter(score => !disqulifiedTeams.includes(score.team.toString()));
+
+
     scores = scores.map(score => ({
       team: score.team,
       points: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
     }));
 
+    //add up points from all judges for each team
     let mappedScores = scores.reduce((acc, curr) => {
       let points = acc.get(curr.team) || 0;
       acc.set(curr.team, curr.points + points);
       return acc;
     }, new Map());
 
+
+    //convert to object with {team,points} mapping
     let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points }));
+
+    //sort points highest to lowest
     leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
+
+    //add rank
     leaderboard = leaderboard.map(lb => ({
       ...lb,
       rank: Array.from(new Set(leaderboard.map(team => team.points))).indexOf(lb.points) + 1,
     }));
+
+    //get only top 3 ranked teams
     leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank));
 
+    //add the event leaderboard to overall leaderboard
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
 
-  let finalLeaderboard = {};
-  for (let score of overallLeaderboard) {
-    let slot2 = await Slot2.find(score.team);
-    let team = await TeamModel.find({ name: slot2.teamName, college: slot2.college }).populate({
-      path: "event",
-      model: "Event",
-    });
 
-    // if (team.disqualified) continue;
+  let finalLeaderboard = {};
+
+  let team;
+  for (let score of overallLeaderboard) {
+
+    //get the slot using it's id on score schema
+    let slot = await Slot2.findOne(score.team);
+
+    if (slot.college == null) {
+      let start = slot.teamName.lastIndexOf("(") + 1;
+      let end = slot.teamName.lastIndexOf(")");
+      if (start > 0) {
+        let comma = slot.teamName.lastIndexOf(",");
+        let collegeName = slot.teamName.substring(0, comma).trim();;
+        let location = slot.teamName.substring(comma + 1, start - 1).trim();
+        let teamName = slot.teamName.substring(start, end);
+        const college = await CollegeModel.find({ name: collegeName, location });
+        if (!college) {
+          console.error("College not found", slot);
+          continue;
+        }
+        team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
+
+      }
+      else {
+        console.error("No way to find team", slot);
+        continue;
+      }
+    }
+    else {
+      team = await TeamModel.findOne({ name: slot.teamName, college: slot.college }).populate("event");
+    }
+
+    if (!team) {
+      console.error("Team not found", slot);
+      continue;
+    }
+
+    if (team.disqualified) continue;
 
     if (finalLeaderboard.hasOwnProperty(team.college)) {
       if (team.event.maxMembersPerTeam === 1) {
