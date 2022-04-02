@@ -13,8 +13,8 @@ const main = async () => {
     var teamBulk = Team.collection.initializeUnorderedBulkOp();
     let count = 0;
     teams.forEach(team => {
-        let start = team.name.indexOf("(") + 1;
-        let end = team.name.indexOf(")");
+        let start = team.name.lastIndexOf("(") + 1;
+        let end = team.name.lastIndexOf(")");
 
         if (start > 0) {
             count++;
@@ -33,18 +33,23 @@ const main = async () => {
     var slot2Bulk = Slot2.collection.initializeUnorderedBulkOp();
     for (let i = 0; i < slot2.length; i++) {
         let slot = slot2[i];
-        let start = slot.teamName.indexOf("(") + 1;
-        let end = slot.teamName.indexOf(")");
+        let start = slot.teamName.lastIndexOf("(") + 1;
+        let end = slot.teamName.lastIndexOf(")");
         console.log(slot.teamName);
         if (start > 0) {
             count++;
-            let comma = slot.teamName.indexOf(",");
+            let comma = slot.teamName.lastIndexOf(",");
             let collegeName = slot.teamName.substring(0, comma).trim();;
             let location = slot.teamName.substring(comma + 1, start - 1).trim();
             slot.teamName = slot.teamName.substring(start, end);
             console.log(collegeName, slot.teamName, location);
             const college = await College.find({ name: collegeName, location });
             console.log(college);
+            if (college == null) {
+                console.log("College not found");
+                college = {}
+            }
+
             slot2Bulk.find({ _id: slot._id }).updateOne({ $set: { teamName: slot.teamName, college: college._id } });
         }
     }
