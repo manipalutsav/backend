@@ -74,14 +74,14 @@ const get = async (req, res) => {
         let collegeName = slot.teamName.substring(0, comma).trim();;
         let location = slot.teamName.substring(comma + 1, start - 1).trim();
         let teamName = slot.teamName.substring(start, end);
-        const college = await CollegeModel.find({ name: collegeName, location });
+        const college = await CollegeModel.findOne({ name: collegeName, location });
         if (!college) {
           console.error("College not found", slot);
           continue;
         }
 
 
-        team = await TeamModel.findOne({ name: teamName, college: college._id.toString() }).populate("event");
+        team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
         console.log({ teamName, college, type: 1, team })
       }
       else {
