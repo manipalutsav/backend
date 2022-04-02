@@ -17,7 +17,7 @@ const schema = {
     ref: 'College',
     required: true,
   },
-  members: [mongoose.Schema.Types.ObjectId],
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Participant' }],
   disqualified: {
     type: Boolean,
     required: true,
