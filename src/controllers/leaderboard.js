@@ -79,7 +79,7 @@ const get = async (req, res) => {
           console.error("College not found", slot);
           continue;
         }
-        console.log({ teamName, college, type: 2 })
+        console.log({ teamName, college, type: 1 })
         team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
 
       }
