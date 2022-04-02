@@ -552,7 +552,9 @@ const getRoundLeaderboard = async (req, res, next) => {
       overtime: score.overtime,
       // disqualified: score.team.disqualified,
     };
-  })).filter(score => !!score);
+  }));
+
+  scores = scores.filter(score => !!score);
 
   return res.json({
     status: 200,
