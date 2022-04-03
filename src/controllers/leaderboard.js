@@ -91,7 +91,7 @@ const get = async (req, res) => {
     }
     else {
 
-      team = await TeamModel.findOne({ name: slot.teamName, college: slot.college }).populate("event");
+      team = await TeamModel.findOne({ name: slot.teamName, college: slot.college, event: score.event._id }).populate("event");
       console.log({ teamName: slot.teamName, college: slot.college, type: 2, team })
     }
 
