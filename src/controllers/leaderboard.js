@@ -37,7 +37,7 @@ const get = async (req, res) => {
 
 
     //convert to object with {team,points} mapping
-    let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points }));
+    let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points, event }));
 
     //sort points highest to lowest
     leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
@@ -74,14 +74,14 @@ const get = async (req, res) => {
         let collegeName = slot.teamName.substring(0, comma).trim();;
         let location = slot.teamName.substring(comma + 1, start - 1).trim();
         let teamName = slot.teamName.substring(start, end);
-        const college = await CollegeModel.findOne({ name: collegeName, location });
+        const college = await CollegeModel.findOne({ name: collegeName, location, event: score.event._id });
         if (!college) {
           console.error("College not found", slot);
           continue;
         }
 
 
-        team = await TeamModel.findOne({ name: teamName, college: college._id }).populate("event");
+        team = await TeamModel.findOne({ name: teamName, college: college._id, event: score.event._id }).populate("event");
         console.log({ teamName, college, type: 1, team })
       }
       else {
