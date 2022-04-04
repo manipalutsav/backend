@@ -8,7 +8,7 @@ const SlotModel = require("../models/Slot");
 const Slot2Model = require("../models/Slot2");
 const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
-const { ROUND_STATUS } = require("../utils/constants");
+const { ROUND_STATUS, USER_TYPES } = require("../utils/constants");
 
 const deleteTeam = async (req, res) => {
   try {
@@ -272,6 +272,8 @@ const createScores = async (req, res, next) => {
   // for (let score of req.body) {
   //   if (!round.teams.includes(score.team)) return next();
   // }
+  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed 
+  // after properly examining the design.
 
   let scores = await ScoreModel.find({
     round: req.params.round,
@@ -297,6 +299,41 @@ const createScores = async (req, res, next) => {
     data: scores,
   });
 };
+
+/**
+ * Fetch scores from judges to be displayed.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
+const getScores = async (req, res, next) => {
+
+  if (!req.user) {
+    return res.status(403).json({
+      status: 403,
+      message: "Forbidden. Requester not authenticated.",
+    });
+  }
+
+  if (requester.type !== USER_TYPES.ADMINISTRATOR) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized. Only administrators can view judge scores.",
+    });
+  }
+
+  let scores = await ScoreModel.find({
+    round: req.params.round,
+  });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
+  });
+};
+
 
 const updateTeamScores = async (req, res) => {
   if (!req.body) req.body = [];
@@ -997,6 +1034,7 @@ module.exports = {
   get,
   getAll,
   getRound,
+  getScores,
   getLeaderboard,
   getRoundLeaderboard,
   getEventLeaderboard,
