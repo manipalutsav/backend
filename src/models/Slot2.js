@@ -8,11 +8,17 @@ const schema = {
   round: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: "Round"
   },
   college: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "College",
     required: true,
+  },
+  team: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Team",
+    required: false,
   },
   teamName: {
     type: String,
