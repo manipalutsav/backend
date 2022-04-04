@@ -275,6 +275,14 @@ const createScores = async (req, res, next) => {
   //Answer: teams saved on scores is slot id and not team id. This needs to be fixed 
   // after properly examining the design.
 
+  /**
+   * TODO: Don't allow same judge to post the same result twice.
+   */
+
+  /**
+   * TODO: Update judge model also with the round id.
+   */
+
   let scores = await ScoreModel.find({
     round: req.params.round,
   });
