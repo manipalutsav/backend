@@ -1,3 +1,7 @@
+/**
+ * IMPORTANT: Don't run this unless you know exactly what this does.
+ */
+
 console.tick = console.log;
 const College = require('../src/models/College');
 const Team = require('../src/models/Team');
