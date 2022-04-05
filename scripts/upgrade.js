@@ -9,8 +9,28 @@ const dotenv = require("dotenv");
 dotenv.config();
 const db = require('../src/utils/dbHelper');
 const Slot2 = require('../src/models/Slot2');
+const Score = require('../src/models/Score');
 
 
+const addJudgePoints = async () => {
+    let round = "6246cab0e4164a291dd210ec";
+    let judge = "624a6e5b13519733866ffc94";
+    const scores = await Score.find({ round });
+
+    for (let score in scores) {
+        let points = [];
+        score.judges.forEach(judge => judge.points.forEach((point, index) => {
+            points[index] = points[index] || 0;
+            points[index] += point;
+        }))
+        score.judges.concat({
+            id: judge,
+            points: points.map(i => i / score.judges.length)
+        })
+        console.log(score);
+    }
+
+}
 
 const updateTeamsWithIndexes = async () => {
     const teams = await Team.find();
@@ -80,7 +100,8 @@ const updateTeamNames = async () => {
 }
 
 const main = async () => {
-    await updateTeamsWithIndexes();
+    await addJudgePoints();
+    // await updateTeamsWithIndexes();
     db.closeConnection();
     console.log("Closed")
 }
