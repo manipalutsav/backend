@@ -28,6 +28,7 @@ const addJudgePoints = async () => {
             points: points.map(j => j / scores[i].judges.length)
         })
         console.log(JSON.stringify(scores[i]));
+        scores[i].save();
     }
 
 }
