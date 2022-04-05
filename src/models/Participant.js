@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+//IMPROVE: Participant is also a user, have login, send mail to mahe email id
+//Particiant could login and see their events and schedules, certificates etc.
 const schema = {
   registrationID: {
     type: String,

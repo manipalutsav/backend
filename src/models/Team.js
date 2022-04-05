@@ -7,6 +7,12 @@ const schema = {
     type: String,
     required: true,
   },
+  //required when slotting happens before all teams are registered and we have to map the slots to teams
+  index: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   event: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Event',

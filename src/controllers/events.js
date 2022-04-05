@@ -56,6 +56,7 @@ const createTeam = async (req, res) => {
   let participatedTeams = await TeamModel.find({ college: college, event: event });
   let collegeDoc = await CollegeModel.findById(college);
   let eventInfo = await EventModel.findById(event);
+
   if (participatedTeams.length === eventInfo.maxTeamsPerCollege) {
     return res.json({
       status: 416,
@@ -63,17 +64,17 @@ const createTeam = async (req, res) => {
     });
   }
 
-  // TODO: Generate random team names, so we dont have to use
-  // college models
-  let names = ["Team A", "Team B", "Team C"];
-  // let name = collegeDoc.name + " " + collegeDoc.location + " (" + names[participatedTeams.length] + ")";
-  let name = names[participatedTeams.length];
+
   if (participants.length > eventInfo.maxMembersPerTeam) {
     return res.json({
       status: 416,
       message: "Number of particpants exceeds max particpants for event",
     });
   }
+
+  let index = participatedTeams.length;
+  let name = "Team " + Number(index + 10).toString(36).toUpperCase();
+
 
   addBulkParticipants(participants, college).
     then(async members => {
@@ -82,6 +83,7 @@ const createTeam = async (req, res) => {
         college,
         members,
         name,
+        index
       });
 
       await team.save(async (err) => {
@@ -94,9 +96,10 @@ const createTeam = async (req, res) => {
 
         // Add team to round 1
         // TODO: Check if round exists in event
-        let round1 = await RoundModel.findById(eventInfo.rounds[0]);
-        round1.teams.push(team.id);
-        await round1.save();
+        //TODO: Check if this is really needed, if not, can remove this code.
+        // let round1 = await RoundModel.findById(eventInfo.rounds[0]);
+        // round1.teams.push(team.id);
+        // await round1.save();
 
         return res.json({
           status: 200,
@@ -792,14 +795,7 @@ const getTeam = async (req, res, next) => {
   return res.json({
     status: 200,
     message: "Success",
-    data: {
-      id: team.id,
-      name: team.name,
-      event: team.event,
-      college: team.college,
-      members: team.members,
-      disqualified: team.disqualified,
-    },
+    data: team,
   });
 };
 
@@ -808,14 +804,6 @@ const getTeams = async (req, res) => {
 
   if (!teams) teams = [];
 
-  teams = teams.map(team => ({
-    id: team.id,
-    event: team.event,
-    college: team.college,
-    members: team.members,
-    name: team.name,
-    disqualified: team.disqualified,
-  }))
 
   return res.json({
     status: 200,
@@ -833,19 +821,10 @@ const getTeamsInRound = async (req, res) => {
     model: "Team",
   });
 
-  let teams = round.teams.map(team => ({
-    id: team.id,
-    event: team.event,
-    college: team.college,
-    name: team.name,
-    members: team.members,
-    disqualified: team.disqualified,
-  }));
-
   return res.json({
     status: 200,
     message: "Success",
-    data: teams,
+    data: round.teams,
   });
 };
 

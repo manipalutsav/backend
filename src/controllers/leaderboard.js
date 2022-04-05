@@ -55,6 +55,8 @@ const get = async (req, res) => {
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
   }
 
+  console.log(overallLeaderboard);
+
 
   let finalLeaderboard = {};
 

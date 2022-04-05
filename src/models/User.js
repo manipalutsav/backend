@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//IMPROVE: Generate and send password to email id instead of being entered by some admin.
 const schema = {
   name: {
     type: String,

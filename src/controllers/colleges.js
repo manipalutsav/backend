@@ -169,14 +169,6 @@ const getTeams = async (req, res) => {
       teams = await TeamModel.find();
     }
 
-    teams = teams.map(team => ({
-      id: team.id,
-      name: team.name,
-      event: team.event,
-      college: team.college,
-      members: team.members,
-      disqualified: team.disqualified,
-    }));
 
     return res.json({
       status: 200,
