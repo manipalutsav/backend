@@ -11,7 +11,25 @@ const db = require('../src/utils/dbHelper');
 const Slot2 = require('../src/models/Slot2');
 
 
-const main = async () => {
+
+const updateTeamsWithIndexes = async () => {
+    const teams = await Team.find();
+    console.log(teams)
+    for (let i = 0; i < teams.length; i++) {
+        for (let j = i + 1; j < teams.length; j++) {
+            console.log(teams[i].college, teams[j].college, teams[i].college.equals(teams[j].college), teams[i].event, teams[j].event, teams[i].event.equals(teams[j].event), teams[i].index, teams[j].index, teams[i].index == teams[j].index)
+            if (teams[i].college.equals(teams[j].college) && teams[i].event.equals(teams[j].event) && teams[i].index == teams[j].index) {
+                console.log("MATCHED")
+                teams[j].index++;
+                console.log({ team: teams[j] });
+                await Team.find({ _id: teams[j]._id }).updateOne({ $set: { index: teams[j].index } });
+                console.log("Updated");
+            }
+        }
+    }
+}
+
+const updateTeamNames = async () => {
     //update teams
     const teams = await Team.find();
     var teamBulk = Team.collection.initializeUnorderedBulkOp();
@@ -59,7 +77,10 @@ const main = async () => {
     }
     if (count > 0)
         slot2Bulk.execute();
+}
 
+const main = async () => {
+    await updateTeamsWithIndexes();
     db.closeConnection();
     console.log("Closed")
 }
