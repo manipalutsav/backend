@@ -30,7 +30,21 @@ const addJudgePoints = async () => {
         console.log(JSON.stringify(scores[i]));
         await Score.find({ round, team: scores[i].team }).updateOne({ $set: { judges: scores[i].judges } });
     }
+}
 
+const roundJudgePoints = async () => {
+    let round = "6246cab0e4164a291dd210ec";
+    let judge = "624a6e5b13519733866ffc94";
+    const scores = await Score.find({ round });
+
+    for (let i in scores) {
+        scores[i].judges.forEach(judge => judge.points.forEach((point, index) => {
+            if (Number(point).toString().endsWith(".25") || Number(point).toString().endsWith(".75"))
+                judge.points[index] = point + 0.25;
+        }))
+        console.log(JSON.stringify(scores[i]));
+        await Score.find({ round, team: scores[i].team }).updateOne({ $set: { judges: scores[i].judges } });
+    }
 }
 
 const updateTeamsWithIndexes = async () => {
@@ -101,7 +115,8 @@ const updateTeamNames = async () => {
 }
 
 const main = async () => {
-    await addJudgePoints();
+    // await addJudgePoints();
+    await roundJudgePoints();
     // await updateTeamsWithIndexes();
     db.closeConnection();
     console.log("Closed")
