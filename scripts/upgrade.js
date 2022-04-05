@@ -17,17 +17,17 @@ const addJudgePoints = async () => {
     let judge = "624a6e5b13519733866ffc94";
     const scores = await Score.find({ round });
 
-    for (let score in scores) {
+    for (let i in scores) {
         let points = [];
-        score.judges.forEach(judge => judge.points.forEach((point, index) => {
+        scores[i].judges.forEach(judge => judge.points.forEach((point, index) => {
             points[index] = points[index] || 0;
             points[index] += point;
         }))
-        score.judges.concat({
+        scores[i].judges.concat({
             id: judge,
-            points: points.map(i => i / score.judges.length)
+            points: points.map(i => i / scores[i].judges.length)
         })
-        console.log(score);
+        console.log(scores[i]);
     }
 
 }
