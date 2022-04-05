@@ -34,7 +34,6 @@ const addJudgePoints = async () => {
 
 const roundJudgePoints = async () => {
     let round = "6246cab0e4164a291dd210ec";
-    let judge = "624a6e5b13519733866ffc94";
     const scores = await Score.find({ round });
 
     for (let i in scores) {
@@ -44,6 +43,26 @@ const roundJudgePoints = async () => {
         }))
         console.log(JSON.stringify(scores[i]));
         await Score.find({ round, team: scores[i].team }).updateOne({ $set: { judges: scores[i].judges } });
+    }
+}
+
+const removeDuplicateJudgePoints = async () => {
+    let round = "6246cab0e4164a291dd210ec";
+    const scores = await Score.find({ round });
+
+    for (let i in scores) {
+        let judgeIds = [];
+        let updatedJudges = [];
+        scores[i].judges.forEach(judge => {
+            if (!judgeIds.includes(judge.id)) {
+                updatedJudges.push(judge);
+            } else {
+                judgeIds.push(judge.id)
+            }
+        });
+
+        console.log(JSON.stringify(updatedJudges));
+        // await Score.find({ round, team: scores[i].team }).updateOne({ $set: { judges: updatedJudges } });
     }
 }
 
@@ -116,7 +135,8 @@ const updateTeamNames = async () => {
 
 const main = async () => {
     // await addJudgePoints();
-    await roundJudgePoints();
+    // await roundJudgePoints();
+    await removeDuplicateJudgePoints();
     // await updateTeamsWithIndexes();
     db.closeConnection();
     console.log("Closed")
