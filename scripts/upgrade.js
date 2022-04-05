@@ -25,7 +25,7 @@ const addJudgePoints = async () => {
         }))
         scores[i].judges.concat({
             id: judge,
-            points: points.map(i => i / scores[i].judges.length)
+            points: points.map(j => j / scores[i].judges.length)
         })
         console.log(scores[i]);
     }
