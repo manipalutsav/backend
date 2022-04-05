@@ -327,7 +327,7 @@ const getScores = async (req, res, next) => {
     });
   }
 
-  if (requester.type !== USER_TYPES.ADMINISTRATOR) {
+  if (req.user.type !== USER_TYPES.ADMINISTRATOR) {
     return res.status(401).json({
       status: 401,
       message: "Unauthorized. Only administrators can view judge scores.",
