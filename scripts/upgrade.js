@@ -28,7 +28,7 @@ const addJudgePoints = async () => {
             points: points.map(j => j / scores[i].judges.length)
         })
         console.log(JSON.stringify(scores[i]));
-        await scores[i].save();
+        await Score.find({ round, team: scores[i].team }).updateOne({ $set: { judges: scores[i].judges } });
     }
 
 }
