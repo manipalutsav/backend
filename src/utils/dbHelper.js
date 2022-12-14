@@ -15,6 +15,7 @@ class Database {
     this.uri = "mongodb://" + this._host;
     this.options = {
       useNewUrlParser: true,
+      useUnifiedTopology: true,
       dbName: process.env.MONGODB_DATABASE,
     };
 
