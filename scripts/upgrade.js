@@ -3,7 +3,7 @@
  */
 
 console.tick = console.log;
-const College = require('../src/models/College');
+const College = require('../src/models/College').default;
 const Team = require('../src/models/Team');
 const dotenv = require("dotenv");
 dotenv.config();
