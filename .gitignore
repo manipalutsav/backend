@@ -156,3 +156,5 @@ $RECYCLE.BIN/
 *.lnk
 dump
 ssl
+
+dist

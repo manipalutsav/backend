@@ -59,6 +59,7 @@ const participantsRouter = require("./routes/participants");
 const statsRouter = require("./routes/stats");
 const coreVolunteerRouter = require("./routes/coreVolunteer");
 const eventVolunteerRouter = require("./routes/eventVolunteer");
+const participationStatus = require("./routes/participationStatus");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
@@ -68,7 +69,7 @@ app.use("/judges", judgesRouter);
 app.use("/intruder", intruderRouter);
 app.use("/participants", participantsRouter);
 app.use("/stats", statsRouter);
-
+app.use("/participationStatus", participationStatus)
 app.use("/coreVolunteer", coreVolunteerRouter);
 app.use("/eventVolunteer", eventVolunteerRouter);
 

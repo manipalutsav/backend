@@ -9,6 +9,10 @@ const schema = {
     type: String,
     required: true,
   },
+  isOutStationed: {
+    type: Boolean,
+    required: false
+  }
 };
 
 const options = {

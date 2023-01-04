@@ -31,6 +31,7 @@ const create = async (req, res) => {
     college = await CollegeModel.create({
       name: req.body.name,
       location: req.body.location,
+      isOutStationed: req.body.isOutStationed
     });
 
     return res.status(200).json({
@@ -40,6 +41,7 @@ const create = async (req, res) => {
         id: college.id,
         name: college.name,
         location: college.location,
+        isOutStationed: college.isOutStationed
       },
     });
   } catch (e) {
@@ -74,6 +76,7 @@ const get = async (req, res) => {
         id: college.id,
         name: college.name,
         location: college.location,
+        isOutStationed: college.isOutStationed
       },
     });
   } catch (e) {
@@ -98,6 +101,7 @@ const getAll = async (req, res) => {
       id: college.id,
       name: college.name,
       location: college.location,
+      isOutStationed: college.isOutStationed
     }));
 
     return res.json({
