@@ -21,4 +21,6 @@ router.get("/:college/teams", Colleges.getTeams);
 // Create a new college
 router.post("/", Colleges.create);
 
+router.patch("/", Colleges.update)
+
 module.exports = router;

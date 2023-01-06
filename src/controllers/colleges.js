@@ -52,6 +52,49 @@ const create = async (req, res) => {
   }
 };
 
+
+const update = async (req, res) => {
+  try {
+    if (!req.body.name || !req.body.location || !req.body.id) {
+      return res.status(400).json({
+        status: 400,
+        message: "Bad request. Invalid request body.",
+      });
+    }
+
+    let college = await CollegeModel.findById(req.body.id);
+
+    if (!college) {
+      return res.status(404).json({
+        status: 404,
+        message: "Not Found. No college was found for the specified id.",
+      });
+    }
+
+    college.name = req.body.name;
+    college.location = req.body.location;
+    college.isOutStationed = req.body.isOutStationed;
+
+    await college.save();
+
+    return res.status(200).json({
+      status: 200,
+      message: "Success. College Updated.",
+      data: {
+        id: college.id,
+        name: college.name,
+        location: college.location,
+        isOutStationed: college.isOutStationed
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
+};
+
 /**
  * Return college object with request id
  * @param {object} req the request object
@@ -193,4 +236,5 @@ module.exports = {
   getAll,
   getParticipants,
   getTeams,
+  update
 };
