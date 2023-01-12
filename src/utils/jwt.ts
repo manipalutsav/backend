@@ -19,7 +19,7 @@ const EXPIRY_TIME = 6 * 60 * 60;
  * a timestamp (represented using string).
  * @returns {Promise<string>} The generated JWT
  */
-const generateToken = (payload, expiryTime = EXPIRY_TIME) => {
+const generateToken = (payload: string | object, expiryTime = EXPIRY_TIME) => {
   return new Promise(async (resolve, reject) => {
     try {
       let token;
@@ -46,7 +46,7 @@ const generateToken = (payload, expiryTime = EXPIRY_TIME) => {
  * @param {string} token The JWT to be authenticated
  * @returns {Promise<string|object>} The decoded payload
  */
-const verifyToken = (token) => {
+const verifyToken = (token: string) => {
   return new Promise(async (resolve, reject) => {
     try {
       let payload = await jwt.verify(token, process.env.HMAC_SECRET_KEY);

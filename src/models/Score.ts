@@ -1,7 +1,18 @@
-import mongoose from "mongoose";
-import Team from "./Team";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Score {
+  id: string,
+  team: string,
+  round: string,
+  judges?: {
+    id: string,
+    points: [number]
+  }[],
+  overtime: number,
+  points: number
+}
+
+const schema = new Schema<Score>({
   team: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Slot2',
@@ -22,16 +33,12 @@ const schema = {
     required: true,
     default: 0,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
-
-const scoreSchema = new mongoose.Schema(schema, options);
-
-scoreSchema.virtual("points").get(function () {
-  return this.judges.reduce((acc, curr) => acc + curr.points.reduce((a, c) => a + c, 0), 0);
 });
 
-export default mongoose.model("Score", scoreSchema);
+schema.virtual("points").get((score: Score) =>
+  score.judges!.reduce((acc, curr) => acc + curr.points.reduce((a, c) => a + c, 0), 0)
+);
+
+export default model<Score>("Score", schema);

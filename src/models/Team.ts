@@ -1,6 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Team {
+  id: string,
+  _id: string,
+  name: string,
+  index: number,
+  event: string,
+  college: string,
+  members: [string],
+  disqualified: boolean
+}
+
+const schema = new Schema<Team>({
   name: {
     type: String,
     required: true,
@@ -27,12 +38,8 @@ const schema = {
     required: true,
     default: false,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const teamSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Team", teamSchema);
+export default model<Team>("Team", schema);

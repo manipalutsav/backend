@@ -1,6 +1,15 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Slot2 {
+  id: string,
+  number: number,
+  round: string,
+  college: string,
+  team: string,
+  teamName: string
+}
+
+const schema = new Schema<Slot2>({
   number: {
     type: Number,
     required: true,
@@ -24,12 +33,8 @@ const schema = {
     type: String,
     required: true,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const slot2Schema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Slot2", slot2Schema);
+export default model<Slot2>("Slot2", schema);

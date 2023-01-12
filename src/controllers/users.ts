@@ -5,6 +5,11 @@ const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
+import { NextFunction, Request, Response } from "express";
+import { UserRequest } from "../interfaces";
+import { User } from "../models/User";
+
+
 /**
  * Get a user
  * @param {object} req the request object
@@ -12,7 +17,7 @@ const jwt = require("../utils/jwt");
  * @param {function} next call the next handler in route
  * @returns {object} the response object
  */
-const get = async (req, res, next) => {
+const get = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let user = await UserModel.findById(req.params.user);
 
@@ -28,16 +33,17 @@ const get = async (req, res, next) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
     next();
   }
 };
 
-const getAll = async (req, res) => {
+const getAll = async (req: Request, res: Response) => {
   try {
     let users = await UserModel.find();
 
-    users = users.map(user => ({
+    users = users.map((user: User) => ({
       id: user.id,
       name: user.name,
       type: user.type,
@@ -64,7 +70,7 @@ const getAll = async (req, res) => {
  * @param {function} next call the next handler in route
  * @returns {object} the response object
  */
-const create = async (req, res) => {
+const create = async (req: UserRequest, res: Response) => {
   try {
     if (!req.user) {
       return res.status(403).json({
@@ -136,6 +142,7 @@ const create = async (req, res) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     return res.status(500).json({
@@ -152,7 +159,7 @@ const create = async (req, res) => {
  * @param {function} next call the next handler in route
  * @returns {object} the response object
  */
-const remove = async (req, res, next) => {
+const remove = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.params.user) return next();
 
@@ -174,6 +181,7 @@ const remove = async (req, res, next) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     res.status(500).json({
@@ -189,7 +197,7 @@ const remove = async (req, res, next) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const updateUser = async (req, res) => {
+const updateUser = async (req: UserRequest, res: Response) => {
   try {
     if (!req.user) {
       return res.status(403).json({
@@ -226,7 +234,7 @@ const updateUser = async (req, res) => {
     user.email = req.body.email;
     user.college = req.body.college;
     user.type = req.body.type;
-    user.save(err => {
+    user.save((err: any) => {
       if (err) {
         return res.json({
           status: 400,
@@ -248,6 +256,7 @@ const updateUser = async (req, res) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     return res.status(500).json({
@@ -263,7 +272,7 @@ const updateUser = async (req, res) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const update = async (req, res) => {
+const update = async (req: Request, res: Response) => {
   try {
     if (!req.body.oldUser || !req.body.newUser) {
       return res.status(400).json({
@@ -335,6 +344,7 @@ const update = async (req, res) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     res.status(500).json({
@@ -344,7 +354,7 @@ const update = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req: UserRequest, res: Response) => {
   try {
     if (!req.body.email || !req.body.password) {
       return res.status(400).json({
@@ -400,6 +410,7 @@ const resetPassword = async (req, res) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     res.status(500).json({
@@ -415,7 +426,7 @@ const resetPassword = async (req, res) => {
  * @param {object} res The response object
  * @returns {void}
  */
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
   try {
     if (!req.body.email || !req.body.password) {
       return res.status(400).json({
@@ -470,6 +481,7 @@ const login = async (req, res) => {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     res.status(500).json({
@@ -479,7 +491,7 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   get,
   getAll,
   create,

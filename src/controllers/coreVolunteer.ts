@@ -1,8 +1,9 @@
 "use strict";
 
+import { Request, Response } from "express";
 import CoreVolunteerModel from "../models/CoreVolunteer";
 
-export const addVolunteer = async (req, res) => {
+export const addVolunteer = async (req: Request, res: Response) => {
   try {
     const { name, registerNumber, shirtSize, college } = req.body;
     if (!name || name.length === 0) { throw Error("Please enter name."); }
@@ -21,7 +22,7 @@ export const addVolunteer = async (req, res) => {
       message: "Success. New Volunteer created.",
       data: volunteer,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.json({
       status: 400,
       message: error.message,
@@ -29,12 +30,14 @@ export const addVolunteer = async (req, res) => {
   }
 };
 
-export const getAll = async (req, res) => {
+export const getAll = async (req: Request, res: Response) => {
   try {
     let volunteer = await CoreVolunteerModel.find().populate({
       path: "college",
       model: "College",
     });
+
+    res.json()
 
     return res.json({
       status: 200,

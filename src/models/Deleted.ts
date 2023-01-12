@@ -1,12 +1,13 @@
 import { Schema, model } from "mongoose";
 
 interface Deleted {
+  id: string,
   type: string,
   date: Date,
   data: object
 }
 
-const deletedSchema = new Schema<Deleted>({
+const schema = new Schema<Deleted>({
   schema: {
     type: String,
     required: true,
@@ -23,4 +24,4 @@ const deletedSchema = new Schema<Deleted>({
   autoCreate: true,
 });
 
-export default model("Deleted", deletedSchema);
+export default model("Deleted", schema);

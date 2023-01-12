@@ -1,7 +1,17 @@
-import mongoose from "mongoose";
 import { ROUND_STATUS } from "../utils/constants";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Round {
+  id: string,
+  event: string,
+  teams: [string],
+  criteria: [string],
+  slottable: boolean,
+  status: number,
+  published: boolean
+}
+
+const schema = new Schema<Round>({
   event: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -21,12 +31,8 @@ const schema = {
     type: Boolean,
     default: false,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const roundSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Round", roundSchema);
+export default model<Round>("Round", schema);

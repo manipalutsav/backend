@@ -1,13 +1,14 @@
 import { Schema, model } from "mongoose";
 
 interface CoreVolunteer {
+  id: string,
   name: string,
   registerNumber: number,
   shirtSize: string,
   college: Schema.Types.ObjectId
 }
 
-const coreVolunteerSchema = new Schema<CoreVolunteer>({
+const schema = new Schema<CoreVolunteer>({
   name: {
     type: String,
     required: true,
@@ -28,4 +29,4 @@ const coreVolunteerSchema = new Schema<CoreVolunteer>({
   autoCreate: true,
 });
 
-export default model("CoreVolunteer", coreVolunteerSchema);
+export default model<CoreVolunteer>("CoreVolunteer", schema);

@@ -7,16 +7,30 @@ const ScoreModel = require("../models/Score");
 const TeamModel = require("../models/Team");
 const UserModel = require("../models/User");
 
+import { NextFunction, Request, Response } from "express";
+import { College } from "../models/College";
+import { Event } from "../models/Event";
+import { Score } from "../models/Score";
+import { Slot } from "../models/Slot";
+import { Slot2 } from "../models/Slot2";
+import { Team } from "../models/Team";
+import { User } from "../models/User";
+
+
 const { USER_TYPES } = require("../utils/constants");
 
-const getEvents = async (req, res) => {
-  let events = await EventModel.find().populate({
+const getEvents = async (req: Request, res: Response) => {
+
+  interface EventPopulated extends Omit<Event, "college"> {
+    college: College
+  }
+
+  let eventsPopulated = await EventModel.find().populate({
     path: "college",
     model: "College",
-  });
+  }) as EventPopulated[];
 
-
-  events = events.map(event => {
+  let events = eventsPopulated.map((event: EventPopulated) => {
     return {
       id: event.id,
       name: event.name,
@@ -37,14 +51,17 @@ const getEvents = async (req, res) => {
   });
 };
 
-const getUsers = async (req, res) => {
+const getUsers = async (req: Request, res: Response) => {
   try {
-    let users = await UserModel.find().populate({
+    interface UserPopulated extends Omit<User, "college"> {
+      college: College
+    }
+    let usersPopulated = await UserModel.find().populate({
       path: "college",
       model: "College",
-    });
+    }) as UserPopulated[];
 
-    users = users.filter(u => u.type === USER_TYPES.FACULTY_COORDINATOR).map(u => ({
+    let users = usersPopulated.filter((u: UserPopulated) => u.type === USER_TYPES.FACULTY_COORDINATOR).map((u: UserPopulated) => ({
       id: u.id,
       name: u.name,
       type: u.type,
@@ -64,14 +81,17 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getSlots = async (req, res, next) => {
-  let slots = await SlotModel.find({ round: req.params.round }).populate({
+const getSlots = async (req: Request, res: Response, next: NextFunction) => {
+  interface SlotPopulated extends Omit<Slot, "team"> {
+    team: Team
+  }
+  let slotsPopulated = await SlotModel.find({ round: req.params.round }).populate({
     path: "team",
     model: "Team",
-  });
-  if (!slots) return next();
+  }) as SlotPopulated[];
+  if (!slotsPopulated) return next();
 
-  slots = slots.map(slot => ({
+  let slots = slotsPopulated.map((slot) => ({
     id: slot.id,
     number: slot.number,
     round: slot.round,
@@ -85,7 +105,7 @@ const getSlots = async (req, res, next) => {
   });
 };
 
-const getRoundLeaderboard = async (req, res, next) => {
+const getRoundLeaderboard = async (req: Request, res: Response, next: NextFunction) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -93,7 +113,7 @@ const getRoundLeaderboard = async (req, res, next) => {
 
   if (!round) next();
 
-  if(!round.published) next();
+  if (!round.published) next();
 
   let scores = await ScoreModel.find({
     round: round.id,
@@ -102,11 +122,11 @@ const getRoundLeaderboard = async (req, res, next) => {
     model: "Team",
   });
 
-  scores = await Promise.all(scores.map(async score => {
+  scores = await Promise.all(scores.map(async (score: Score) => {
     let team = await TeamModel.findById(score.team);
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
-    return({
+    return ({
       team: score.team,
       round: score.round,
       judgePoints: score.points,
@@ -115,7 +135,7 @@ const getRoundLeaderboard = async (req, res, next) => {
       disqualified: team.disqualified,
     });
   }));
-  scores = scores.filter(slot => !slot.disqualified);
+  scores = scores.filter((slot: any) => !slot.disqualified);
   return res.json({
     status: 200,
     message: "Success",
@@ -123,7 +143,7 @@ const getRoundLeaderboard = async (req, res, next) => {
   });
 };
 
-const getEventLeaderboard = async (req, res) => {
+const getEventLeaderboard = async (req: Request, res: Response) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) {
@@ -140,7 +160,7 @@ const getEventLeaderboard = async (req, res) => {
     model: "Team",
   });
 
-  scores = scores.map(score => {
+  scores = scores.map((score: Score) => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
     return {
@@ -154,7 +174,14 @@ const getEventLeaderboard = async (req, res) => {
     };
   });
 
-  let leaderboard = {};
+  type points = { original?: number, final: number, judge?: string };
+  interface ScoreRecalculated extends Omit<Score, "points"> {
+    points: points
+  }
+  type ScoreMinified = Omit<Omit<Omit<ScoreRecalculated, "id">, "round">, "overtime">;
+  type Leaderboard = { [key: string]: ScoreMinified };
+
+  let leaderboard: Leaderboard = {};
   for (let score of scores) {
     if (!leaderboard.hasOwnProperty(score.team.id)) {
       leaderboard[score.team.id] = {
@@ -179,7 +206,7 @@ const getEventLeaderboard = async (req, res) => {
   });
 };
 
-module.exports = {
+export default {
   getEvents,
   getUsers,
   getSlots,

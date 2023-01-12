@@ -1,7 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
-//IMPROVE: Generate and send password to email id instead of being entered by some admin.
-const schema = {
+export interface User {
+  id: string,
+  name: string,
+  email: string,
+  mobile: string,
+  type: number,
+  password: string,
+  college: string
+}
+
+const schema = new Schema<User>({
   name: {
     type: String,
     required: true,
@@ -28,12 +37,8 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const userSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("User", userSchema);
+export default model<User>("User", schema);

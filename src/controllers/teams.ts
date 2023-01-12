@@ -3,13 +3,16 @@
 const TeamModel = require("../models/Team");
 const EventModel = require("../models/Event");
 
+import { NextFunction, Request, Response } from "express";
+
+
 /**
  * Add new team into the system.
  * @param {object} req The request object
  * @param {object} res The response object
  * @returns {void}
  */
-const create = async (req, res) => {
+const create = async (req: Request, res: Response) => {
   let {
     event,
     college,
@@ -33,7 +36,7 @@ const create = async (req, res) => {
     members,
   });
 
-  team.save((err) => {
+  team.save((err: any) => {
     if (err) {
       return res.status(500).json({
         status: 500,
@@ -55,7 +58,7 @@ const create = async (req, res) => {
  * @param {object} res The response object
  * @returns {void}
  */
-const get = async (req, res) => {
+const get = async (req: Request, res: Response) => {
   let team = await TeamModel.findById({ id: req.params.id });
 
   return res.json({
@@ -65,7 +68,7 @@ const get = async (req, res) => {
   });
 };
 
-const getAll = async (req, res) => {
+const getAll = async (req: Request, res: Response) => {
   try {
     let teams = await TeamModel.find();
 
@@ -82,7 +85,7 @@ const getAll = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   create,
   get,
   getAll,

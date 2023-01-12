@@ -1,6 +1,6 @@
 "use strict";
 
-import CollegeModel from "../models/College";
+import CollegeModel, { College } from "../models/College";
 import TeamModel from "../models/Team";
 import ParticipantModel from "../models/Participant";
 import { Request, Response } from "express";
@@ -93,13 +93,13 @@ const get = async (req: Request, res: Response) => {
  */
 const getAll = async (req: Request, res: Response) => {
   try {
-    let colleges = await CollegeModel.find();
+    let colleges = await CollegeModel.find() as College[];
 
     colleges = colleges.map(college => ({
       id: college.id,
       name: college.name,
       location: college.location,
-    }));
+    })) as College[];
 
     return res.json({
       status: 200,
@@ -120,7 +120,7 @@ const getAll = async (req: Request, res: Response) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const getParticipants = async (req, res) => {
+const getParticipants = async (req: Request, res: Response) => {
   try {
     let participants;
 
@@ -157,7 +157,7 @@ const getParticipants = async (req, res) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const getTeams = async (req, res) => {
+const getTeams = async (req: Request, res: Response) => {
   try {
     let teams;
 

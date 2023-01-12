@@ -1,6 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Leaderboard {
+  id: string,
+  college: string,
+  points: number
+}
+const schema = new Schema<Leaderboard>({
   college: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -9,12 +14,8 @@ const schema = {
     type: Number,
     required: true,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const leaderboardSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Leaderboard", leaderboardSchema);
+export default model<Leaderboard>("Leaderboard", schema);

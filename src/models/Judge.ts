@@ -1,17 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Judge {
+  id: string,
+  name: string,
+  rounds: [string]
+}
+
+const schema = new Schema<Judge>({
   name: {
     type: String,
     required: true,
   },
   rounds: [mongoose.Schema.Types.ObjectId],
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const judgeSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Judge", judgeSchema);
+export default model<Judge>("Judge", schema);

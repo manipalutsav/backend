@@ -1,11 +1,13 @@
 import { Schema, model } from "mongoose";
 
-interface College {
+export interface College {
+  id: string,
+  _id: string,
   name: string,
   location: string
 }
 
-const collegeSchema = new Schema<College>({
+const schema = new Schema<College>({
   name: {
     type: String,
     required: true,
@@ -18,4 +20,4 @@ const collegeSchema = new Schema<College>({
   autoCreate: true,
 });
 
-export default model<College>("College", collegeSchema);
+export default model<College>("College", schema);

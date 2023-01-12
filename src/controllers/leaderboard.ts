@@ -1,43 +1,65 @@
 "use strict";
 
-const LeaderboardModel = require("../models/Leaderboard");
+import LeaderboardModel, { Leaderboard as LB } from "../models/Leaderboard";
 const CollegeModel = require("../models/College");
 const EventModel = require("../models/Event");
 const ScoreModel = require("../models/Score");
 const TeamModel = require("../models/Team");
 const Slot2 = require("../models/Slot2");
 
-const get = async (req, res) => {
-  let events = await EventModel.find({ faculty: false });
+import { NextFunction, Request, Response } from "express";
+import { Event } from "../models/Event";
+import { Score } from "../models/Score";
+import { Team } from "../models/Team";
+import { College } from "../models/College";
+
+
+type points = { original?: number, final: number, judge?: string };
+interface ScoreRecalculated extends Omit<Score, "points"> {
+  points: points
+}
+type ScoreMinified = Omit<Omit<Omit<ScoreRecalculated, "id">, "round">, "overtime">;
+interface Leaderboard {
+  team: string,
+  points: string,
+  event?: Event,
+  rank?: number
+}
+
+type OverallLeaderboard = Leaderboard[]
+
+const get = async (req: Request, res: Response) => {
+  let events = await EventModel.find({ faculty: false }) as Event[];
 
 
   let disqulifiedTeams = await TeamModel.find({ disqualified: true });
-  disqulifiedTeams = disqulifiedTeams.map(team => team._id.toString());
+  disqulifiedTeams = disqulifiedTeams.map((team: Team) => team._id.toString());
 
-  let overallLeaderboard = [];
+  let overallLeaderboard: OverallLeaderboard = [];
   for (let event of events) {
     let scores = await ScoreModel.find({
       round: { $in: event.rounds },
     });
 
-    scores = scores.filter(score => !disqulifiedTeams.includes(score.team.toString()));
+    scores = scores.filter((score: Score) => !disqulifiedTeams.includes(score.team.toString()));
 
 
-    scores = scores.map(score => ({
+    scores = scores.map((score: Score) => ({
       team: score.team,
       points: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
     }));
 
     //add up points from all judges for each team
-    let mappedScores = scores.reduce((acc, curr) => {
+    let mappedScores = scores.reduce((acc: Map<string, number>, curr: Score) => {
       let points = acc.get(curr.team) || 0;
       acc.set(curr.team, curr.points + points);
       return acc;
     }, new Map());
 
 
+
     //convert to object with {team,points} mapping
-    let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points, event }));
+    let leaderboard: Leaderboard[] = [...mappedScores].map(([team, points]) => ({ team, points, event }));
 
     //sort points highest to lowest
     leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
@@ -49,7 +71,7 @@ const get = async (req, res) => {
     }));
 
     //get only top 3 ranked teams
-    leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank));
+    leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank!));
 
     //add the event leaderboard to overall leaderboard
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
@@ -58,7 +80,7 @@ const get = async (req, res) => {
   console.log(overallLeaderboard);
 
 
-  let finalLeaderboard = {};
+  let finalLeaderboard: { [key: string]: number } = {};
 
 
   for (let score of overallLeaderboard) {
@@ -76,14 +98,14 @@ const get = async (req, res) => {
         let collegeName = slot.teamName.substring(0, comma).trim();;
         let location = slot.teamName.substring(comma + 1, start - 1).trim();
         let teamName = slot.teamName.substring(start, end);
-        const college = await CollegeModel.findOne({ name: collegeName, location, event: score.event._id });
+        const college = await CollegeModel.findOne({ name: collegeName, location, event: score.event!._id });
         if (!college) {
           console.error("College not found", slot);
           continue;
         }
 
 
-        team = await TeamModel.findOne({ name: teamName, college: college._id, event: score.event._id }).populate("event");
+        team = await TeamModel.findOne({ name: teamName, college: college._id, event: score.event!._id }).populate("event");
         console.log({ teamName, college, type: 1, team })
       }
       else {
@@ -93,7 +115,7 @@ const get = async (req, res) => {
     }
     else {
 
-      team = await TeamModel.findOne({ name: slot.teamName, college: slot.college, event: score.event._id }).populate("event");
+      team = await TeamModel.findOne({ name: slot.teamName, college: slot.college, event: score.event!._id }).populate("event");
       console.log({ teamName: slot.teamName, college: slot.college, type: 2, team })
     }
 
@@ -146,14 +168,14 @@ const get = async (req, res) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const getPublic = async (req, res) => {
+const getPublic = async (req: Request, res: Response) => {
   try {
     let leaderboard = await LeaderboardModel.find().populate({
       path: "college",
       model: "College",
     });
 
-    leaderboard = leaderboard.map(lb => ({
+    let leaderboardMinified = leaderboard.map((lb: LB) => ({
       college: lb.college,
       points: lb.points,
     }));
@@ -161,7 +183,7 @@ const getPublic = async (req, res) => {
     return res.json({
       status: 200,
       message: "Success",
-      data: leaderboard,
+      data: leaderboardMinified,
     });
   } catch (e) {
     return res.status(500).json({
@@ -171,28 +193,28 @@ const getPublic = async (req, res) => {
   }
 };
 
-const getWinners = async (req, res) => {
+const getWinners = async (req: Request, res: Response) => {
   let events = await EventModel.find({ faculty: false });
 
-  let disqulifiedTeams = await TeamModel.find({ disqualified: true });
-  disqulifiedTeams = disqulifiedTeams.map(team => team._id.toString());
+  let disqulifiedTeams = await TeamModel.find({ disqualified: true }) as Team[];
+  let disqulifiedTeamsIds = disqulifiedTeams.map(team => team._id.toString());
 
-  let overallLeaderboard = [];
+  let overallLeaderboard: OverallLeaderboard = [];
   for (let event of events) {
     let scores = await ScoreModel.find({
       round: { $in: event.rounds },
     });
 
-    scores = scores.filter(score => !disqulifiedTeams.includes(score.team.toString()));
+    scores = scores.filter((score: Score) => !disqulifiedTeamsIds.includes(score.team.toString()));
 
 
-    scores = scores.map(score => ({
+    scores = scores.map((score: Score) => ({
       team: score.team,
       points: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
     }));
 
     //add up points from all judges for each team
-    let mappedScores = scores.reduce((acc, curr) => {
+    let mappedScores = scores.reduce((acc: Map<string, number>, curr: Score) => {
       let points = acc.get(curr.team) || 0;
       acc.set(curr.team, curr.points + points);
       return acc;
@@ -200,7 +222,7 @@ const getWinners = async (req, res) => {
 
 
     //convert to object with {team,points} mapping
-    let leaderboard = [...mappedScores].map(([team, points]) => ({ team, points }));
+    let leaderboard: Leaderboard[] = [...mappedScores].map(([team, points]) => ({ team, points }));
 
     //sort points highest to lowest
     leaderboard = leaderboard.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
@@ -212,7 +234,7 @@ const getWinners = async (req, res) => {
     }));
 
     //get only top 3 ranked teams
-    leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank));
+    leaderboard = leaderboard.filter(lb => [1, 2, 3].includes(lb.rank!));
 
     //add the event leaderboard to overall leaderboard
     overallLeaderboard = overallLeaderboard.concat(leaderboard);
@@ -279,14 +301,14 @@ const getWinners = async (req, res) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const init = async (req, res) => {
+const init = async (req: Request, res: Response) => {
   try {
-    let colleges = await CollegeModel.find();
+    let colleges = await CollegeModel.find() as College[];
 
-    colleges = colleges.map(college => college.id);
+    let collegesIds = colleges.map((college) => college.id);
 
-    let leaderboard = colleges.map(college => ({
-      college: college,
+    let leaderboard = collegesIds.map(collegeId => ({
+      college: collegeId,
       points: 0,
     }));
 
@@ -311,7 +333,7 @@ const init = async (req, res) => {
  * @param {object} res the response object
  * @returns {object} the response object
  */
-const update = async (req, res) => {
+const update = async (req: Request, res: Response) => {
   try {
     if (!req.body.points) {
       return res.status(400).json({
@@ -322,16 +344,16 @@ const update = async (req, res) => {
 
     let collegeLeaderboard = await LeaderboardModel.findOne({ college: req.params.college });
 
-    collegeLeaderboard.points = req.body.points;
+    collegeLeaderboard!.points = req.body.points;
 
-    await collegeLeaderboard.save();
+    await collegeLeaderboard!.save();
 
     return res.json({
       status: 200,
       message: "Success. Points updated.",
       data: {
-        college: collegeLeaderboard.college,
-        points: collegeLeaderboard.points,
+        college: collegeLeaderboard!.college,
+        points: collegeLeaderboard!.points,
       },
     });
   } catch (e) {
@@ -342,7 +364,7 @@ const update = async (req, res) => {
   }
 };
 
-const publish = async (req, res) => {
+const publish = async (req: Request, res: Response) => {
   try {
     if (!req.body.length) {
       return res.status(400).json({
@@ -367,7 +389,7 @@ const publish = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   get,
   getPublic,
   getWinners,

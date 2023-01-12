@@ -1,6 +1,25 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
+import { College } from "./College";
+import { Round } from "./Round";
 
-const schema = {
+export interface Event {
+  id: string,
+  _id?: string,
+  rounds: string[],
+  name: string,
+  college: string,
+  minMembersPerTeam: number,
+  maxMembersPerTeam: number,
+  maxTeamsPerCollege: number,
+  venue: string,
+  description: string,
+  duration: number,
+  startDate: Date,
+  endDate: Date,
+  faculty: boolean
+}
+
+const schema = new Schema<Event>({
   rounds: [mongoose.Schema.Types.ObjectId],
   name: {
     type: String,
@@ -27,12 +46,8 @@ const schema = {
     required: true,
     default: false,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const eventSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Event", eventSchema);
+export default model<Event>("Event", schema);

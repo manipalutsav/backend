@@ -1,6 +1,9 @@
 "use strict";
 
-export default (_req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+
+export default (_req: Request, res: Response, next: NextFunction) => {
   /**
    * This header improves the protection of web applications against
    * Clickjacking.

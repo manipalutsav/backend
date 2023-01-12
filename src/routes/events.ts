@@ -54,6 +54,7 @@ router.post("/:event/rounds/:round/slots", Events.createSlots);
 router.post("/:event/rounds/:round/slots2", Events.createSlots2);
 
 router.post("/:event/rounds/:round/scores", Events.createScores);
+//@ts-ignore
 router.get("/:event/rounds/:round/scores", Events.getScores);
 
 // Register a team to the given event

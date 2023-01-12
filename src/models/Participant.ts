@@ -1,8 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
+
+
+export interface Participant {
+  id: string,
+  registrationID: string,
+  name: string,
+  college: string,
+  faculty: boolean
+}
 
 //IMPROVE: Participant is also a user, have login, send mail to mahe email id
 //Particiant could login and see their events and schedules, certificates etc.
-const schema = {
+const schema = new Schema<Participant>({
   registrationID: {
     type: String,
     required: true,
@@ -21,12 +30,8 @@ const schema = {
     required: true,
     default: false,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
+});
 
-const participantSchema = new mongoose.Schema(schema, options);
-
-export default mongoose.model("Participant", participantSchema);
+export default model<Participant>("Participant", schema);

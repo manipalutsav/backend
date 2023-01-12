@@ -1,6 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
-const schema = {
+export interface Vol {
+  id: string,
+  college: string,
+  name: string,
+  regno: number,
+  shirtSize: string
+}
+
+const schema = new Schema<Vol>({
   college: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -16,11 +24,8 @@ const schema = {
   shirtSize: {
     type: String,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
-const volSchema = new mongoose.Schema(schema, options);
+});
 
-export default mongoose.model("Vol", volSchema);
+export default model<Vol>("Vol", schema);

@@ -1,4 +1,4 @@
-const HTTP_STATUS = {
+export const HTTP_STATUS = {
   200: {
     status: "200",
     message: "Success",
@@ -25,20 +25,20 @@ const HTTP_STATUS = {
   },
 };
 
-const USER_TYPES = {
+export const USER_TYPES = {
   ADMINISTRATOR: 1 << 0,
   SUPPORT_TEAM: 1 << 1,
   FACULTY_COORDINATOR: 1 << 2,
   STUDENT_COORDINATOR: 1 << 3,
 };
 
-const ROUND_STATUS = {
+export const ROUND_STATUS = {
   SCHEDULED: 1,
   ONGOING: 2,
   COMPLETED: 3,
 };
 
-const COMMANDS = [
+export const COMMANDS = [
   { emoji: "🍕", name: "pizza" },
   { emoji: "🍺", name: "beer" },
   { emoji: "💩", name: "poo" },
@@ -48,9 +48,3 @@ const COMMANDS = [
   { emoji: "👂", name: "listen" },
 ];
 
-module.exports = {
-  HTTP_STATUS,
-  USER_TYPES,
-  ROUND_STATUS,
-  COMMANDS,
-};

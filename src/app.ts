@@ -62,6 +62,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(headers);
 
+//@ts-ignore
 if (process.env.NODE_ENV !== "development") app.use(auth);
 
 
@@ -114,7 +115,7 @@ function normalizePort(val: string) {
 function onShutdown() {
   console.log("\x1b[32m");
   console.info('Got SIGINT. Graceful shutdown start', new Date().toISOString())
-  server.close(async (err) => {
+  server.close(async (err: any) => {
     if (err) {
       console.log(err)
       process.exit(1)

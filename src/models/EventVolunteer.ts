@@ -1,6 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
-const schema = {
+export interface EventVolunteer {
+  id: string,
+  name: string,
+  registerNumber: number,
+  college: string
+}
+
+const schema = new Schema<EventVolunteer>({
   name: {
     type: String,
     required: true,
@@ -13,11 +20,8 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-};
-
-const options = {
+}, {
   autoCreate: true,
-};
-const eventVolunteerSchema = new mongoose.Schema(schema, options);
+});
 
-export default mongoose.model("EventVolunteer", eventVolunteerSchema);
+export default model<EventVolunteer>("EventVolunteer", schema);

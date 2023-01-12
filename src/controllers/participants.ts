@@ -2,7 +2,10 @@
 
 const ParticipantModel = require("../models/Participant");
 
-const get = async (req, res) => {
+import { NextFunction, Request, Response } from "express";
+
+
+const get = async (req: Request, res: Response) => {
   try {
     let participant = await ParticipantModel.findById(req.params.participant);
 
@@ -26,7 +29,7 @@ const get = async (req, res) => {
   }
 };
 
-const getAll = async (req, res) => {
+const getAll = async (req: Request, res: Response) => {
   try {
     let participants = await ParticipantModel.find();
 
@@ -43,7 +46,7 @@ const getAll = async (req, res) => {
   }
 };
 
-const update = async (req, res) => {
+const update = async (req: Request, res: Response) => {
   try {
     let participant = await ParticipantModel.findById(req.params.participant);
 
@@ -72,7 +75,7 @@ const update = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   get,
   getAll,
   update,

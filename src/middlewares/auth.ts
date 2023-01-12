@@ -3,8 +3,11 @@
 const jwt = require("../utils/jwt");
 const UserModel = require("../models/User");
 const { HTTP_STATUS } = require("../utils/constants");
+import { NextFunction, Request, Response } from "express";
+import { UserRequest } from "../interfaces";
 
-export default async (req, res, next) => {
+
+export default async (req: UserRequest, res: Response, next: NextFunction) => {
   if (req.url === "/users/login" && req.method === "POST") return next();
   if (req.url.startsWith("/intruder/") && req.method === "GET") return next();
 
@@ -32,6 +35,7 @@ export default async (req, res, next) => {
     next();
   } catch (e) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     res.status(401).json(HTTP_STATUS[401]);

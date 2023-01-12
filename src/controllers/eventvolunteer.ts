@@ -1,8 +1,11 @@
 "use strict";
 
+import { NextFunction, Request, Response } from "express";
+
+
 const EventVolunteerModel = require("../models/EventVolunteer");
 
-exports.addVolunteer = async (req, res) => {
+export const addVolunteer = async (req: Request, res: Response) => {
     try {
         const { name, registerNumber, college } = req.body;
         if (!name || name.length === 0) { throw Error("Please enter name."); }
@@ -19,7 +22,7 @@ exports.addVolunteer = async (req, res) => {
             message: "Success. New Volunteer created.",
             data: volunteer,
         });
-    } catch (error) {
+    } catch (error: any) {
         return res.json({
             status: 400,
             message: error.message,
@@ -27,7 +30,7 @@ exports.addVolunteer = async (req, res) => {
     }
 };
 
-exports.getAll = async (req, res) => {
+export const getAll = async (req: Request, res: Response) => {
     try {
         let volunteer = await EventVolunteerModel.find().populate({
             path: "college",

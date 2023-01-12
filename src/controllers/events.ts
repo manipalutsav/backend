@@ -1,5 +1,16 @@
 "use strict";
 
+import { NextFunction, Request, Response } from "express";
+import { ESMap } from "typescript";
+import { UserRequest } from "../interfaces";
+import { College } from "../models/College";
+import { Event } from "../models/Event";
+import { Participant } from "../models/Participant";
+import { Round } from "../models/Round";
+import { Score } from "../models/Score";
+import { Slot2 } from "../models/Slot2";
+import { Team } from "../models/Team";
+
 const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
@@ -10,7 +21,7 @@ const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS, USER_TYPES } = require("../utils/constants");
 
-const deleteTeam = async (req, res) => {
+const deleteTeam = async (req: Request, res: Response) => {
   try {
     let team = await TeamModel.findOne({
       _id: req.params.team,
@@ -44,7 +55,7 @@ const deleteTeam = async (req, res) => {
   }
 };
 
-const createTeam = async (req, res) => {
+const createTeam = async (req: Request, res: Response) => {
   let {
     college,
     participants,
@@ -86,7 +97,7 @@ const createTeam = async (req, res) => {
         index
       });
 
-      await team.save(async (err) => {
+      await team.save(async (err: any) => {
         if (err) {
           return res.json({
             status: 500,
@@ -110,6 +121,7 @@ const createTeam = async (req, res) => {
     }).
     catch(e => {
       // eslint-disable-next-line no-console
+      //@ts-ignore
       console.poo(e);
 
       return res.status(500).json({
@@ -119,7 +131,7 @@ const createTeam = async (req, res) => {
     });
 };
 
-const createRound = async (req, res, next) => {
+const createRound = async (req: Request, res: Response, next: NextFunction) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) next();
@@ -133,7 +145,7 @@ const createRound = async (req, res, next) => {
   });
 
   await roundDocument.save().
-    then(async round => {
+    then(async (round: Round) => {
       event.rounds.push(round.id);
       await event.save();
 
@@ -149,9 +161,10 @@ const createRound = async (req, res, next) => {
         },
       });
     }).
-    catch((e) => {
+    catch((error: any) => {
       // eslint-disable-next-line no-console
-      console.poo(e);
+      // @ts-ignore
+      console.poo(error);
 
       return res.status(500).json({
         status: 500,
@@ -160,7 +173,7 @@ const createRound = async (req, res, next) => {
     });
 };
 
-const updateRound = async (req, res, next) => {
+const updateRound = async (req: Request, res: Response, next: NextFunction) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) next();
@@ -170,7 +183,7 @@ const updateRound = async (req, res, next) => {
   roundDocument.slottable = req.body.slottable;
 
   await roundDocument.save().
-    then(async round => {
+    then(async (round: Round) => {
       // event.rounds.push(round.id);
       // await event.save();
 
@@ -186,9 +199,10 @@ const updateRound = async (req, res, next) => {
         },
       });
     }).
-    catch((e) => {
+    catch((error: any) => {
       // eslint-disable-next-line no-console
-      console.poo(e);
+      //@ts-ignore
+      console.poo(error);
 
       return res.status(500).json({
         status: 500,
@@ -197,7 +211,7 @@ const updateRound = async (req, res, next) => {
     });
 };
 
-const deleteRound = async (req, res, next) => {
+const deleteRound = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let event = await EventModel.findById(req.params.event);
 
@@ -220,8 +234,9 @@ const deleteRound = async (req, res, next) => {
       message: "Success. Round deleted.",
       data: round,
     });
-  } catch (e) {
+  } catch (error) {
     // eslint-disable-next-line no-console
+    //@ts-ignore
     console.poo(e);
 
     return res.status(500).json({
@@ -231,7 +246,7 @@ const deleteRound = async (req, res, next) => {
   }
 };
 
-const createScore = async (req, res, next) => {
+const createScore = async (req: Request, res: Response, next: NextFunction) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -264,7 +279,7 @@ const createScore = async (req, res, next) => {
   });
 };
 
-const createScores = async (req, res, next) => {
+const createScores = async (req: Request, res: Response, next: NextFunction) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -275,7 +290,7 @@ const createScores = async (req, res, next) => {
   // for (let score of req.body) {
   //   if (!round.teams.includes(score.team)) return next();
   // }
-  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed 
+  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed
   // after properly examining the design.
 
   /**
@@ -313,13 +328,12 @@ const createScores = async (req, res, next) => {
 
 /**
  * Fetch scores from judges to be displayed.
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns
  */
-const getScores = async (req, res, next) => {
-
+const getScores = async (req: UserRequest, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(403).json({
       status: 403,
@@ -346,7 +360,7 @@ const getScores = async (req, res, next) => {
 };
 
 
-const updateTeamScores = async (req, res) => {
+const updateTeamScores = async (req: Request, res: Response) => {
   if (!req.body) req.body = [];
 
   if (req.body.length === 0) {
@@ -387,15 +401,15 @@ const updateTeamScores = async (req, res) => {
   });
 };
 
-const createSlots = async (req, res) => {
+const createSlots = async (req: Request, res: Response) => {
   let teams = await TeamModel.find({
     event: req.params.event,
   });
   if (!teams) teams = [];
 
-  let teamNames = teams.map(team => team.name);
+  let teamNames = teams.map((team: Team) => team.name);
   // TODO: Use team names
-  teams = teams.map(team => team.id);
+  teams = teams.map((team: Team) => team.id);
 
   // Slotting
   let slots = [];
@@ -423,13 +437,13 @@ const createSlots = async (req, res) => {
   });
 };
 
-const createSlots2 = async (req, res) => {
+const createSlots2 = async (req: Request, res: Response) => {
   let colleges = await CollegeModel.find();
   let event = await EventModel.findById(req.params.event);
   let maxTeamsPerCollege = event.maxTeamsPerCollege;
-  let teams = [];
+  let teams: { teamName: string, college: College }[] = [];
   let names = ["A", "B", "C", "D", "E"];
-  colleges.forEach(college => {
+  colleges.forEach((college: College) => {
     for (let i = 0; i < maxTeamsPerCollege; i++) {
       teams.push({ teamName: `Team ${names[i]}`, college: college });
     }
@@ -454,7 +468,7 @@ const createSlots2 = async (req, res) => {
   });
 };
 
-const get = async (req, res, next) => {
+const get = async (req: Request, res: Response, next: NextFunction) => {
   let event = await EventModel.findById(req.params.event).populate({
     path: "college",
     model: "College",
@@ -485,24 +499,20 @@ const get = async (req, res, next) => {
   });
 };
 
-const getAll = async (req, res) => {
-  let events = await EventModel.find().populate({
-    path: "rounds",
-    model: "Round",
-  }).populate({
+
+const getAll = async (req: Request, res: Response) => {
+  let events: Event[] = await EventModel.find().populate({
     path: "college",
     model: "College",
   });
 
-  events = events.map(event => {
-    let roundId = event.rounds.map(round => round.id);
+  events = events.map((event) => {
     return {
       id: event.id,
       name: event.name,
       description: event.description,
       college: event.college,
-      rounds: roundId,
-      teams: event.teams,
+      rounds: event.rounds,
       minMembersPerTeam: event.minMembersPerTeam,
       maxMembersPerTeam: event.maxMembersPerTeam,
       maxTeamsPerCollege: event.maxTeamsPerCollege,
@@ -510,7 +520,6 @@ const getAll = async (req, res) => {
       duration: event.duration,
       startDate: event.startDate,
       endDate: event.endDate,
-      slottable: event.slottable,
       faculty: event.faculty,
     };
   });
@@ -522,7 +531,11 @@ const getAll = async (req, res) => {
   });
 };
 
-const getLeaderboard = async (req, res, next) => {
+type points = { original?: number, final: number, judge?: string };
+interface ScoreRecalculated extends Omit<Score, "points"> {
+  points: points
+}
+const getLeaderboard = async (req: Request, res: Response, next: NextFunction) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) next();
@@ -531,18 +544,19 @@ const getLeaderboard = async (req, res, next) => {
     round: { $in: event.rounds },
   });
 
-  scores = scores.map(score => ({
+
+  let scoresRecalculated = scores.map((score: Score) => ({
     team: score.team,
     points: {
       original: score.points,
       final: score.points - (score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0),
     },
-  }));
+  })) as ScoreRecalculated[];
 
-  let mappedScores = scores.reduce((acc, curr) => {
+  let mappedScores = scoresRecalculated.reduce((acc: Map<string, points>, curr: ScoreRecalculated) => {
     let points = acc.get(curr.team) || { original: 0, final: 0 };
     acc.set(curr.team, {
-      original: curr.points.original + points.original,
+      original: curr.points.original! + points.original!,
       final: curr.points.final + points.final,
     });
     return acc;
@@ -557,7 +571,7 @@ const getLeaderboard = async (req, res, next) => {
   });
 };
 
-const getRoundLeaderboard = async (req, res, next) => {
+const getRoundLeaderboard = async (req: Request, res: Response, next: NextFunction) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -565,11 +579,16 @@ const getRoundLeaderboard = async (req, res, next) => {
 
   if (!round) next();
 
-  let scores = await ScoreModel.find({
+  interface ScorePopulated extends Omit<Score, "team"> {
+    team: Slot2
+  }
+  let scoresPopulated = await ScoreModel.find({
     round: round.id,
-  }).populate({ path: "team", populate: { path: "college" } });
+  }).populate({ path: "team", populate: { path: "college" } }) as ScorePopulated[];
 
-  scores = await Promise.all(scores.map(async score => {
+
+
+  let scores = await Promise.all(scoresPopulated.map(async (score: ScorePopulated) => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
     if (!score.team.college) {
@@ -612,7 +631,7 @@ const getRoundLeaderboard = async (req, res, next) => {
 };
 
 // IT WAS ALREADY THERE AND I WROTE IT AGAIN!
-const getEventLeaderboard = async (req, res) => {
+const getEventLeaderboard = async (req: Request, res: Response) => {
   let event = await EventModel.findById(req.params.event);
 
   if (!event) {
@@ -629,7 +648,7 @@ const getEventLeaderboard = async (req, res) => {
     model: "Team",
   });
 
-  scores = scores.map(score => {
+  let scoresRecalculated = scores.map((score: Score) => {
     let bias = score.overtime > 0 ? 5 * (Math.ceil(score.overtime / 15)) : 0;
 
     return {
@@ -643,8 +662,11 @@ const getEventLeaderboard = async (req, res) => {
     };
   });
 
-  let leaderboard = {};
-  for (let score of scores) {
+  type ScoreMinified = Omit<Omit<Omit<ScoreRecalculated, "id">, "round">, "overtime">;
+
+  type Leaderboard = { [key: string]: ScoreMinified };
+  let leaderboard: Leaderboard = {};
+  for (let score of scoresRecalculated) {
     if (!leaderboard.hasOwnProperty(score.team.id)) {
       leaderboard[score.team.id] = {
         team: score.team,
@@ -668,7 +690,7 @@ const getEventLeaderboard = async (req, res) => {
   });
 };
 
-const getRound = async (req, res, next) => {
+const getRound = async (req: Request, res: Response, next: NextFunction) => {
 
   let round = await RoundModel.findOne({
     _id: req.params.round,
@@ -693,17 +715,16 @@ const getRound = async (req, res, next) => {
   });
 };
 
-const getRounds = async (req, res) => {
+const getRounds = async (req: Request, res: Response) => {
   let rounds = await RoundModel.find({ event: req.params.event });
 
   if (!rounds) rounds = [];
 
-  rounds = rounds.map(round => ({
+  rounds = rounds.map((round: Round) => ({
     id: round.id,
     event: round.event,
     teams: round.teams,
     published: round.published,
-    duration: round.duration,
     slottable: round.slottable,
     status: round.status,
   }));
@@ -715,7 +736,7 @@ const getRounds = async (req, res) => {
   });
 };
 
-const getSlot = async (req, res, next) => {
+const getSlot = async (req: Request, res: Response, next: NextFunction) => {
   let slot = await SlotModel.findOne({
     round: req.params.round,
     team: req.params.team,
@@ -734,7 +755,7 @@ const getSlot = async (req, res, next) => {
   });
 };
 
-const getSlots = async (req, res, next) => {
+const getSlots = async (req: Request, res: Response, next: NextFunction) => {
   let slots = await SlotModel.find({ round: req.params.round }).populate({
     path: "team",
     model: "Team",
@@ -742,7 +763,7 @@ const getSlots = async (req, res, next) => {
 
   if (!slots) next();
 
-  slots = slots.map(slot => ({
+  slots = slots.map((slot: Slot2) => ({
     id: slot.id,
     number: slot.number,
     round: slot.round,
@@ -757,10 +778,10 @@ const getSlots = async (req, res, next) => {
   });
 };
 
-const getSlots2 = async (req, res, next) => {
+const getSlots2 = async (req: Request, res: Response, next: NextFunction) => {
   let slots = await Slot2Model.find({ round: req.params.round }).populate('college');
   if (!slots) next();
-  slots = slots.map(slot => ({
+  slots = slots.map((slot: Slot2) => ({
     id: slot.id,
     number: slot.number,
     round: slot.round,
@@ -776,7 +797,7 @@ const getSlots2 = async (req, res, next) => {
 };
 
 
-const deleteSlots2 = async (req, res) => {
+const deleteSlots2 = async (req: Request, res: Response) => {
   await Slot2Model.deleteMany({ round: req.params.round });
   return res.json({
     status: 200,
@@ -784,7 +805,7 @@ const deleteSlots2 = async (req, res) => {
   });
 };
 
-const getTeam = async (req, res, next) => {
+const getTeam = async (req: Request, res: Response, next: NextFunction) => {
   let team = await TeamModel.findOne({
     _id: req.params.team,
     event: req.params.event,
@@ -799,7 +820,7 @@ const getTeam = async (req, res, next) => {
   });
 };
 
-const getTeams = async (req, res) => {
+const getTeams = async (req: Request, res: Response) => {
   let teams = await TeamModel.find({ event: req.params.event }).populate("college");
 
   if (!teams) teams = [];
@@ -812,7 +833,7 @@ const getTeams = async (req, res) => {
   });
 };
 
-const getTeamsInRound = async (req, res) => {
+const getTeamsInRound = async (req: Request, res: Response) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
@@ -828,7 +849,7 @@ const getTeamsInRound = async (req, res) => {
   });
 };
 
-const create = async (req, res) => {
+const create = async (req: Request, res: Response) => {
   let {
     name,
     college,
@@ -861,7 +882,7 @@ const create = async (req, res) => {
   });
 
   await event.save().
-    then(event => {
+    then((event: Event) => {
       return res.json({
         status: 200,
         message: "New event created",
@@ -874,8 +895,9 @@ const create = async (req, res) => {
         },
       });
     }).
-    catch((e) => {
+    catch((e: any) => {
       // eslint-disable-next-line no-console
+      //@ts-ignore
       console.poo(e);
 
       return res.status(500).json({
@@ -885,7 +907,7 @@ const create = async (req, res) => {
     });
 };
 
-const edit = async (req, res) => {
+const edit = async (req: Request, res: Response) => {
   let {
     name,
     college,
@@ -932,7 +954,7 @@ const edit = async (req, res) => {
   }
 
   await event.save().
-    then(event => {
+    then((event: Event) => {
       return res.json({
         status: 200,
         message: "Success. Event Updated",
@@ -945,8 +967,9 @@ const edit = async (req, res) => {
         },
       });
     }).
-    catch((e) => {
+    catch((e: any) => {
       // eslint-disable-next-line no-console
+      //@ts-ignore
       console.poo(e);
 
       return res.status(500).json({
@@ -962,13 +985,13 @@ const edit = async (req, res) => {
  * @param {string} college The college id
  * @returns {Array} The members id
  */
-const addBulkParticipants = (data, college) => {
+const addBulkParticipants = (data: Participant[], college: College) => {
 
   // TODO: check if student particpant registered for faculty event and vice versa
 
   return new Promise(async (resolve, reject) => {
     try {
-      let members = [];
+      let members: string[] = [];
       await data.map(each => {
         let participant = new ParticipantModel({
           registrationID: each.registrationID,
@@ -977,20 +1000,20 @@ const addBulkParticipants = (data, college) => {
           faculty: each.faculty,
         });
         members.push(participant._id);
-        participant.save(err => {
+        participant.save((err: any) => {
           if (err) {
             throw err;
           }
         });
       });
       resolve(members);
-    } catch (err) {
+    } catch (err: any) {
       reject(err);
     }
   });
 };
 
-const publishRoundLeaderboard = async (req, res) => {
+const publishRoundLeaderboard = async (req: Request, res: Response) => {
   let round = await RoundModel.findById(req.params.round);
 
   if (!round) {
@@ -1010,7 +1033,7 @@ const publishRoundLeaderboard = async (req, res) => {
   });
 };
 
-module.exports = {
+export default {
   deleteTeam,
   deleteRound,
   createRound,

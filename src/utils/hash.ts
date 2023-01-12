@@ -15,7 +15,7 @@ const SALT_ROUNDS = 10;
  * @param {string} password The plain text password.
  * @returns {Promise<string>} The salted hash of the given password.
  */
-function generatePasswordHash(password) {
+function generatePasswordHash(password: string) {
   return new Promise(async (resolve, reject) => {
     try {
       let hash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -33,7 +33,7 @@ function generatePasswordHash(password) {
  * @param {string} hash The salted hash for the password
  * @returns {Promise<boolean>} Whether or not the given hash is of the password.
  */
-function comparePasswordHash(password, hash) {
+function comparePasswordHash(password: string, hash: string) {
   return new Promise(async (resolve, reject) => {
     try {
       let match = await bcrypt.compare(password, hash);

@@ -7,7 +7,15 @@ const ParticipantModel = require("../models/Participant");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
 
-const get = async (req, res) => {
+import { NextFunction, Request, Response } from "express";
+import { College } from "../models/College";
+import { Event } from "../models/Event";
+import { Judge } from "../models/Judge";
+import { Participant } from "../models/Participant";
+import { Team } from "../models/Team";
+
+
+const get = async (req: Request, res: Response) => {
   try {
     let users = await UserModel.find();
     let events = await EventModel.find();
@@ -25,22 +33,22 @@ const get = async (req, res) => {
         },
         events: {
           total: events.length,
-          staff: events.filter(e => e.faculty).length,
-          venues: [ ...new Set(events.map(e => e.venue)) ].length,
+          staff: events.filter((e: Event) => e.faculty).length,
+          venues: [...new Set(events.map((e: Event) => e.venue))].length,
         },
         colleges: {
           total: colleges.length,
-          locations: [ ...new Set(colleges.map(c => c.location)) ].length,
+          locations: [...new Set(colleges.map((c: College) => c.location))].length,
         },
         participants: {
-          total: participants.map(p => p.registrationID).length,
-          staff: participants.filter(p => p.faculty).map(p => p.registrationID).length,
+          total: participants.map((p: Participant) => p.registrationID).length,
+          staff: participants.filter((p: Participant) => p.faculty).map((p: Participant) => p.registrationID).length,
         },
         teams: {
-          total: teams.filter(t => t.members.length > 1).length,
+          total: teams.filter((t: Team) => t.members.length > 1).length,
         },
         judges: {
-          total: judges.map(j => j.name).length,
+          total: judges.map((j: Judge) => j.name).length,
         },
       },
     });
@@ -52,6 +60,6 @@ const get = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   get,
 };

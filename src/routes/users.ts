@@ -11,13 +11,16 @@ router.get("/", Users.getAll);
 router.get("/:user", Users.get);
 
 // Create a new user
+//@ts-ignore
 router.post("/", Users.create);
 // Authenticate a user into the system
 router.post("/login", Users.login);
 // Modify the requester's user details.
+//@ts-ignore
 router.post("/:user", Users.updateUser);
 
 // Reset password of another user.
+//@ts-ignore
 router.patch("/", Users.resetPassword);
 // Modify the requester's user details.
 router.patch("/:user", Users.update);
