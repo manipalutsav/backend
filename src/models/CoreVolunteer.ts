@@ -4,6 +4,7 @@ interface CoreVolunteer {
   id: string,
   name: string,
   registerNumber: number,
+  phoneNumber: number,
   shirtSize: string,
   college: Schema.Types.ObjectId
 }
@@ -16,6 +17,10 @@ const schema = new Schema<CoreVolunteer>({
   registerNumber: {
     type: Number,
     required: true,
+  },
+  phoneNumber: {
+    type: Number,
+    required: true
   },
   shirtSize: {
     type: String,

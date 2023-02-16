@@ -36,7 +36,7 @@ export default async (req: UserRequest, res: Response, next: NextFunction) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     res.status(401).json(HTTP_STATUS[401]);
   }

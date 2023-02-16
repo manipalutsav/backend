@@ -122,7 +122,7 @@ const createTeam = async (req: Request, res: Response) => {
     catch(e => {
       // eslint-disable-next-line no-console
       //@ts-ignore
-      console.poo(e);
+      console.log(e);
 
       return res.status(500).json({
         status: 500,
@@ -164,7 +164,7 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
     catch((error: any) => {
       // eslint-disable-next-line no-console
       // @ts-ignore
-      console.poo(error);
+      console.log(error);
 
       return res.status(500).json({
         status: 500,
@@ -202,7 +202,7 @@ const updateRound = async (req: Request, res: Response, next: NextFunction) => {
     catch((error: any) => {
       // eslint-disable-next-line no-console
       //@ts-ignore
-      console.poo(error);
+      console.log(error);
 
       return res.status(500).json({
         status: 500,
@@ -237,7 +237,7 @@ const deleteRound = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     return res.status(500).json({
       status: 500,
@@ -898,7 +898,7 @@ const create = async (req: Request, res: Response) => {
     catch((e: any) => {
       // eslint-disable-next-line no-console
       //@ts-ignore
-      console.poo(e);
+      console.log(e);
 
       return res.status(500).json({
         status: 500,
@@ -970,7 +970,7 @@ const edit = async (req: Request, res: Response) => {
     catch((e: any) => {
       // eslint-disable-next-line no-console
       //@ts-ignore
-      console.poo(e);
+      console.log(e);
 
       return res.status(500).json({
         status: 500,

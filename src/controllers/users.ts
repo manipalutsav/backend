@@ -34,7 +34,7 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
     next();
   }
 };
@@ -143,7 +143,7 @@ const create = async (req: UserRequest, res: Response) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     return res.status(500).json({
       status: 500,
@@ -182,7 +182,7 @@ const remove = async (req: Request, res: Response, next: NextFunction) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     res.status(500).json({
       status: 500,
@@ -257,7 +257,7 @@ const updateUser = async (req: UserRequest, res: Response) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     return res.status(500).json({
       status: 500,
@@ -345,7 +345,7 @@ const update = async (req: Request, res: Response) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     res.status(500).json({
       status: 500,
@@ -411,7 +411,7 @@ const resetPassword = async (req: UserRequest, res: Response) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     res.status(500).json({
       status: 500,
@@ -482,7 +482,7 @@ const login = async (req: Request, res: Response) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     //@ts-ignore
-    console.poo(e);
+    console.log(e);
 
     res.status(500).json({
       status: 500,
