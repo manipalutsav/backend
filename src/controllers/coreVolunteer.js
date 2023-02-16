@@ -4,14 +4,16 @@ const CoreVolunteerModel = require("../models/CoreVolunteer");
 
 exports.addVolunteer = async (req, res) => {
   try {
-    const { name, registerNumber, shirtSize, college } = req.body;
+    const { name, registerNumber, phoneNumber, shirtSize, college } = req.body;
     if (!name || name.length === 0) { throw Error("Please enter name."); }
     if (!registerNumber || registerNumber.length === 0) { throw Error("Please enter register number."); }
+    if (!phoneNumber || phoneNumber.length === 0) { throw Error("Please enter phone number."); }
     if (!shirtSize || shirtSize.length === 0) { throw Error("Please select shirt size."); }
     if (!college || college.length === 0) { throw Error("Please select the college."); }
     let volunteer = await CoreVolunteerModel.create({
       name,
       registerNumber,
+      phoneNumber,
       shirtSize,
       college,
     });

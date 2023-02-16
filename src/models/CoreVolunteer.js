@@ -9,6 +9,10 @@ const schema = {
     type: Number,
     required: true,
   },
+  phoneNumber: {
+    type: Number,
+    required: true,
+  },
   shirtSize: {
     type: String,
     required: true,
