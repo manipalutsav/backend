@@ -141,7 +141,7 @@ exports.getVolunteer = async (req, res) => {
       throw response(403, "User does not have permission to view volunteers");
     }
 
-    let filterOptions = { id };
+    let filterOptions = { _id: id };
     if ([4, 8].includes(req.user.type)) {
       filterOptions = { collegeId: req.user.college };
     }
