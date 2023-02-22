@@ -45,10 +45,11 @@ exports.addVolunteer = async (req, res) => {
       collegeId,
     });
 
-    return res.json(response(200, volunteer));
+    return res.status(200).json(response(200, volunteer));
 
   } catch (error) {
-    return res.json(error);
+    console.log(error);
+    return res.status(error.status).json(error);
   }
 };
 
