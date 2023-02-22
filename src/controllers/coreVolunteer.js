@@ -53,7 +53,7 @@ exports.addVolunteer = async (req, res) => {
 
 exports.updateVolunteer = async (req, res) => {
   try {
-    const id = req.param.volunteerId
+    const id = req.params.volunteerId
     const { name, registerNumber, phoneNumber, shirtSize, collegeId } = req.body;
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
     if (!name || name.length === 0) { throw Error("Please enter name."); }
@@ -96,7 +96,7 @@ exports.updateVolunteer = async (req, res) => {
 
 exports.deleteVolunteer = async (req, res) => {
   try {
-    const id = req.param.volunteerId
+    const id = req.params.volunteerId
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
     let volunteer = await CoreVolunteerModel.findById(id);
     if (!volunteer) {
@@ -134,7 +134,7 @@ exports.deleteVolunteer = async (req, res) => {
 exports.getVolunteer = async (req, res) => {
   try {
 
-    const id = req.param.volunteerId
+    const id = req.params.volunteerId
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
 
     if (![1, 4, 8].includes(req.user.type)) {
