@@ -224,6 +224,7 @@ const updateUser = async (req, res) => {
 
     user.name = req.body.name;
     user.email = req.body.email;
+    user.mobile = req.body.mobile;
     user.college = req.body.college;
     user.type = req.body.type;
     user.save(err => {

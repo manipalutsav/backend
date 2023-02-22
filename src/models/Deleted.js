@@ -9,6 +9,10 @@ const schema = {
     type: Date,
     required: true,
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
   data: {
     type: Object,
     required: true,
