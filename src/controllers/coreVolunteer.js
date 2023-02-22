@@ -16,7 +16,7 @@ exports.addVolunteer = async (req, res) => {
     if (!shirtSize || shirtSize.length === 0) { throw response(400, "Please select shirt size."); }
     if (!collegeId || collegeId.length === 0) { throw response(400, "Please select the college."); }
 
-    if ([1, 4, 8].includes(req.user.type)) {
+    if (![1, 4, 8].includes(req.user.type)) {
       throw response(403, `User does not have permission to add volunteers, required [1,4,8] provided: ${req.user.type}`);
     }
 
@@ -64,7 +64,7 @@ exports.updateVolunteer = async (req, res) => {
     if (!volunteer) {
       throw Error("Could not find volunteer to update.")
     }
-    if ([1, 4, 8].includes(req.user.type)) {
+    if (![1, 4, 8].includes(req.user.type)) {
       throw Error("User does not have permission to update volunteers");
     }
 
@@ -102,7 +102,7 @@ exports.deleteVolunteer = async (req, res) => {
       throw Error("Could not find volunteer to remove.")
     }
 
-    if ([1, 4, 8].includes(req.user.type)) {
+    if (![1, 4, 8].includes(req.user.type)) {
       throw Error("User does not have permission to delete volunteers");
     }
     if ([4, 8].includes(req.user.type) && req.user.college != volunteer.collegeId) {
@@ -133,7 +133,7 @@ exports.deleteVolunteer = async (req, res) => {
 exports.getByCollege = async (req, res) => {
   try {
 
-    if ([1, 4, 8].includes(req.user.type)) {
+    if (![1, 4, 8].includes(req.user.type)) {
       throw Error("User does not have permission to view volunteers");
     }
 
