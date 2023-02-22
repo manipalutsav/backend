@@ -131,19 +131,25 @@ exports.deleteVolunteer = async (req, res) => {
   }
 };
 
-exports.getVolunteers = async (req, res) => {
+exports.getVolunteer = async (req, res) => {
   try {
+
+    const id = req.param.volunteerId
+    if (!id || id.length === 0) { throw Error("Id is missing from request"); }
 
     if (![1, 4, 8].includes(req.user.type)) {
       throw Error("User does not have permission to view volunteers");
     }
 
-    let filterOptions = {};
+    let filterOptions = { id };
     if ([4, 8].includes(req.user.type)) {
       filterOptions = { collegeId: req.user.college };
     }
 
-    let volunteer = await CoreVolunteerModel.find(filterOptions);
+    let volunteer = await CoreVolunteerModel.findOne(filterOptions);
+    if (!volunteer) {
+      throw Error("Could not find volunteer")
+    }
 
     return res.json({
       status: 200,
@@ -157,3 +163,32 @@ exports.getVolunteers = async (req, res) => {
     });
   }
 };
+
+
+exports.getVolunteers = async (req, res) => {
+  try {
+
+    if (![1, 4, 8].includes(req.user.type)) {
+      throw Error("User does not have permission to view volunteers");
+    }
+
+    let filterOptions = {};
+    if ([4, 8].includes(req.user.type)) {
+      filterOptions = { collegeId: req.user.college };
+    }
+
+    let volunteers = await CoreVolunteerModel.find(filterOptions);
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: volunteers,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
