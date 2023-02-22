@@ -17,7 +17,7 @@ const schema = {
     type: String,
     required: true,
   },
-  college: {
+  collegeId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
