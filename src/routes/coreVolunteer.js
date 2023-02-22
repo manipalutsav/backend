@@ -3,12 +3,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { addVolunteer, getAll } = require("../controllers/coreVolunteer");
+const { addVolunteer, updateVolunteer, deleteVolunteer, getVolunteers } = require("../controllers/coreVolunteer");
 
-// Create a new Volunteer
-router.post("/add", addVolunteer);
-
-// get all volunteers
-router.get("/", getAll);
+router.post("/", addVolunteer);
+router.patch("/:volunteerId", updateVolunteer);
+router.delete("/:volunteerId", deleteVolunteer);
+router.get("/", getVolunteers);
 
 module.exports = router;

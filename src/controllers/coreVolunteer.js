@@ -53,7 +53,8 @@ exports.addVolunteer = async (req, res) => {
 
 exports.updateVolunteer = async (req, res) => {
   try {
-    const { id, name, registerNumber, phoneNumber, shirtSize, collegeId } = req.body;
+    const id = req.param.volunteerId
+    const { name, registerNumber, phoneNumber, shirtSize, collegeId } = req.body;
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
     if (!name || name.length === 0) { throw Error("Please enter name."); }
     if (!registerNumber || registerNumber.length === 0) { throw Error("Please enter register number."); }
@@ -95,7 +96,7 @@ exports.updateVolunteer = async (req, res) => {
 
 exports.deleteVolunteer = async (req, res) => {
   try {
-    const { id } = req.body;
+    const id = req.param.volunteerId
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
     let volunteer = await CoreVolunteerModel.findById(id);
     if (!volunteer) {
@@ -130,36 +131,19 @@ exports.deleteVolunteer = async (req, res) => {
   }
 };
 
-exports.getByCollege = async (req, res) => {
+exports.getVolunteers = async (req, res) => {
   try {
 
     if (![1, 4, 8].includes(req.user.type)) {
       throw Error("User does not have permission to view volunteers");
     }
 
-    let volunteer = await CoreVolunteerModel.find({ collegeId: req.user.college });
-
-    return res.json({
-      status: 200,
-      message: "Success",
-      data: volunteer,
-    });
-  } catch (e) {
-    return res.status(500).json({
-      status: 500,
-      message: "Internal Server Error",
-    });
-  }
-};
-
-exports.getAll = async (req, res) => {
-  try {
-
-    if (req.user.type != 1) {
-      throw Error("Only Admins can fetch all volunteers");
+    let filterOptions = {};
+    if ([4, 8].includes(req.user.type)) {
+      filterOptions = { collegeId: req.user.college };
     }
 
-    let volunteer = await CoreVolunteerModel.find();
+    let volunteer = await CoreVolunteerModel.find(filterOptions);
 
     return res.json({
       status: 200,
