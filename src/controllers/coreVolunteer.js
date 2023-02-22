@@ -2,8 +2,7 @@
 
 const CoreVolunteerModel = require("../models/CoreVolunteer");
 const Deleted = require("../models/Deleted");
-const User = require("../models/User");
-const { response, HTTP_STATUS } = require("../utils/constants");
+const { response } = require("../utils/constants");
 
 exports.addVolunteer = async (req, res) => {
   try {
