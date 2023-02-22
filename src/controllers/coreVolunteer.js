@@ -135,10 +135,10 @@ exports.getVolunteer = async (req, res) => {
   try {
 
     const id = req.params.volunteerId
-    if (!id || id.length === 0) { throw Error("Id is missing from request"); }
+    if (!id || id.length === 0) { throw response(400, "Id is missing from request"); }
 
     if (![1, 4, 8].includes(req.user.type)) {
-      throw Error("User does not have permission to view volunteers");
+      throw response(403, "User does not have permission to view volunteers");
     }
 
     let filterOptions = { id };
@@ -148,19 +148,12 @@ exports.getVolunteer = async (req, res) => {
 
     let volunteer = await CoreVolunteerModel.findOne(filterOptions);
     if (!volunteer) {
-      throw Error("Could not find volunteer")
+      throw response(404, "Could not find volunteer")
     }
 
-    return res.json({
-      status: 200,
-      message: "Success",
-      data: volunteer,
-    });
-  } catch (e) {
-    return res.status(500).json({
-      status: 500,
-      message: "Internal Server Error",
-    });
+    return res.json(response(200, volunteer));
+  } catch (error) {
+    return res.status(error.status).json(error);
   }
 };
 
