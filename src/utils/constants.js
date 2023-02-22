@@ -25,6 +25,10 @@ const HTTP_STATUS = {
   },
 };
 
+const response = (status = 200, data = "") => {
+  return { ...HTTP_STATUS[status], data }
+}
+
 const USER_TYPES = {
   ADMINISTRATOR: 1 << 0,
   SUPPORT_TEAM: 1 << 1,
@@ -53,4 +57,5 @@ module.exports = {
   USER_TYPES,
   ROUND_STATUS,
   COMMANDS,
+  response
 };

@@ -1,8 +1,10 @@
 "use strict";
 
+const { response } = require("../app");
 const CoreVolunteerModel = require("../models/CoreVolunteer");
 const Deleted = require("../models/Deleted");
 const User = require("../models/User");
+const { error, HTTP_STATUS } = require("../utils/constants");
 
 exports.addVolunteer = async (req, res) => {
   try {
@@ -10,30 +12,29 @@ exports.addVolunteer = async (req, res) => {
 
     let MAX_VOLUNTEERS_PER_COLLEGE = 8;
 
-    if (!name || name.length === 0) { throw Error("Please enter name."); }
-    if (!registerNumber || registerNumber.length === 0) { throw Error("Please enter register number."); }
-    if (!phoneNumber || phoneNumber.length === 0) { throw Error("Please enter phone number."); }
-    if (!shirtSize || shirtSize.length === 0) { throw Error("Please select shirt size."); }
-    if (!collegeId || collegeId.length === 0) { throw Error("Please select the college."); }
+    if (!name || name.length === 0) { throw response(400, "Please enter name."); }
+    if (!registerNumber || registerNumber.length === 0) { throw response(400, "Please enter register number."); }
+    if (!phoneNumber || phoneNumber.length === 0) { throw response(400, "Please enter phone number."); }
+    if (!shirtSize || shirtSize.length === 0) { throw response(400, "Please select shirt size."); }
+    if (!collegeId || collegeId.length === 0) { throw response(400, "Please select the college."); }
 
     if ([1, 4, 8].includes(req.user.type)) {
-      throw Error("User does not have permission to add volunteers");
+      throw response(403, `User does not have permission to add volunteers, required [1,4,8] provided: ${req.user.type}`);
     }
 
     if ([4, 8].includes(req.user.type) && req.user.college != collegeId) {
-      throw Error("User cannot add volunteer of another college.");
+      throw response(403, "User cannot add volunteer of another college.");
     }
 
     let checkVolunteer = await CoreVolunteerModel.findOne({ registerNumber });
     if (checkVolunteer) {
-      throw Error("Volunteer with register number already exists.")
+      throw response(400, "Volunteer with register number already exists.")
     }
 
     let check2Volunteer = await CoreVolunteerModel.find({ collegeId });
-    if (check2Volunteer.length == 8) {
-      throw Error("College already has 8 volunteers")
+    if (check2Volunteer.length == MAX_VOLUNTEERS_PER_COLLEGE) {
+      throw response(400, `College already has ${MAX_VOLUNTEERS_PER_COLLEGE} volunteers`)
     }
-
 
 
     let volunteer = await CoreVolunteerModel.create({
@@ -44,16 +45,10 @@ exports.addVolunteer = async (req, res) => {
       collegeId,
     });
 
-    return res.json({
-      status: 200,
-      message: "Success. New Volunteer created.",
-      data: volunteer,
-    });
+    return res.json(response(200, volunteer));
+
   } catch (error) {
-    return res.json({
-      status: 400,
-      message: error.message,
-    });
+    return res.json(error);
   }
 };
 
