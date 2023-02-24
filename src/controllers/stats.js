@@ -6,6 +6,8 @@ const EventModel = require("../models/Event");
 const ParticipantModel = require("../models/Participant");
 const TeamModel = require("../models/Team");
 const JudgeModel = require("../models/Judge");
+const CoreVolunteerModel = require("../models/CoreVolunteer");
+const EventVolunteerModel = require("../models/EventVolunteer");
 
 const get = async (req, res) => {
   try {
@@ -15,6 +17,8 @@ const get = async (req, res) => {
     let participants = await ParticipantModel.find();
     let teams = await TeamModel.find();
     let judges = await JudgeModel.find();
+    let coreVolunteers = await CoreVolunteerModel.find();
+    let eventVolunteers = await EventVolunteerModel.find();
 
     return res.json({
       status: 200,
@@ -26,11 +30,11 @@ const get = async (req, res) => {
         events: {
           total: events.length,
           staff: events.filter(e => e.faculty).length,
-          venues: [ ...new Set(events.map(e => e.venue)) ].length,
+          venues: [...new Set(events.map(e => e.venue))].length,
         },
         colleges: {
           total: colleges.length,
-          locations: [ ...new Set(colleges.map(c => c.location)) ].length,
+          locations: [...new Set(colleges.map(c => c.location))].length,
         },
         participants: {
           total: participants.map(p => p.registrationID).length,
@@ -42,6 +46,11 @@ const get = async (req, res) => {
         judges: {
           total: judges.map(j => j.name).length,
         },
+        volunteers: {
+          core: coreVolunteers.map(c => c.name).length,
+          event: eventVolunteers.map(e => e.name).length,
+          total: coreVolunteers.map(c => c.name).length + eventVolunteers.map(e => e.name).length,
+        }
       },
     });
   } catch (e) {
