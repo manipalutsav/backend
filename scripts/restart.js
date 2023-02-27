@@ -13,7 +13,11 @@ pm2.connect(async (err) => {
             console.log("No instance found, creating one...")
         }
         else {
-            console.log("Found an instance, restarting it.")
+            console.log("Found an instance.")
+            let pid = pm2Instance.pid;
+            let pm2_id = pm2Instance.pm2_env.pm_id;
+            console.log("Stopping it.")
+            await new Promise((res, rej) => pm2.stop(pm2_id, (err) => err ? rej(err) : res(0)))
         }
     }
     catch (e) {
