@@ -1,4 +1,5 @@
 const pm2 = require('pm2')
+const child_process = require("child_process");
 
 pm2.connect(async (err) => {
     try {
@@ -18,6 +19,7 @@ pm2.connect(async (err) => {
             let pm2_id = pm2Instance.pm2_env.pm_id;
             console.log("Stopping it.")
             await new Promise((res, rej) => pm2.stop(pm2_id, (err) => err ? rej(err) : res(0)))
+            child_process.execSync("sudo kill " + pid);
         }
     }
     catch (e) {
