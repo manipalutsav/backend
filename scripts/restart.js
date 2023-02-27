@@ -31,9 +31,11 @@ pm2.connect(async (err) => {
             console.log("Restarting pm2 instance " + pm2_id);
             console.log(child_process.execSync("pm2 start " + pm2_id).toString());
             console.log("Restarted")
+            process.exit(0);
         }
     }
     catch (e) {
         console.error("ERROR", e);
+        process.exit(-1);
     }
 })
