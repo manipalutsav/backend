@@ -19,9 +19,9 @@ pm2.connect(async (err) => {
             console.log("No instance found, creating one...")
         }
         else {
-            console.log("Found an instance.")
             let pid = pm2Instance.pid;
             let pm2_id = pm2Instance.pm2_env.pm_id;
+            console.log(`Found an instance. [PID: ${pid} ][PM2_ID: ${pm2_id}]`)
             console.log("Stopping it.")
             await new Promise((res, rej) => pm2.stop(pm2_id, (err) => err != "Terminated" ? rej(err) : res(0)))
             console.log("Terminating process " + pid);
