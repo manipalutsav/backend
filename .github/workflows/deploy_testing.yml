@@ -46,4 +46,4 @@ jobs:
             git fetch
             git checkout testing
             git pull
-            node scripts/restart.js
+            node ./scripts/restart.js
