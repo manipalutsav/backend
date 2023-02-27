@@ -1,6 +1,11 @@
 const pm2 = require('pm2')
 const child_process = require("child_process");
 
+
+console.log("Fetching latest changes");
+console.log(child_process.execSync("git pull").toString());
+
+
 pm2.connect(async (err) => {
     try {
         if (err) {
