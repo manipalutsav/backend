@@ -1,0 +1,46 @@
+# Sample workflow for building and deploying a Gatsby site to GitHub Pages
+#
+# To get started with Gatsby see: https://www.gatsbyjs.com/docs/quick-start/
+#
+name: Test PR
+
+on:
+  # Runs on prs for testing
+  pull_request:
+    branches:
+    - '**'        # matches every branch
+    - '!main'   # excludes master
+
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Build job
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test
