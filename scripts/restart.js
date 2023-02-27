@@ -26,6 +26,7 @@ pm2.connect(async (err) => {
             await new Promise((res, rej) => pm2.stop(pm2_id, (err) => err ? rej(err) : res(0)))
             child_process.execSync("sudo kill " + pid);
             pm2.start(pm2_id);
+            console.log("Restarted")
         }
     }
     catch (e) {
