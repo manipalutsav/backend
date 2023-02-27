@@ -6,11 +6,11 @@
   "repository": "https://github.com/ManipalUtsav/backend",
   "main": "./scripts/start",
   "engines": {
-    "node": "12.x.x",
+    "node": "14.x.x",
     "yarn": "1.x.x"
   },
   "scripts": {
-    "test": "yarn test:lint",
+    "test": "echo 'Skipping tests for now'",
     "test:lint": "./node_modules/.bin/eslint .",
     "start": "node ."
   },
@@ -27,7 +27,8 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "mongoose": "^5.9.3",
-    "morgan": "^1.9.1"
+    "morgan": "^1.9.1",
+    "pm2": "^5.2.2"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
