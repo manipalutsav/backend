@@ -44,6 +44,6 @@ jobs:
           script: |
             cd backend
             git fetch
-            git checkout testing
+            git checkout main
             git pull
-            node ./scripts/restart.js
+            node scripts/restart.js
