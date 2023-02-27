@@ -2,7 +2,7 @@
 #
 # To get started with Gatsby see: https://www.gatsbyjs.com/docs/quick-start/
 #
-name: Build and deploy testing
+name: Build and deploy prod
 
 on:
   # Runs on pushes targeting the default branch
@@ -46,4 +46,5 @@ jobs:
             git fetch
             git checkout main
             git pull
+            npm ci
             node scripts/restart.js
