@@ -19,7 +19,7 @@ pm2.connect(async (err) => {
             console.log("No instance found, creating one...")
             console.log(child_process.execSync("pm2 start 'sudo node .'").toString());
             console.log("Started")
-
+            process.exit(0);
         }
         else {
             let pid = pm2Instance.pid;
