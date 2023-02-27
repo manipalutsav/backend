@@ -428,10 +428,9 @@ const createSlots2 = async (req, res) => {
   let event = await EventModel.findById(req.params.event);
   let maxTeamsPerCollege = event.maxTeamsPerCollege;
   let teams = [];
-  let names = ["A", "B", "C", "D", "E"];
   colleges.forEach(college => {
     for (let i = 0; i < maxTeamsPerCollege; i++) {
-      teams.push({ teamName: `Team ${names[i]}`, college: college });
+      teams.push({ teamIndex: i, college: college });
     }
   });
   let count = teams.length;
@@ -439,13 +438,14 @@ const createSlots2 = async (req, res) => {
   for (let i = 0; i < count; i++) {
     let index = Math.floor(Math.random() * 100) % teams.length;
     let team = teams.splice(index, 1)[0];
+    let order = i + 1;
     await Slot2Model.create({
-      number: i + 1,
+      number: order,
       round: req.params.round,
-      teamName: team.teamName,
+      teamIndex: team.teamIndex,
       college: team.college._id
     });
-    slots.push({ number: i + 1, ...team });
+    slots.push({ number: order, ...team });
   }
   return res.json({
     status: 200,
@@ -764,7 +764,7 @@ const getSlots2 = async (req, res, next) => {
     id: slot.id,
     number: slot.number,
     round: slot.round,
-    teamName: slot.teamName,
+    teamIndex: slot.teamIndex,
     college: slot.college
   }));
 
