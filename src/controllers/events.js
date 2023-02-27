@@ -275,7 +275,7 @@ const createScores = async (req, res, next) => {
   // for (let score of req.body) {
   //   if (!round.teams.includes(score.team)) return next();
   // }
-  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed 
+  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed
   // after properly examining the design.
 
   /**
@@ -313,10 +313,10 @@ const createScores = async (req, res, next) => {
 
 /**
  * Fetch scores from judges to be displayed.
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns
  */
 const getScores = async (req, res, next) => {
 
@@ -899,7 +899,7 @@ const edit = async (req, res) => {
     startDate,
     endDate,
     slottable,
-    criteria,
+    // criteria,
     faculty
   } = req.body;
 
@@ -919,17 +919,18 @@ const edit = async (req, res) => {
   event.slottable = !!slottable;
   event.faculty = faculty != undefined ? faculty : event.faculty;
 
-  if (criteria) {
-    if (event.rounds && event.rounds.length) {
-      for (let round of event.rounds) {
-        let roundDoc = await RoundModel.findById(round);
-        roundDoc.criteria = criteria;
+  //Seems like not required
+  // if (criteria) {
+  //   if (event.rounds && event.rounds.length) {
+  //     for (let round of event.rounds) {
+  //       let roundDoc = await RoundModel.findById(round);
+  //       roundDoc.criteria = criteria;
 
-        // eslint-disable-next-line no-console
-        await roundDoc.save();
-      }
-    }
-  }
+  //       // eslint-disable-next-line no-console
+  //       await roundDoc.save();
+  //     }
+  //   }
+  // }
 
   await event.save().
     then(event => {
