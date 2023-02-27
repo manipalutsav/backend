@@ -32,6 +32,6 @@ pm2.connect(async (err) => {
         }
     }
     catch (e) {
-        console.error(e);
+        console.error("ERROR", e);
     }
 })
