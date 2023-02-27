@@ -1,95 +1,49 @@
-# # Sample workflow for building and deploying a Gatsby site to GitHub Pages
-# #
-# # To get started with Gatsby see: https://www.gatsbyjs.com/docs/quick-start/
-# #
-# name: Build and deploy prod
+# Sample workflow for building and deploying a Gatsby site to GitHub Pages
+#
+# To get started with Gatsby see: https://www.gatsbyjs.com/docs/quick-start/
+#
+name: Build and deploy testing
 
-# on:
-#   # Runs on pushes targeting the default branch
-#   push:
-#     branches: ["main"]
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
 
 
-# # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-# permissions:
-#   contents: read
-#   pages: write
-#   id-token: write
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-# # Allow one concurrent deployment
-# concurrency:
-#   group: "pages"
-#   cancel-in-progress: true
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
-# # Default to bash
-# defaults:
-#   run:
-#     shell: bash
+# Default to bash
+defaults:
+  run:
+    shell: bash
 
-# jobs:
-#   # Build job
-#   build:
-#     environment:
-#         name: prod
-#     permissions: write-all
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
-#       - name: Setup Node
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: "14"
-#       - name: Install dependencies
-#         run: npm ci
-#       - name: Run tests
-#         run: npm run test
-#       - name: Configure CNAME
-#         run: echo "${{ vars.SITE_URL }}" > static/CNAME
-#       - name: Set backend server
-#         run: echo "export default '${{ vars.BACKEND_URL }}'" > src/utils/serverUrl.js
-#       - name: Build project
-#         env:
-#           NODE_ENV: production
-#         run: npm run build
-#       - name: Move build folder
-#         run: mv ./public ../build
-#       - name: Check working directory
-#         run: echo $(pwd)
-#         working-directory: ../build
-#       - name: Initialize git
-#         run: git init
-#         working-directory: ../build
-#       - name: Set user email
-#         run: git config --local user.email "${{ vars.SVC_EMAIL }}"
-#         working-directory: ../build
-#       - name: Set user name
-#         run: git config --local user.name "${{ vars.SVC_NAME }}"
-#         working-directory: ../build
-#       - name: Set user password
-#         working-directory: ../build
-#         run: git config --local user.password ${{ secrets.SVC_TOKEN }}
-#       - name: Configure git env
-#         working-directory: ../build
-#         run: echo "GIT_USER=${{ vars.SVC_NAME }}:${{ secrets.SVC_TOKEN }}" >> $GITHUB_ENV
-#       - name: Set remote url
-#         working-directory: ../build
-#         run: git remote add origin https://${{ vars.SVC_NAME }}:${{ secrets.SVC_TOKEN }}@${{ vars.GH_PAGES_REPO }}
-#       - name: Fetch from remote url
-#         working-directory: ../build
-#         run: git fetch
-#       - name: Add all files
-#         working-directory: ../build
-#         run: git add .
-#       - name: Commit to master
-#         working-directory: ../build
-#         run: git commit -m "Updated code"
-#       - name: Push code to origin
-#         working-directory: ../build
-#         run: git push -f origin master
-#       - name: Check site deployed
-#         working-directory: ../build
-#         run:  echo "Site deployed ${{ vars.SITE_URL }}"
-#       - name: Delete build folder
-#         working-directory: ../
-#         run: rm -rf build
+jobs:
+  # Build job
+  build:
+    environment:
+        name: prod
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ vars.HOST }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            cd backend
+            git fetch
+            git checkout main
+            git pull
+            node scripts/restart.js
