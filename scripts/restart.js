@@ -13,7 +13,7 @@ pm2.connect(async (err) => {
         }
         let list = await new Promise((res, rej) => pm2.list((err, list) => err ? rej(err) : res(list)))
 
-        let pm2Instance = list.find(item => item.name.match(/sudo node/));
+        let pm2Instance = list.find(item => item.name.match(/node/));
 
         if (!pm2Instance) {
             console.log("No instance found, creating one...")
