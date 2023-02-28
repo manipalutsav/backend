@@ -3,13 +3,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { create, getAll, getAllWithCollegeId, getAllFromCollege } = require("../controllers/volunteer");
+const { addVolunteer, updateVolunteer, deleteVolunteer, getVolunteers, getVolunteer } = require("../controllers/volunteers");
 
-router.post("/addVolunteer", create);
-
-router.get("/", getAll);
-router.get("/getAllWithCollegeId", getAllWithCollegeId);
-router.get("/getAllFromCollege", getAllFromCollege);
-
+router.post("/", addVolunteer);
+router.patch("/:volunteerId", updateVolunteer);
+router.delete("/:volunteerId", deleteVolunteer);
+router.get("/:volunteerId", getVolunteer);
+router.get("/all/:type", getVolunteers);
 
 module.exports = router;
