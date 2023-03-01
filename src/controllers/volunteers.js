@@ -148,7 +148,7 @@ exports.getVolunteer = async (req, res) => {
 
     let filterOptions = { _id: id };
     if ([4, 8].includes(req.user.type)) {
-      filterOptions = { collegeId: req.user.college };
+      filterOptions = { ...filterOptions, collegeId: req.user.college };
     }
 
     let volunteer = await VolunteerModel.findOne(filterOptions);
@@ -176,7 +176,7 @@ exports.getVolunteers = async (req, res) => {
 
     let filterOptions = { type };
     if ([4, 8].includes(req.user.type)) {
-      filterOptions = { collegeId: req.user.college };
+      filterOptions = { ...filterOptions, collegeId: req.user.college };
     }
 
     let volunteers = await VolunteerModel.find(filterOptions);
