@@ -143,7 +143,7 @@ exports.getVolunteer = async (req, res) => {
 
     let filterOptions = { _id: id };
     if ([4, 8].includes(req.user.type)) {
-      filterOptions = { collegeId: req.user.college };
+      filterOptions = { ...filterOptions, collegeId: req.user.college };
     }
 
     let volunteer = await CoreVolunteerModel.findOne(filterOptions);
