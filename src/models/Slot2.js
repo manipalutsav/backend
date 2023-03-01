@@ -20,8 +20,8 @@ const schema = {
     ref: "Team",
     required: false,
   },
-  teamName: {
-    type: String,
+  teamIndex: {
+    type: Number,
     required: true,
   },
 };

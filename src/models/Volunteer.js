@@ -1,30 +1,35 @@
 const mongoose = require("mongoose");
 
 const schema = {
-  college: {
+  name: {
+    type: String,
+    required: true,
+  },
+  registerNumber: {
+    type: Number,
+    required: true,
+  },
+  phoneNumber: {
+    type: Number,
+    required: true,
+  },
+  shirtSize: {
+    type: String,
+    required: false,
+  },
+  collegeId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  list: [
-    {
-      name: {
-        type: String,
-        required: true,
-      },
-      regno: {
-        type: Number,
-        required: true,
-      },
-      shirtSize: {
-        type: String,
-      },
-    },
-  ],
+  type: {
+    type: String,
+    required: true,
+  }
 };
 
 const options = {
   autoCreate: true,
 };
-const volunteerSchema = new mongoose.Schema(schema, options);
+const VolunteerSchema = new mongoose.Schema(schema, options);
 
-module.exports = mongoose.model("Volunteer", volunteerSchema);
+module.exports = mongoose.model("Volunteer", VolunteerSchema);

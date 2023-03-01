@@ -275,7 +275,7 @@ const createScores = async (req, res, next) => {
   // for (let score of req.body) {
   //   if (!round.teams.includes(score.team)) return next();
   // }
-  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed 
+  //Answer: teams saved on scores is slot id and not team id. This needs to be fixed
   // after properly examining the design.
 
   /**
@@ -313,10 +313,10 @@ const createScores = async (req, res, next) => {
 
 /**
  * Fetch scores from judges to be displayed.
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns
  */
 const getScores = async (req, res, next) => {
 
@@ -428,10 +428,9 @@ const createSlots2 = async (req, res) => {
   let event = await EventModel.findById(req.params.event);
   let maxTeamsPerCollege = event.maxTeamsPerCollege;
   let teams = [];
-  let names = ["A", "B", "C", "D", "E"];
   colleges.forEach(college => {
     for (let i = 0; i < maxTeamsPerCollege; i++) {
-      teams.push({ teamName: `Team ${names[i]}`, college: college });
+      teams.push({ teamIndex: i, college: college });
     }
   });
   let count = teams.length;
@@ -439,13 +438,14 @@ const createSlots2 = async (req, res) => {
   for (let i = 0; i < count; i++) {
     let index = Math.floor(Math.random() * 100) % teams.length;
     let team = teams.splice(index, 1)[0];
+    let order = i + 1;
     await Slot2Model.create({
-      number: i + 1,
+      number: order,
       round: req.params.round,
-      teamName: team.teamName,
+      teamIndex: team.teamIndex,
       college: team.college._id
     });
-    slots.push({ number: i + 1, ...team });
+    slots.push({ number: order, ...team });
   }
   return res.json({
     status: 200,
@@ -764,7 +764,7 @@ const getSlots2 = async (req, res, next) => {
     id: slot.id,
     number: slot.number,
     round: slot.round,
-    teamName: slot.teamName,
+    teamIndex: slot.teamIndex,
     college: slot.college
   }));
 
@@ -899,7 +899,7 @@ const edit = async (req, res) => {
     startDate,
     endDate,
     slottable,
-    criteria,
+    // criteria,
     faculty
   } = req.body;
 
@@ -919,17 +919,18 @@ const edit = async (req, res) => {
   event.slottable = !!slottable;
   event.faculty = faculty != undefined ? faculty : event.faculty;
 
-  if (criteria) {
-    if (event.rounds && event.rounds.length) {
-      for (let round of event.rounds) {
-        let roundDoc = await RoundModel.findById(round);
-        roundDoc.criteria = criteria;
+  //Seems like not required
+  // if (criteria) {
+  //   if (event.rounds && event.rounds.length) {
+  //     for (let round of event.rounds) {
+  //       let roundDoc = await RoundModel.findById(round);
+  //       roundDoc.criteria = criteria;
 
-        // eslint-disable-next-line no-console
-        await roundDoc.save();
-      }
-    }
-  }
+  //       // eslint-disable-next-line no-console
+  //       await roundDoc.save();
+  //     }
+  //   }
+  // }
 
   await event.save().
     then(event => {
