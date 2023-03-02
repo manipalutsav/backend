@@ -16,6 +16,7 @@ const handle404 = require("./middlewares/handle404");
 const errorHandler = require("./middlewares/errorHandler");
 const headers = require("./middlewares/headers");
 const auth = require("./middlewares/auth");
+const backupMongo = require("./middlewares/backupMongo");
 
 // Configure application
 
@@ -45,6 +46,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(headers);
+//backup mongo
+app.use(backupMongo);
 
 if (process.env.NODE_ENV !== "development") app.use(auth);
 
