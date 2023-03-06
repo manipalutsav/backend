@@ -8,7 +8,7 @@ exports.addVolunteer = async (req, res) => {
   try {
     const { name, registerNumber, phoneNumber, shirtSize, collegeId, type } = req.body;
 
-    let MAX_VOLUNTEERS_PER_COLLEGE = 8;
+    // let MAX_VOLUNTEERS_PER_COLLEGE = 8;
 
     if (!name || name.length === 0) { throw response(400, "Please enter name."); }
     if (!registerNumber || registerNumber.length === 0) { throw response(400, "Please enter register number."); }
@@ -30,10 +30,10 @@ exports.addVolunteer = async (req, res) => {
       throw response(400, `Volunteer with register number already exists for the type ${type}.`)
     }
 
-    let check2Volunteer = await VolunteerModel.find({ collegeId, type });
-    if (check2Volunteer.length == MAX_VOLUNTEERS_PER_COLLEGE) {
-      throw response(400, `College already has ${MAX_VOLUNTEERS_PER_COLLEGE} volunteers for the type ${type}.`)
-    }
+    // let check2Volunteer = await VolunteerModel.find({ collegeId, type });
+    // if (check2Volunteer.length == MAX_VOLUNTEERS_PER_COLLEGE) {
+    //   throw response(400, `College already has ${MAX_VOLUNTEERS_PER_COLLEGE} volunteers for the type ${type}.`)
+    // }
 
 
     let volunteer = await VolunteerModel.create({
