@@ -2,14 +2,135 @@
 
 const LeaderboardModel = require("../models/Leaderboard");
 const CollegeModel = require("../models/College");
+const RoundModel = require("../models/Round");
 const EventModel = require("../models/Event");
 const ScoreModel = require("../models/Score");
 const TeamModel = require("../models/Team");
-const Slot2 = require("../models/Slot2");
+const Slot2Model = require("../models/Slot2");
+const JudgeScoreModel = require("../models/JudgeScore");
+
+
+//same code as getOvertimeMinusPoints on events
+const getOvertimeMinusPoints = (overtime = 0) => {
+  return overtime > 0 ? 5 * (Math.ceil(overtime / 15)) : 0;
+}
+//same code as getRoundLeaderboard2 without req,res
+const getRoundLeaderboard = async (roundId) => {
+  let round = await RoundModel.findById(roundId);
+
+  if (!round) {
+    throw "Round does not exist to get leaderboard";
+  }
+
+  let scores = await JudgeScoreModel.find({
+    round: round._id
+  })
+
+  //fetch slots for the round
+  let slots = await Slot2Model.find({
+    round: round._id
+  }).populate('college');
+
+  //get all slot ids from scores
+  let slotIds = new Set();
+
+  //Add up points by judges
+  scores.forEach(score => {
+    score.total = score.points.reduce((p1, p2) => p1 + p2);
+    slotIds.add(score.slot);
+  })
+
+  //add up totals for each slot
+  let leaderboard = [];
+  Array.from(slotIds)
+    .map(slotId => slots.find(slot => String(slot._id) == slotId))//add slot details
+    .filter(slot => !slot.disqualified)//filter out disqualified teams
+    .forEach(slot => {
+      let total = scores.filter(score => score.slot == String(slot._id)).reduce((total, score) => total + score.total, 0);
+      let bias = getOvertimeMinusPoints(slot.overtime)
+      total = total - bias;
+      if (!leaderboard.find(leaderboardItem => leaderboardItem.slot._id == slot._id))
+        leaderboard.push({ slot: slot, total })
+    })
+
+  //sort leaderboard
+  leaderboard.sort((p1, p2) => p2.total - p1.total);
+
+  //remove duplicates (keep only one entry per slot)
+
+  //Add Rank
+  let scoreOrder = Array.from(new Set(leaderboard.map(item => item.total)));
+  leaderboard.forEach(item => {
+    item.rank = scoreOrder.indexOf(item.total) + 1;
+  })
+  return leaderboard;
+}
+
+const get2 = async (req, res) => {
+  try {
+    let events = await EventModel.find({ faculty: false });
+    let colleges = (await CollegeModel.find({}))
+    let board = [];
+    colleges.forEach(college => {
+      college = college.toObject();
+      college.points = 0;
+      board.push(college);
+    })
+    // console.log({ board })
+
+    const POINTS = {
+      GROUP: [14, 10, 8],
+      INDIVIDUAL: [10, 8, 6]
+    }
+
+    //get the latest leaderboard of all events
+    await Promise.all(events.map(async event => {
+      //if event doesn't have any rounds, move to next event.
+      if (event.rounds.length == 0)
+        return;
+      //get last round id
+      let roundId = event.rounds[event.rounds.length - 1];
+      let leaderboard = await getRoundLeaderboard(roundId);
+      leaderboard.forEach(item => {
+
+        let point = POINTS[event.maxMembersPerTeam == 1 ? "INDIVIDUAL" : "GROUP"][item.rank - 1];
+        if (point) {
+          let college = board.find(college => {
+            return String(college._id) == String(item.slot.college._id)
+          });
+          college.points += Number(point);
+        }
+      })
+    }))
+
+    board.sort((c1, c2) => c2.points - c1.points)
+
+    console.log(board)
+
+    let ranks = Array.from(new Set(board.map(college => college.points)));
+    console.log({ ranks })
+    board.forEach(college => {
+      college.rank = ranks.findIndex(point => point === college.points) + 1;
+    });
+
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: board,
+    });
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+
+}
 
 const get = async (req, res) => {
   let events = await EventModel.find({ faculty: false });
-
 
   let disqulifiedTeams = await TeamModel.find({ disqualified: true });
   disqulifiedTeams = disqulifiedTeams.map(team => team._id.toString());
@@ -64,7 +185,7 @@ const get = async (req, res) => {
   for (let score of overallLeaderboard) {
 
     //get the slot using it's id on score schema
-    let slot = await Slot2.findOne(score.team);
+    let slot = await Slot2Model.findOne(score.team);
     let team;
     if (slot.college == null) {
       console.log("SLOT COLLEGE MISSING")
@@ -224,7 +345,7 @@ const getWinners = async (req, res) => {
   for (let score of overallLeaderboard) {
 
     //get the slot using it's id on score schema
-    let slot = await Slot2.findOne(score.team);
+    let slot = await Slot2Model.findOne(score.team);
     let team;
     if (slot.college == null) {
       console.log("SLOT COLLEGE MISSING")
@@ -369,6 +490,7 @@ const publish = async (req, res) => {
 
 module.exports = {
   get,
+  get2,
   getPublic,
   getWinners,
   init,

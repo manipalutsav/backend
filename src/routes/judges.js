@@ -6,7 +6,8 @@ const router = express.Router();
 const Judges = require("../controllers/judges");
 
 // Returns the list of all judges
-router.get("/", Judges.get);
+router.get("/", Judges.getAll);
+router.get("/:round", Judges.getForRound);
 
 // Create a new judge
 router.post("/", Judges.create);

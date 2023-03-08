@@ -6,7 +6,7 @@ const router = express.Router();
 const Leaderboard = require("../controllers/leaderboard");
 
 // Returns the leaderboard
-router.get("/", Leaderboard.get);
+router.get("/", Leaderboard.get2);
 // Returns the leaderboard visible to the public
 router.get("/public", Leaderboard.getPublic);
 // Returns the list of all the winning teams

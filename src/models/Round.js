@@ -6,8 +6,15 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  teams: [ mongoose.Schema.Types.ObjectId ],
-  criteria: [ String ],
+  teams: [mongoose.Schema.Types.ObjectId],
+  criteria: [{
+    criterion: String,
+    weightage: {
+      type: Number,
+      required: true,
+      default: 10
+    }
+  }],
   slottable: {
     type: Boolean,
     required: true,
