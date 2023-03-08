@@ -24,6 +24,16 @@ const schema = {
     type: Number,
     required: true,
   },
+  overtime: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  disqualified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 };
 
 const options = {

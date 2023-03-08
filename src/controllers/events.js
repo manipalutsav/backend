@@ -4,6 +4,8 @@ const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
 const ScoreModel = require("../models/Score");
+const JudgeScoreModel = require("../models/JudgeScore")
+const JudgeModel = require("../models/Judge")
 const SlotModel = require("../models/Slot");
 const Slot2Model = require("../models/Slot2");
 const TeamModel = require("../models/Team");
@@ -264,13 +266,68 @@ const createScore = async (req, res, next) => {
   });
 };
 
+
+const createJudgeScore = async (req, res) => {
+  let round = await RoundModel.findById(req.params.round);
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round does not exist to submit scores",
+    });
+  }
+
+  let judge = await JudgeModel.findById(req.params.judge);
+  if (!judge) {
+    return res.status(404).json({
+      status: 404,
+      message: "Judge Does not exist",
+    });
+  }
+
+  let oldScores = await JudgeScoreModel.find({
+    round: req.params.round,
+    judge: req.params.judge
+  });
+
+  if (oldScores.length > 0) {
+    return res.status(400).json({
+      status: 404,
+      message: "Judge has already submitted the scores for this round. Contact support team.",
+    });
+  }
+
+  let scores = req.body;
+
+  await Promise.all(scores.map(async score =>
+    await JudgeScoreModel.create({
+      slot: score.slot,
+      points: score.points,
+      round: round._id,
+      judge: judge._id,
+    })
+  ));
+
+  judge.rounds.push(round._id);
+  await judge.save();
+
+  return res.status(200).json({
+    status: 200,
+    message: "Success",
+  });
+};
+
+//remove this after judgeScore model is fully implemented
 const createScores = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
     event: req.params.event,
   });
-  if (!round) return next();
-  console.log(req.params)
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round does not exist to submit scores",
+    });
+  }
   // TODO: This doesn't work. Why??
   // for (let score of req.body) {
   //   if (!round.teams.includes(score.team)) return next();
@@ -344,6 +401,84 @@ const getScores = async (req, res, next) => {
     data: scores,
   });
 };
+
+const getJudgeScores = async (req, res, next) => {
+
+  if (!req.user) {
+    return res.status(403).json({
+      status: 403,
+      message: "Forbidden. Requester not authenticated.",
+    });
+  }
+
+  if (req.user.type > 2) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized. Only administrators & support team can view judge scores.",
+    });
+  }
+
+  let scores = await JudgeScoreModel.find({
+    round: req.params.round,
+    judge: req.params.judge,
+  });
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: scores,
+  });
+};
+
+const updateSlotBias = async (req, res) => {
+
+  if (!req.params.round) {
+    return res.status(404).json({
+      status: 400,
+      message: "round id missing from params",
+    });
+  }
+
+  let round = await RoundModel.findOne({
+    _id: req.params.round,
+  });
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round does not exist to update bias",
+    });
+  }
+
+  if (!req.body) req.body = [];
+
+  if (req.body.length === 0) {
+    return res.status(400).json({
+      status: 400,
+      message: "Bad Request",
+    });
+  }
+
+  let slotsUpdate = req.body;
+
+  let slots = await Slot2Model.find({
+    round: req.params.round
+  })
+
+  let result = await Slot2Model.bulkWrite(slotsUpdate.map(slot => ({
+    updateOne: {
+      filter: { "_id": slot.id },
+      update: { $set: { overtime: slot.overtime || 0, disqualified: slot.disqualified } }
+    }
+  })))
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: result
+  })
+
+
+}
 
 
 const updateTeamScores = async (req, res) => {
@@ -557,6 +692,76 @@ const getLeaderboard = async (req, res, next) => {
   });
 };
 
+
+const getRoundLeaderboard2 = async (req, res, next) => {
+  let round = await RoundModel.findById(req.params.round);
+
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round does not exist to get leaderboard",
+    });
+  }
+
+  let scores = await JudgeScoreModel.find({
+    round: round._id
+  })
+
+  //fetch slots for the round
+  let slots = await Slot2Model.find({
+    round: round._id
+  }).populate('college');
+
+
+
+  //get all slot ids from scores
+  let slotIds = new Set();
+
+  //Add up points by judges
+  scores.forEach(score => {
+    score.total = score.points.reduce((p1, p2) => p1 + p2);
+    slotIds.add(score.slot);
+  })
+
+
+
+  //add up totals for each slot
+  let leaderboard = [];
+  Array.from(slotIds)
+    .map(slotId => slots.find(slot => String(slot._id) == slotId))//add slot details
+    .filter(slot => !slot.disqualified)//filter out disqualified teams
+    .forEach(slot => {
+      let total = scores.filter(score => score.slot == String(slot._id)).reduce((total, score) => total + score.total, 0);
+      let bias = getOvertimeMinusPoints(slot.overtime)
+      total = total - bias;
+      if (!leaderboard.find(leaderboardItem => leaderboardItem.slot._id == slot._id))
+        leaderboard.push({ slot: slot, total })
+    })
+
+  //sort leaderboard
+  leaderboard.sort((p1, p2) => p2.total - p1.total);
+
+  //remove duplicates (keep only one entry per slot)
+
+
+
+  //Add Rank
+  let scoreOrder = Array.from(new Set(leaderboard.map(item => item.total)));
+  leaderboard.forEach(item => {
+    item.rank = scoreOrder.indexOf(item.total) + 1;
+  })
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: leaderboard,
+  });
+}
+
+const getOvertimeMinusPoints = (overtime = 0) => {
+  return overtime > 0 ? 5 * (Math.ceil(overtime / 15)) : 0;
+}
+
 const getRoundLeaderboard = async (req, res, next) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
@@ -765,7 +970,9 @@ const getSlots2 = async (req, res, next) => {
     number: slot.number,
     round: slot.round,
     teamIndex: slot.teamIndex,
-    college: slot.college
+    college: slot.college,
+    overtime: slot.overtime,
+    disqualified: slot.disqualified
   }));
 
   return res.json({
@@ -1040,4 +1247,8 @@ module.exports = {
   updateRound,
   updateTeamScores,
   publishRoundLeaderboard,
+  createJudgeScore,
+  getJudgeScores,
+  getRoundLeaderboard2,
+  updateSlotBias
 };

@@ -24,7 +24,7 @@ router.get("/:event/rounds/:round/slots", Events.getSlots);
 router.get("/:event/rounds/:round/slots2", Events.getSlots2);
 router.get("/:event/rounds/:round/slots2/delete", Events.deleteSlots2);
 // Returns the leaderboard for the given round in the given event
-router.get("/:event/rounds/:round/leaderboard", Events.getRoundLeaderboard);
+router.get("/:event/rounds/:round/leaderboard", Events.getRoundLeaderboard2);
 // Returns the list of teams qualified for the given round in the given event
 router.get("/:event/rounds/:round/teams", Events.getTeamsInRound);
 // Returns the scores of given team in the given round in the given event
@@ -48,12 +48,14 @@ router.post("/:event/rounds/:round", Events.updateRound);
 // TODO: Finalize the round scores and move teams to next round.
 // router.post("/:event/rounds/:round/finalize", Events.finalizeRound);
 // Add scores for the given team for the given round in the given event
+//not seeing this being used from frontend
 router.post("/:event/rounds/:round/teams/:team/scores", Events.createScore);
 // Add scores for the teams in the given round in the given event
 router.post("/:event/rounds/:round/slots", Events.createSlots);
 router.post("/:event/rounds/:round/slots2", Events.createSlots2);
 
-router.post("/:event/rounds/:round/scores", Events.createScores);
+router.post("/:event/rounds/:round/judges/:judge", Events.createJudgeScore);
+router.get("/:event/rounds/:round/judges/:judge", Events.getJudgeScores);
 router.get("/:event/rounds/:round/scores", Events.getScores);
 
 // Register a team to the given event
@@ -67,6 +69,7 @@ router.post("/:event/teams", Events.createTeam);
 router.patch("/:event/rounds/:round/leaderboard", Events.publishRoundLeaderboard);
 // Update team scores (overtime, disqualification)
 router.patch("/:event/rounds/:round/scores", Events.updateTeamScores);
+router.patch("/:event/rounds/:round/bias", Events.updateSlotBias);
 
 // Deletes the specified team from the given event
 router.delete("/:event/teams/:team", Events.deleteTeam);
