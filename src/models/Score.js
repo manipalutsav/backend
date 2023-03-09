@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Team = require("./Team");
 
 const schema = {
-  team: {
+  slot: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Slot2',
     required: true,

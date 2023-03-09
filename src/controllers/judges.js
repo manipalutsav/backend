@@ -2,9 +2,32 @@
 
 const JudgeModel = require("../models/Judge");
 
-const get = async (req, res) => {
+const getAll = async (req, res) => {
   try {
     let judges = await JudgeModel.find();
+
+    judges = judges.map(judge => ({
+      id: judge.id,
+      name: judge.name,
+      rounds: judge.rounds,
+    }));
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: judges,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+const getForRound = async (req, res) => {
+  try {
+    let judges = await JudgeModel.find({ rounds: req.params.round });
 
     judges = judges.map(judge => ({
       id: judge.id,
@@ -44,7 +67,7 @@ const create = async (req, res) => {
     } else {
       judge = await JudgeModel.create({
         name: req.body.name,
-        rounds: req.body.round ? [ req.body.round ] : [],
+        rounds: req.body.round ? [req.body.round] : [],
       });
     }
 
@@ -66,6 +89,7 @@ const create = async (req, res) => {
 };
 
 module.exports = {
-  get,
+  getAll,
+  getForRound,
   create,
 };
