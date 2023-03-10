@@ -130,7 +130,8 @@ const createRound = async (req, res, next) => {
     event: event.id,
     teams: [],
     criteria: req.body.criteria,
-    slottable: req.body.slottable,
+    slotType: req.body.slotType,
+    slotOrder: req.body.slotOrder,
     status: ROUND_STATUS.SCHEDULED,
   });
 
@@ -170,6 +171,8 @@ const updateRound = async (req, res, next) => {
   let roundDocument = await RoundModel.findById(req.params.round);
   roundDocument.criteria = req.body.criteria;
   roundDocument.slottable = req.body.slottable;
+  roundDocument.slotType = req.body.slotType;
+  roundDocument.slotOrder = req.body.slotOrder;
 
   await roundDocument.save().
     then(async round => {
@@ -184,7 +187,8 @@ const updateRound = async (req, res, next) => {
           event: req.params.event,
           teams: [],
           criteria: round.criteria,
-          slottable: round.slottable,
+          slotOrder: round.slotOrder,
+          slotType: round.slotType
         },
       });
     }).
@@ -561,25 +565,50 @@ const createSlots = async (req, res) => {
 const createSlots2 = async (req, res) => {
   let colleges = await CollegeModel.find();
   let event = await EventModel.findById(req.params.event);
+  let round = await RoundModel.findById(req.params.round);
   let maxTeamsPerCollege = event.maxTeamsPerCollege;
   let teams = [];
-  colleges.forEach(college => {
-    for (let i = 0; i < maxTeamsPerCollege; i++) {
-      teams.push({ teamIndex: i, college: college });
-    }
-  });
+  if (round.slotType == "registered") {
+    teams = await TeamModel.find({ event: req.params.event }).populate({
+      path: "college",
+      model: "College",
+    });
+    console.log(teams);
+    teams = teams.map(team => ({ ...team.toObject(), teamIndex: team.index }))
+  }
+  else {
+    colleges.forEach(college => {
+      for (let i = 0; i < maxTeamsPerCollege; i++) {
+        teams.push({ teamIndex: i, college: college });
+      }
+    });
+  }
   let count = teams.length;
   let slots = [];
   for (let i = 0; i < count; i++) {
-    let index = Math.floor(Math.random() * 100) % teams.length;
+    let index;
+    if (round.slotOrder == "asc") {
+      index = 0;
+    }
+    else if (round.slotOrder == "desc") {
+      index = teams.length - 1;
+    }
+    else {//random
+      index = Math.floor(Math.random() * 100) % teams.length;
+    }
     let team = teams.splice(index, 1)[0];
     let order = i + 1;
-    await Slot2Model.create({
-      number: order,
-      round: req.params.round,
-      teamIndex: team.teamIndex,
-      college: team.college._id
-    });
+    try {
+      await Slot2Model.create({
+        number: order,
+        round: req.params.round,
+        teamIndex: team.teamIndex,
+        college: team.college._id
+      });
+    } catch (e) {
+      console.log(e, team);
+      throw e;
+    }
     slots.push({ number: order, ...team });
   }
   return res.json({
@@ -892,7 +921,8 @@ const getRound = async (req, res, next) => {
       published: round.published,
       teams: round.teams,
       duration: round.duration,
-      slottable: round.slottable,
+      slotOrder: round.slotOrder,
+      slotType: round.slotType,
       status: round.status,
     },
   });
