@@ -15,15 +15,23 @@ const schema = {
       default: 10
     }
   }],
-  slottable: {
-    type: Boolean,
+  slotType: {
+    type: String,
     required: true,
-    default: true,
+    default: "all",
+    match: /^(?:all|registered)$/i,
+  },
+  slotOrder: {
+    type: String,
+    required: true,
+    default: "random",
+    match: /^(?:random|asc|desc)$/i,
   },
   status: {
     type: Number,
     default: ROUND_STATUS.SCHEDULED,
   },
+
   published: {
     type: Boolean,
     default: false,
