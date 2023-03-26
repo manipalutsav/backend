@@ -12,8 +12,10 @@ exports.addVolunteer = async (req, res) => {
 
     if (!name || name.length === 0) { throw response(400, "Please enter name."); }
     if (!registerNumber || registerNumber.length === 0) { throw response(400, "Please enter register number."); }
-    if (!phoneNumber || phoneNumber.length === 0) { throw response(400, "Please enter phone number."); }
-    if (!shirtSize || shirtSize.length === 0) { throw response(400, "Please select shirt size."); }
+    if (type != "event") {
+      if (!phoneNumber || phoneNumber.length === 0) { throw response(400, "Please enter phone number."); }
+      if (!shirtSize || shirtSize.length === 0) { throw response(400, "Please select shirt size."); }
+    }
     if (!collegeId || collegeId.length === 0) { throw response(400, "Please select the college."); }
     if (!type || type.length === 0) { throw response(400, "Volunteer type is missing from context"); }
 
@@ -60,8 +62,10 @@ exports.updateVolunteer = async (req, res) => {
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
     if (!name || name.length === 0) { throw Error("Please enter name."); }
     if (!registerNumber || registerNumber.length === 0) { throw Error("Please enter register number."); }
-    if (!phoneNumber || phoneNumber.length === 0) { throw Error("Please enter phone number."); }
-    if (!shirtSize || shirtSize.length === 0) { throw Error("Please select shirt size."); }
+    if (type != "event") {
+      if (!phoneNumber || phoneNumber.length === 0) { throw Error("Please enter phone number."); }
+      if (!shirtSize || shirtSize.length === 0) { throw Error("Please select shirt size."); }
+    }
     if (!collegeId || collegeId.length === 0) { throw Error("Please select the college."); }
     if (!type || type.length === 0) { throw response(400, "Volunteer type is missing from context"); }
 

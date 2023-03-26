@@ -11,7 +11,7 @@ const schema = {
   },
   phoneNumber: {
     type: Number,
-    required: true,
+    required: false,
   },
   shirtSize: {
     type: String,
