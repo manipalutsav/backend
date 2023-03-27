@@ -6,7 +6,7 @@ const schema = {
   registrationID: {
     type: String,
     required: true,
-    match: /^(?:(?:MAHE[\d]{7})|(?:MSS[\d]{4,5})|(?:MAGE[\d]{8})|(?:EC[\d]{4,5})|(?:[\d]{9}))$/i,
+    match: /^(?:(?:MAHE[\d]{7})|(?:MAHER[\d]{6})|(?:MSS[\d]{4,5})|(?:MAGE[\d]{8})|(?:EC[\d]{4,5})|(?:[\d]{9}))$/i,
   },
   name: {
     type: String,
