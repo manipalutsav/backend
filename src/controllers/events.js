@@ -74,8 +74,17 @@ const createTeam = async (req, res) => {
     });
   }
 
+  let researchScholars = participants.filter(participant => participant.registrationID.match(/MAHER|[\d]{9}/i));
+  if (researchScholars.length > 7 && eventInfo.name.match(/variety/i)) {
+    return res.json({
+      status: 416,
+      message: "Cannot have more than 7 research scholars for the event",
+    });
+  }
+
   let index = participatedTeams.length;
   let name = "Team " + Number(index + 10).toString(36).toUpperCase();
+
 
 
   addBulkParticipants(participants, college).
