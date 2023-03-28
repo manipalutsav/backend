@@ -46,6 +46,78 @@ const deleteTeam = async (req, res) => {
   }
 };
 
+const updateTeam = async (req, res) =>
+{
+  try {
+    let team = await TeamModel.findOne({
+      _id: req.params.team,
+      event: req.params.event,
+    });
+
+    if (!team) {
+      return res.status(404).json({
+        status: 400,
+        message: "Not Found. Team doesn't exist.",
+      });
+    }
+
+    let event = await EventModel.findById(req.params.event);
+    let {
+      participants,
+    } = req.body;
+
+    // Check whether there is room to add new participants
+    if(team.members.length >= event.maxMembersPerTeam){
+      return res.json({
+        status: 400,
+        message: "Max. participants registered!",
+      });
+    }
+
+    // Check whether the no. of participants provided is within the max participants
+    if(team.members.length + participants.length > event.maxMembersPerTeam){
+      return res.json({
+        status: 416,
+        message: "Number of particpants exceeds max particpants for event",
+      });
+    }
+
+   
+    addBulkParticipants(participants, team.college).
+      then(async newMembers => {
+        team.members.push(...newMembers);
+
+        await team.save(async (err) => {
+          if (err) {
+            return res.json({
+              status: 500,
+              message: "Internal Server Error",
+            });
+          }
+          
+
+          // Add team to round 1
+          // TODO: Check if round exists in event
+          // TODO: Check if this is really needed, if not, can remove this code.
+          // let round1 = await RoundModel.findById(eventInfo.rounds[0]);
+          // round1.teams.push(team.id);
+          // await round1.save();
+
+          return res.json({
+            status: 200,
+            message: "Team updated",
+            data: team,
+          });
+        });
+      });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 const createTeam = async (req, res) => {
   let {
     college,
@@ -1283,6 +1355,7 @@ module.exports = {
   create,
   edit,
   createTeam,
+  updateTeam,
   updateRound,
   updateTeamScores,
   publishRoundLeaderboard,
