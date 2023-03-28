@@ -70,6 +70,8 @@ router.patch("/:event/rounds/:round/leaderboard", Events.publishRoundLeaderboard
 // Update team scores (overtime, disqualification)
 router.patch("/:event/rounds/:round/scores", Events.updateTeamScores);
 router.patch("/:event/rounds/:round/bias", Events.updateSlotBias);
+// Update team with more participants
+router.patch("/:event/teams/:team", Events.updateTeam);
 
 // Deletes the specified team from the given event
 router.delete("/:event/teams/:team", Events.deleteTeam);
