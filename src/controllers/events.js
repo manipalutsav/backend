@@ -26,13 +26,24 @@ const deleteTeam = async (req, res) => {
       });
     }
 
-    let members = team.members;
+    // Checking whether the event has already been slotted
+    let rounds = await RoundModel.find({ event: req.params.event });
+    rounds = (rounds.map((r) => r._id));
+    let slots = await Slot2Model.find({ round: { $in:rounds } });
+    if(slots.length > 0){
+      return res.status(400).json({
+        status: 400,
+        message: "Can not delete team, slotting already done",
+      });
+    }
 
-    await TeamModel.findByIdAndDelete(team.id);
+    let members = team.members;
 
     for (let member of members) {
       await ParticipantModel.findByIdAndDelete(member);
     }
+
+    await TeamModel.findByIdAndDelete(team.id);
 
     return res.json({
       status: 200,
