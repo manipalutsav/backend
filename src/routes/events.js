@@ -5,6 +5,7 @@ const router = express.Router();
 
 // TODO: replace `noop` with actual controllers
 const Events = require("../controllers/events");
+const Teams = require("../controllers/teams")
 
 // Returns the list of all events
 router.get("/", Events.getAll);
@@ -77,5 +78,7 @@ router.patch("/:event/teams/:team", Events.updateTeam);
 router.delete("/:event/teams/:team", Events.deleteTeam);
 // Deletes the specified round from the given event
 router.delete("/:event/rounds/:round", Events.deleteRound);
+
+router.delete("/:event/teams/:team/participants/:participant", Teams.deleteOne);
 
 module.exports = router;
