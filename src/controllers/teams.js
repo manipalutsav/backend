@@ -2,6 +2,7 @@
 
 const TeamModel = require("../models/Team");
 const EventModel = require("../models/Event");
+const ParticipantModel = require("../models/Participant");
 
 /**
  * Add new team into the system.
@@ -82,8 +83,54 @@ const getAll = async (req, res) => {
   }
 };
 
+const deleteOne = async (req, res) => {
+  try {
+    let participant = await ParticipantModel.findById(req.params.participant);
+    let team = await TeamModel.findById(req.params.team).populate('event');
+
+    if (!participant) {
+      return res.status(404).json({
+        status: 404,
+        message: "Not Found. No participant was found for the given ID.",
+      });
+    }
+
+    if(!team){
+      return res.status(404).json({
+        status: 404,
+        message: "Not Found. No team was found for the given ID.",
+      });
+    }
+
+    if(team.members.length <= team.event.minMembersPerTeam){
+      return res.status(403).json({
+        status: 403,
+        message: "Min. members should be there!",
+      });
+    }
+    
+    // Removing member id from team
+    team.members = await team.members.filter((m) => !m.equals(participant._id));
+    await team.save();
+
+    await ParticipantModel.findByIdAndDelete(participant._id);
+
+    return res.status(200).json({
+      status: 200,
+      message: "Deleted successfully!",
+    });
+
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   create,
   get,
   getAll,
+  deleteOne,
 };
