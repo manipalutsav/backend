@@ -59,6 +59,11 @@ router.post("/:event/rounds/:round/judges/:judge", Events.createJudgeScore);
 router.get("/:event/rounds/:round/judges/:judge", Events.getJudgeScores);
 router.get("/:event/rounds/:round/scores", Events.getScores);
 
+router.post("/:event/rounds/:round/judges/:judge/backup", Events.makeBackup);
+router.get("/:event/rounds/:round/judges/:judge/backup", Events.getBackup);
+router.delete("/:event/rounds/:round/judges/:judge/backup", Events.deleteBackup);
+
+
 // Register a team to the given event
 router.post("/:event/teams", Events.createTeam);
 // Add members (participants) to the given team
