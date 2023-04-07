@@ -1231,6 +1231,19 @@ const getTeams = async (req, res) => {
   });
 };
 
+const getTeamsWithMembers = async (req, res) => {
+  let teams = await TeamModel.find({ event: req.params.event }).populate("college").populate("members");
+
+  if (!teams) teams = [];
+
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: teams,
+  });
+};
+
 const getTeamsInRound = async (req, res) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
@@ -1452,6 +1465,7 @@ module.exports = {
   deleteSlots2,
   getTeam,
   getTeams,
+  getTeamsWithMembers,
   getTeamsInRound,
   create,
   edit,

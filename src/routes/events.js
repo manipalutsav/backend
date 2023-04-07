@@ -33,10 +33,10 @@ router.get("/:event/rounds/:round/teams", Events.getTeamsInRound);
 // Returns the list of teams participating in the given event
 router.get("/:event/teams", Events.getTeams);
 // Returns the team for the given team id participating in the given event
+router.get("/:event/teams/members", Events.getTeamsWithMembers);
 router.get("/:event/teams/:team", Events.getTeam);
 // Returns the scores of given team in the given event
 // router.get("/:event/teams/:team/scores", noop);
-
 // Create a new event
 router.post("/", Events.create);
 // Create a new round in the given event
