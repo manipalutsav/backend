@@ -12,4 +12,5 @@ router.get("/:round", Judges.getForRound);
 // Create a new judge
 router.post("/", Judges.create);
 
+router.delete("/:judge", Judges.deleteOne);
 module.exports = router;
