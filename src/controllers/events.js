@@ -4,6 +4,7 @@ const EventModel = require("../models/Event");
 const CollegeModel = require("../models/College");
 const RoundModel = require("../models/Round");
 const ScoreModel = require("../models/Score");
+const ScoreBackupModel = require("../models/ScoreBackup");
 const JudgeScoreModel = require("../models/JudgeScore")
 const JudgeModel = require("../models/Judge")
 const SlotModel = require("../models/Slot");
@@ -362,6 +363,95 @@ const createScore = async (req, res, next) => {
   });
 };
 
+
+const makeBackup = async (req, res, next) => {
+  let round = await RoundModel.findById(req.params.round);
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round does not exist.",
+    });
+  }
+
+  let judge = await JudgeModel.findById(req.params.judge);
+  if (!judge) {
+    return res.status(404).json({
+      status: 404,
+      message: "Judge Does not exist",
+    });
+  }
+
+  let { time, ua, data } = req.body;
+
+
+  let oldScores = await JudgeScoreModel.find({
+    round: req.params.round,
+    judge: req.params.judge
+  });
+
+  if (oldScores.length > 0) {
+    return res.status(400).json({
+      status: 404,
+      message: "Judge has already submitted the scores for this round. Cannot create backup.",
+    });
+  }
+
+  let record = { ...time, ua, data, round, judge }
+
+  let response = await ScoreBackupModel.findOneAndUpdate({
+    round: req.params.round,
+    judge: req.params.judge
+  }, record, { upsert: true })
+
+  return res.status(200).json({
+    status: 200,
+    message: "Success",
+    response
+  });
+};
+
+const getBackup = async (req, res, next) => {
+  let round = await RoundModel.findById(req.params.round);
+  if (!round) {
+    return res.status(404).json({
+      status: 404,
+      message: "Round does not exist.",
+    });
+  }
+
+  let judge = await JudgeModel.findById(req.params.judge);
+  if (!judge) {
+    return res.status(404).json({
+      status: 404,
+      message: "Judge Does not exist",
+    });
+  }
+
+  let response = await ScoreBackupModel.findOne({
+    round: req.params.round,
+    judge: req.params.judge
+  })
+
+  return res.status(200).json({
+    status: 200,
+    message: "Success",
+    data: response
+  });
+};
+
+const deleteBackup = async (req, res, next) => {
+
+  let response = await ScoreBackupModel.findOneAndDelete({
+    round: req.params.round,
+    judge: req.params.judge
+  })
+
+  return res.status(200).json({
+    status: 200,
+    message: "Success",
+    data: response
+  });
+};
 
 const createJudgeScore = async (req, res) => {
   let round = await RoundModel.findById(req.params.round);
@@ -1141,6 +1231,19 @@ const getTeams = async (req, res) => {
   });
 };
 
+const getTeamsWithMembers = async (req, res) => {
+  let teams = await TeamModel.find({ event: req.params.event }).populate("college").populate("members");
+
+  if (!teams) teams = [];
+
+
+  return res.json({
+    status: 200,
+    message: "Success",
+    data: teams,
+  });
+};
+
 const getTeamsInRound = async (req, res) => {
   let round = await RoundModel.findOne({
     _id: req.params.round,
@@ -1362,6 +1465,7 @@ module.exports = {
   deleteSlots2,
   getTeam,
   getTeams,
+  getTeamsWithMembers,
   getTeamsInRound,
   create,
   edit,
@@ -1373,5 +1477,8 @@ module.exports = {
   createJudgeScore,
   getJudgeScores,
   getRoundLeaderboard2,
-  updateSlotBias
+  updateSlotBias,
+  makeBackup,
+  getBackup,
+  deleteBackup
 };
