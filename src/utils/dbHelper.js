@@ -18,18 +18,17 @@ class Database {
       useUnifiedTopology: true,
       dbName: process.env.MONGODB_DATABASE,
     };
-
-    this._connect();
   }
 
   /**
    * Connects to MongoDB server
    * @returns {void}
    */
-  _connect() {
-    mongoose.connect(this.uri, this.options);
-    // eslint-disable-next-line no-console
-    console.tick("Database connection successful");
+  connect() {
+    return mongoose.connect(this.uri, this.options).then(() => {
+      // eslint-disable-next-line no-console
+      console.tick("Database connection successful");
+    });
   }
 
   /**
