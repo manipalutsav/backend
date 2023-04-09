@@ -64,6 +64,7 @@ const coreVolunteerRouter = require("./routes/coreVolunteer");
 const eventVolunteerRouter = require("./routes/eventVolunteer");
 const volunteerRouter = require("./routes/volunteer");
 const participationStatus = require("./routes/participationStatus");
+const practiceSlot = require("./routes/practiceSlot");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
@@ -77,6 +78,7 @@ app.use("/participationStatus", participationStatus)
 app.use("/coreVolunteer", coreVolunteerRouter);
 app.use("/eventVolunteer", eventVolunteerRouter);
 app.use("/volunteer", volunteerRouter);
+app.use("/practiceSlots", practiceSlot);
 
 // Error handlers
 app.use(handle404);
