@@ -496,4 +496,5 @@ module.exports = {
   init,
   publish,
   update,
+  getRoundLeaderboard
 };
