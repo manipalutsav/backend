@@ -12,6 +12,7 @@ const Slot2Model = require("../models/Slot2");
 const TeamModel = require("../models/Team");
 const ParticipantModel = require("../models/Participant");
 const { ROUND_STATUS, USER_TYPES } = require("../utils/constants");
+const leaderboard = require("./leaderboard")
 
 const deleteTeam = async (req, res) => {
   try {
@@ -30,8 +31,8 @@ const deleteTeam = async (req, res) => {
     // Checking whether the event has already been slotted
     let rounds = await RoundModel.find({ event: req.params.event });
     rounds = (rounds.map((r) => r._id));
-    let slots = await Slot2Model.find({ round: { $in:rounds } });
-    if(slots.length > 0){
+    let slots = await Slot2Model.find({ round: { $in: rounds } });
+    if (slots.length > 0) {
       return res.status(400).json({
         status: 400,
         message: "Can not delete team, slotting already done",
@@ -58,8 +59,7 @@ const deleteTeam = async (req, res) => {
   }
 };
 
-const updateTeam = async (req, res) =>
-{
+const updateTeam = async (req, res) => {
   try {
     let team = await TeamModel.findOne({
       _id: req.params.team,
@@ -79,7 +79,7 @@ const updateTeam = async (req, res) =>
     } = req.body;
 
     // Check whether there is room to add new participants
-    if(team.members.length >= event.maxMembersPerTeam){
+    if (team.members.length >= event.maxMembersPerTeam) {
       return res.json({
         status: 400,
         message: "Max. participants registered!",
@@ -87,14 +87,14 @@ const updateTeam = async (req, res) =>
     }
 
     // Check whether the no. of participants provided is within the max participants
-    if(team.members.length + participants.length > event.maxMembersPerTeam){
+    if (team.members.length + participants.length > event.maxMembersPerTeam) {
       return res.json({
         status: 416,
         message: "Number of particpants exceeds max particpants for event",
       });
     }
 
-   
+
     addBulkParticipants(participants, team.college).
       then(async newMembers => {
         team.members.push(...newMembers);
@@ -106,7 +106,7 @@ const updateTeam = async (req, res) =>
               message: "Internal Server Error",
             });
           }
-          
+
 
           // Add team to round 1
           // TODO: Check if round exists in event
@@ -225,6 +225,7 @@ const createRound = async (req, res, next) => {
     criteria: req.body.criteria,
     slotType: req.body.slotType,
     slotOrder: req.body.slotOrder,
+    qualifier: req.body.qualifier,
     status: ROUND_STATUS.SCHEDULED,
   });
 
@@ -266,6 +267,8 @@ const updateRound = async (req, res, next) => {
   roundDocument.slottable = req.body.slottable;
   roundDocument.slotType = req.body.slotType;
   roundDocument.slotOrder = req.body.slotOrder;
+  roundDocument.qualifier = req.body.qualifier;
+
 
   await roundDocument.save().
     then(async round => {
@@ -750,7 +753,24 @@ const createSlots2 = async (req, res) => {
   let round = await RoundModel.findById(req.params.round);
   let maxTeamsPerCollege = event.maxTeamsPerCollege;
   let teams = [];
-  if (round.slotType == "registered") {
+
+  if (round.qualifier) {
+    let roundIndex = event.rounds.indexOf(req.params.round);
+    let lb = await leaderboard.getRoundLeaderboard(event.rounds[roundIndex - 1]);
+    let qualifiedTeams = lb.slice(0, round.qualifier);
+    console.log("QUALIFIED TEAMS", qualifiedTeams);
+    teams = await TeamModel.find({ event: req.params.event }).populate({
+      path: "college",
+      model: "College",
+    });
+    teams = teams.map(team => team.toObject());
+    console.log("TEAMS", teams)
+    teams = teams.filter(team => qualifiedTeams.find(item => item.slot.teamIndex == team.index && item.slot.college._id.toString() == team.college._id))
+    console.log("LB FILTER", teams)
+    teams = teams.map(team => ({ ...team, teamIndex: team.index }))
+    console.log("FINAL", teams)
+  }
+  else if (round.slotType == "registered") {
     teams = await TeamModel.find({ event: req.params.event }).populate({
       path: "college",
       model: "College",
@@ -1106,6 +1126,7 @@ const getRound = async (req, res, next) => {
       slotOrder: round.slotOrder,
       slotType: round.slotType,
       status: round.status,
+      qualifier: round.qualifier
     },
   });
 };

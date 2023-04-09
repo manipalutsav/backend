@@ -15,6 +15,10 @@ const schema = {
       default: 10
     }
   }],
+  qualifier: {
+    type: Number,
+    required: false,
+  },
   slotType: {
     type: String,
     required: true,
