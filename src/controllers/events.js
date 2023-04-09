@@ -758,24 +758,19 @@ const createSlots2 = async (req, res) => {
     let roundIndex = event.rounds.indexOf(req.params.round);
     let lb = await leaderboard.getRoundLeaderboard(event.rounds[roundIndex - 1]);
     let qualifiedTeams = lb.slice(0, round.qualifier);
-    console.log("QUALIFIED TEAMS", qualifiedTeams);
     teams = await TeamModel.find({ event: req.params.event }).populate({
       path: "college",
       model: "College",
     });
     teams = teams.map(team => team.toObject());
-    console.log("TEAMS", teams)
     teams = teams.filter(team => qualifiedTeams.find(item => item.slot.teamIndex == team.index && item.slot.college._id.toString() == team.college._id))
-    console.log("LB FILTER", teams)
     teams = teams.map(team => ({ ...team, teamIndex: team.index }))
-    console.log("FINAL", teams)
   }
   else if (round.slotType == "registered") {
     teams = await TeamModel.find({ event: req.params.event }).populate({
       path: "college",
       model: "College",
     });
-    console.log(teams);
     teams = teams.map(team => ({ ...team.toObject(), teamIndex: team.index }))
   }
   else {
@@ -808,7 +803,6 @@ const createSlots2 = async (req, res) => {
         college: team.college._id
       });
     } catch (e) {
-      console.log(e, team);
       throw e;
     }
     slots.push({ number: order, ...team });
