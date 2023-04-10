@@ -1,0 +1,21 @@
+const mongoose = require("mongoose");
+
+const schema = {
+  number: {
+    type: Number,
+    required: true,
+  },
+  college: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "College",
+    required: true,
+  }
+};
+
+const options = {
+  autoCreate: true,
+};
+
+const practiceSlotSchema = new mongoose.Schema(schema, options);
+
+module.exports = mongoose.model("PracticeSlot", practiceSlotSchema);

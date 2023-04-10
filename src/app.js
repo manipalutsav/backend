@@ -4,32 +4,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const chalk = require("chalk");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const app = express();
-dotenv.config();
 
 // Middlewares
 const handle404 = require("./middlewares/handle404");
 const errorHandler = require("./middlewares/errorHandler");
 const headers = require("./middlewares/headers");
 const auth = require("./middlewares/auth");
-const backupMongo = require("./middlewares/backupMongo");
 
 // Configure application
 
-app.use(logger(function (tokens, req, res) {
-  return chalk.redBright(tokens["remote-addr"](req, res))
-    + " " + chalk.blue(tokens.date(req, res))
-    + " " + chalk.green(tokens.method(req, res))
-    + " " + chalk.white(tokens.url(req, res))
-    + " " + chalk.green(tokens.status(req, res))
-    + " " + chalk.redBright(tokens.referrer(req, res))
-    + " " + chalk.yellow(tokens["user-agent"](req, res))
-    + " " + chalk.cyan(tokens["response-time"](req, res));
-}));
+
 app.use(cors({
   origin: [
     "http://manipalutsav.github.io",
@@ -46,10 +34,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(headers);
-//backup mongo
-app.use(backupMongo);
+
 
 if (process.env.NODE_ENV !== "development") app.use(auth);
+//::ffff:172.68.154.133 Sat, 08 Apr 2023 22:06:50 GMT POST /events/6246c631e4164a291dd21005/rounds/642d461e7dcfe149a2298970/judges/640a300d2445a63259c09373/backup 200 https://test.manipalutsav.com/ Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 1990.208
+
+app.use(logger(function (tokens, req, res) {
+  return chalk.redBright(tokens["remote-addr"](req, res))
+    + " " + chalk.blue(tokens.date(req, res))
+    + " " + chalk.green(tokens.method(req, res))
+    + " " + chalk.white(tokens.url(req, res))
+    + " " + chalk.green(tokens.status(req, res))
+    + " " + chalk.redBright(tokens.referrer(req, res))
+    + " " + chalk.yellow(tokens["user-agent"](req, res))
+    + " " + chalk.cyan(tokens["response-time"](req, res))
+    + " " + chalk.white(req.user.email || "(anonymous)");
+}));
 
 // Routes
 const collegesRouter = require("./routes/colleges");
@@ -64,6 +64,7 @@ const coreVolunteerRouter = require("./routes/coreVolunteer");
 const eventVolunteerRouter = require("./routes/eventVolunteer");
 const volunteerRouter = require("./routes/volunteer");
 const participationStatus = require("./routes/participationStatus");
+const practiceSlot = require("./routes/practiceSlot");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
@@ -77,6 +78,7 @@ app.use("/participationStatus", participationStatus)
 app.use("/coreVolunteer", coreVolunteerRouter);
 app.use("/eventVolunteer", eventVolunteerRouter);
 app.use("/volunteer", volunteerRouter);
+app.use("/practiceSlots", practiceSlot);
 
 // Error handlers
 app.use(handle404);

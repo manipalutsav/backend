@@ -65,11 +65,13 @@ const getRoundLeaderboard = async (roundId) => {
   })
   return leaderboard;
 }
-
+// Colleges and results to be removed
+const remove_college_list = [{name:"Cultural Coordination Committee", location:"Manipal"}, {name:"Kasturba Hospital", location:"Manipal"}, {name:"MAHE", location:"Manipal"}];
+const remove_event_list = ["Staff Cooking: Vegetarian", "Staff Cooking: Non-Vegetarian", "Staff Cooking: Dessert", "Staff Vegetable & Fruit Carving", "Staff Variety Entertainment", "Poetry (Kannada)"];
 const get2 = async (req, res) => {
   try {
-    let events = await EventModel.find({ faculty: false });
-    let colleges = (await CollegeModel.find({}))
+    let events = await EventModel.find({ $and:[ { faculty: false }, { "name": { "$nin": remove_event_list } } ]  });
+    let colleges = (await CollegeModel.find({ $or: [ { "name": { "$nin": remove_college_list.map(c => c.name) } }, { "location": { "$nin": remove_college_list.map(c => c.location) } } ] }));
     let board = [];
     colleges.forEach(college => {
       college = college.toObject();
@@ -496,4 +498,5 @@ module.exports = {
   init,
   publish,
   update,
+  getRoundLeaderboard
 };
