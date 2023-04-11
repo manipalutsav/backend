@@ -98,12 +98,12 @@ https://manipalutsav.com/events/public?date=${date}`
       if (mobile.length == 10)
         mobile = `+91${mobile}`
 
-      // await client.messages
-      //   .create({
-      //     body: message,
-      //     from: 'whatsapp:+19034763176',
-      //     to: `whatsapp:${mobile}`
-      //   });
+      return client.messages
+        .create({
+          body: message,
+          from: 'whatsapp:+19034763176',
+          to: `whatsapp:${mobile}`
+        });
     }));
 
 
