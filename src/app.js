@@ -48,7 +48,7 @@ app.use(logger(function (tokens, req, res) {
     + " " + chalk.redBright(tokens.referrer(req, res))
     + " " + chalk.yellow(tokens["user-agent"](req, res))
     + " " + chalk.cyan(tokens["response-time"](req, res))
-    + " " + chalk.white(req.user.email || "(anonymous)");
+    + " " + chalk.white((req.user && req.user.email) || "(anonymous)");
 }));
 
 // Routes
@@ -65,6 +65,7 @@ const eventVolunteerRouter = require("./routes/eventVolunteer");
 const volunteerRouter = require("./routes/volunteer");
 const participationStatus = require("./routes/participationStatus");
 const practiceSlot = require("./routes/practiceSlot");
+const notifications = require("./routes/notifications");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
@@ -79,6 +80,7 @@ app.use("/coreVolunteer", coreVolunteerRouter);
 app.use("/eventVolunteer", eventVolunteerRouter);
 app.use("/volunteer", volunteerRouter);
 app.use("/practiceSlots", practiceSlot);
+app.use("/notifications", notifications);
 
 // Error handlers
 app.use(handle404);
