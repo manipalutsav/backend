@@ -17,6 +17,8 @@ router.get("/:college", Colleges.get);
 router.get("/:college/participants", Colleges.getParticipants);
 // Returns the list of teams from the given college
 router.get("/:college/teams", Colleges.getTeams);
+//return ranking for all events
+router.get("/:college/rankings", Colleges.getAllEventsRanking);
 
 // Create a new college
 router.post("/", Colleges.create);
