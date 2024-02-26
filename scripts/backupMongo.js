@@ -41,6 +41,10 @@ const backupMongo = async () => {
 }
 
 const backupMongoCronJob = () => {
+    if(process.env.DB_BACKUP === "FALSE"){
+        console.log("Database backup is disabled, skipping");
+        return;
+    }
     let timeInterval = 1 * 60 * 1000; //every 1 minute
     setInterval(backupMongo, timeInterval);
     console.log("Mongo Backup cron job has started")
