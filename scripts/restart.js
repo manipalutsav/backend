@@ -29,7 +29,12 @@ pm2.connect(async (err) => {
                 console.log("Stopping it.")
                 console.log(child_process.execSync("pm2 stop " + pm2_id).toString());
                 console.log("Terminating process " + pid);
+                try{
                 console.log(child_process.execSync("sudo kill " + pid).toString());
+                }
+                catch(e){
+                    console.log("Failed to terminate process, reason:",e);
+                }
             }
             console.log("Restarting pm2 instance " + pm2_id);
             console.log(child_process.execSync("pm2 start " + pm2_id).toString());
