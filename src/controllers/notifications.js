@@ -3,7 +3,9 @@ const User = require("../models/User");
 const twilio = require('twilio');
 const Notification = require("../models/Notification");
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const client = null;
+if(process.env.TWILIO_ACCOUNT_SID)
+  client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 const sendToMe = async (req, res) => {
   try {
