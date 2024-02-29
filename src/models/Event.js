@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const schema = {
-  rounds: [ mongoose.Schema.Types.ObjectId ],
+  rounds: [mongoose.Schema.Types.ObjectId],
   name: {
     type: String,
     required: true,
@@ -27,6 +27,8 @@ const schema = {
     required: true,
     default: false,
   },
+  registrationStartDate: Date,
+  registrationEndDate: Date
 };
 
 const options = {
