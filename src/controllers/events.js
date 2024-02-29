@@ -841,6 +841,8 @@ const get = async (req, res, next) => {
       endDate: event.endDate,
       slottable: event.slottable,
       faculty: event.faculty,
+      registrationStartDate: event.registrationStartDate,
+      registrationEndDate: event.registrationEndDate,
     },
   });
 };
@@ -872,6 +874,8 @@ const getAll = async (req, res) => {
       endDate: event.endDate,
       slottable: event.slottable,
       faculty: event.faculty,
+      registrationStartDate: event.registrationStartDate,
+      registrationEndDate: event.registrationEndDate,
     };
   });
 
@@ -1289,7 +1293,10 @@ const create = async (req, res) => {
     startDate,
     endDate,
     slottable,
-    faculty } = req.body;
+    faculty,
+    registrationStartDate,
+    registrationEndDate,
+  } = req.body;
 
   let event = new EventModel({
     name,
@@ -1304,7 +1311,9 @@ const create = async (req, res) => {
     startDate,
     endDate,
     slottable,
-    faculty
+    faculty,
+    registrationStartDate,
+    registrationEndDate,
   });
 
   await event.save().
@@ -1347,7 +1356,9 @@ const edit = async (req, res) => {
     endDate,
     slottable,
     // criteria,
-    faculty
+    faculty,
+    registrationStartDate,
+    registrationEndDate,
   } = req.body;
 
   let event = await EventModel.findById(req.params.event);
@@ -1365,6 +1376,8 @@ const edit = async (req, res) => {
   event.endDate = endDate ? endDate : event.endDate;
   event.slottable = !!slottable;
   event.faculty = faculty != undefined ? faculty : event.faculty;
+  event.registrationStartDate = registrationStartDate ? registrationStartDate : event.registrationStartDate;
+  event.registrationEndDate = registrationEndDate ? registrationEndDate : event.registrationEndDate;
 
   //Seems like not required
   // if (criteria) {
