@@ -3,7 +3,7 @@ const User = require("../models/User");
 const twilio = require('twilio');
 const Notification = require("../models/Notification");
 
-const client = null;
+let client = null;
 if(process.env.TWILIO_ACCOUNT_SID)
   client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
