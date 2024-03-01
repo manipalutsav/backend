@@ -20,10 +20,9 @@ exports.addVolunteer = async (req, res) => {
       throw response(403, `User does not have permission to add volunteers, required [1,4,8] provided: ${req.user.type}`);
     }
 
-    // TODO: Re-enable it later
-    // if ([4, 8].includes(req.user.type) && req.user.college != collegeId) {
-    //   throw response(403, "User cannot add volunteer of another college.");
-    // }
+    if ([4, 8].includes(req.user.type) && req.user.college != collegeId) {
+      throw response(403, "User cannot add volunteer of another college.");
+    }
 
     let checkVolunteer = await CoreVolunteerModel.findOne({ registerNumber });
     if (checkVolunteer) {
@@ -70,10 +69,9 @@ exports.updateVolunteer = async (req, res) => {
       throw Error("User does not have permission to update volunteers");
     }
 
-    // TODO: Re-enable it later
-    // if ([4, 8].includes(req.user.type) && req.user.college != collegeId) {
-    //   throw Error("User cannot update volunteer of another college.");
-    // }
+    if ([4, 8].includes(req.user.type) && req.user.college != collegeId) {
+      throw Error("User cannot update volunteer of another college.");
+    }
 
     volunteer.name = name;
     volunteer.registerNumber = registerNumber;
@@ -109,10 +107,9 @@ exports.deleteVolunteer = async (req, res) => {
       throw Error("User does not have permission to delete volunteers");
     }
 
-    // TODO: Re-enable it later
-    // if ([4, 8].includes(req.user.type) && req.user.college != volunteer.collegeId) {
-    //   throw Error("User cannot remove volunteer of another college.");
-    // }
+    if ([4, 8].includes(req.user.type) && req.user.college != volunteer.collegeId) {
+      throw Error("User cannot remove volunteer of another college.");
+    }
 
     let deleted = await Deleted.create({
       schema: "CoreVolunteer",
@@ -147,10 +144,9 @@ exports.getVolunteer = async (req, res) => {
 
     let filterOptions = { _id: id };
 
-    // TODO: Re-enable it later
-    // if ([4, 8].includes(req.user.type)) {
-    //   filterOptions = { ...filterOptions, collegeId: req.user.college };
-    // }
+    if ([4, 8].includes(req.user.type)) {
+      filterOptions = { ...filterOptions, collegeId: req.user.college };
+    }
 
     let volunteer = await CoreVolunteerModel.findOne(filterOptions);
     if (!volunteer) {
@@ -173,10 +169,9 @@ exports.getVolunteers = async (req, res) => {
 
     let filterOptions = {};
     
-    // TODO: Re-enable it later
-    // if ([4, 8].includes(req.user.type)) {
-    //   filterOptions = { collegeId: req.user.college };
-    // }
+    if ([4, 8].includes(req.user.type)) {
+      filterOptions = { collegeId: req.user.college };
+    }
 
     let volunteers = await CoreVolunteerModel.find(filterOptions);
 
