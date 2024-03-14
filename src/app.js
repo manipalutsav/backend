@@ -14,6 +14,7 @@ const handle404 = require("./middlewares/handle404");
 const errorHandler = require("./middlewares/errorHandler");
 const headers = require("./middlewares/headers");
 const auth = require("./middlewares/auth");
+const audit = require("./middlewares/audit")
 
 // Configure application
 
@@ -50,6 +51,8 @@ app.use(logger(function (tokens, req, res) {
     + " " + chalk.cyan(tokens["response-time"](req, res))
     + " " + chalk.white((req.user && req.user.email) || "(anonymous)");
 }));
+
+app.use(audit);
 
 // Routes
 const collegesRouter = require("./routes/colleges");
