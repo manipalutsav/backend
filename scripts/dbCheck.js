@@ -87,9 +87,8 @@ const removeMissingRoundIds = async () => {
         await Promise.all(missing.map(async i => {
             let event = events.find(event => event.id == i.eventId);
             let index = event.rounds.indexOf(i.roundId);
-            console.log(event);
             event.rounds.splice(index, 1);
-            console.log(event);
+            console.log(`Deleted ${i.roundId} in ${i.eventId}`);
             return await event.save();
         }));
         console.log("Done");
