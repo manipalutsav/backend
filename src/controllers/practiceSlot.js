@@ -1,53 +1,119 @@
 const PracticeSlotModel = require("../models/PracticeSlot");
 const CollegeModel = require("../models/College");
-
+const Team = require("../models/Team")
+const Event = require("../models/Event")
 
 const createPracticeSlot = async (req, res) => {
-  let colleges = await CollegeModel.find();
+  try {
+    console.log("Practice slotting:");
 
-  let count = colleges.length;
-  let slots = [];
-  for (let i = 0; i < count; i++) {
-    let index = Math.floor(Math.random() * 100) % colleges.length;
-    let college = colleges.splice(index, 1)[0].toObject();
-    let order = i + 1;
-    try {
-      await PracticeSlotModel.create({
-        number: order,
-        college: college._id
-      });
-    } catch (e) {
-      throw e;
+    // Assuming the date is provided in the request body, ensure it's in the correct format
+    const date = req.body.date;
+    console.log(date+" this is date")
+
+    // Step 1: Find events occurring at the specified venue and date
+    const events = await Event.find({
+      venue: "KMC Greens, Main Stage",
+      startDate: { $gt: new Date(date) },
+      endDate: { $lt: new Date(date + "T23:59:59.999Z") }
+    });
+    console.log(events.length, "events found");
+
+    // Step 2: Fetch teams for all events
+    const teamsByEvent = [];
+    for (const event of events) {
+      const teams = await Team.find({ event: event._id });
+      teamsByEvent.push(...teams);
     }
-    slots.push({ number: order, ...college });
+    console.log(teamsByEvent.length, "teams found in total");
+
+    // Step 3: Create practice slots by removing duplicate teams based on college
+    const slots = [];
+    const addedTeams = new Set(); // Track teams by college to remove duplicates
+    let order = 0;
+    for (const team of teamsByEvent) {
+      const teamIdentifier = `${team.college}-${team.index}`; // Unique identifier for the team
+      if (!addedTeams.has(teamIdentifier)) {
+        console.log("Team added:", teamIdentifier);
+        order += 1;
+        const college = await CollegeModel.findOne({ _id: team.college });
+        await PracticeSlotModel.create({
+          number: order,
+          college: team.college,
+          date: date,
+          index:team.index
+        });
+        slots.push({ team: team.index, location: college.location, college: college.name, order: order });
+        addedTeams.add(teamIdentifier);
+      } else {
+        console.log("Team removed:", teamIdentifier);
+      }
+    }
+    console.log(slots.length, "slots created");
+
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: slots,
+    });
+  } catch (error) {
+    console.error("Error creating practice slots:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
   }
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: slots,
-  });
 };
+
+
+
 
 const getPracticeSlots = async (req, res, next) => {
-  console.log(2);
-  let slots = await PracticeSlotModel.find().populate('college');
-  if (!slots) next();
-  slots = slots.map(slot => ({
-    id: slot.id,
-    number: slot.number,
-    ...slot.college.toObject(),
-  }));
+  try {
+    // Fetch practice slots with populated college details
+    
+    const slots = await PracticeSlotModel.find({});
 
-  return res.json({
-    status: 200,
-    message: "Success",
-    data: slots,
-  });
+    // Check if practice slots are found
+    if (!slots || slots.length === 0) {
+      return res.status(404).json({ status: 404, message: "Practice slots not found" });
+    }
+
+    // Map the practice slots data to include college name, location, and team details
+    const populatedSlots = await Promise.all(slots.map(async (slot) => {
+      const College = await CollegeModel.findById(slot.college);
+      // Check if college is found
+      if (!College) {
+        throw new Error("College not found for practice slot");
+      }
+      // Format the data with college name and location
+      const slotData = {
+        order: slot.number,
+        date:slot.date,
+        college: College.name,
+        location: College.location,
+        team: slot.index
+      };
+      return slotData;
+    }));
+
+    // Return the populated data with college details
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: populatedSlots
+    });
+  } catch (error) {
+    console.error("Error fetching practice slots:", error);
+    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+  }
 };
+
 
 
 const deletePracticeSlots = async (req, res) => {
-  await PracticeSlotModel.deleteMany();
+  const date = req.body.date;
+  await PracticeSlotModel.deleteMany({date:new Date(date)});
   return res.json({
     status: 200,
     message: "Success",
