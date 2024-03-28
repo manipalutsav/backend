@@ -9,7 +9,11 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: "College",
     required: true,
-  }
+  },
+  index: {
+    type: Number,
+  },
+  date:Date
 };
 
 const options = {
