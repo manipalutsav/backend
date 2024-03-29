@@ -9,7 +9,7 @@ const createPracticeSlot = async (req, res) => {
 
     // Assuming the date is provided in the request body, ensure it's in the correct format
     const date = req.body.date;
-    console.log(date+" this is date")
+    console.log(date + " this is date");
 
     // Step 1: Find events occurring at the specified venue and date
     const events = await Event.find({
@@ -27,21 +27,44 @@ const createPracticeSlot = async (req, res) => {
     }
     console.log(teamsByEvent.length, "teams found in total");
 
+    const shuffle = (array) => {
+      let currentIndex = array.length;
+    
+      // While there remain elements to shuffle...
+      while (currentIndex != 0) {
+    
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+    
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+    }
+
+    shuffle(teamsByEvent)
+
     // Step 3: Create practice slots by removing duplicate teams based on college
     const slots = [];
     const addedTeams = new Set(); // Track teams by college to remove duplicates
     let order = 0;
+    const mangaloreColleges = [];
     for (const team of teamsByEvent) {
       const teamIdentifier = `${team.college}-${team.index}`; // Unique identifier for the team
+      const college = await CollegeModel.findOne({ _id: team.college });
+      if (college.location === "Mangalore") {
+        mangaloreColleges.push({ team, college });
+        continue; // Skip adding Mangalore colleges for now
+      }
       if (!addedTeams.has(teamIdentifier)) {
         console.log("Team added:", teamIdentifier);
         order += 1;
-        const college = await CollegeModel.findOne({ _id: team.college });
         await PracticeSlotModel.create({
           number: order,
           college: team.college,
           date: date,
-          index:team.index
+          index: team.index
         });
         slots.push({ team: team.index, location: college.location, college: college.name, order: order });
         addedTeams.add(teamIdentifier);
@@ -49,6 +72,26 @@ const createPracticeSlot = async (req, res) => {
         console.log("Team removed:", teamIdentifier);
       }
     }
+
+    // Add Mangalore colleges at the end
+    for (const { team, college } of mangaloreColleges) {
+      const teamIdentifier = `${team.college}-${team.index}`;
+      if (!addedTeams.has(teamIdentifier)) {
+        console.log("Team added:", teamIdentifier);
+        order += 1;
+        await PracticeSlotModel.create({
+          number: order,
+          college: team.college,
+          date: date,
+          index: team.index
+        });
+        slots.push({ team: team.index, location: college.location, college: college.name, order: order });
+        addedTeams.add(teamIdentifier);
+      } else {
+        console.log("Team removed:", teamIdentifier);
+      }
+    }
+
     console.log(slots.length, "slots created");
 
     return res.json({
@@ -64,6 +107,7 @@ const createPracticeSlot = async (req, res) => {
     });
   }
 };
+
 
 
 
