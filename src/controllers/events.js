@@ -1237,6 +1237,7 @@ const getTeam = async (req, res, next) => {
   });
 };
 
+
 const getTeams = async (req, res) => {
   let teams = await TeamModel.find({ event: req.params.event }).populate("college");
 
