@@ -27,6 +27,24 @@ const createPracticeSlot = async (req, res) => {
     }
     console.log(teamsByEvent.length, "teams found in total");
 
+    const shuffle = (array) => {
+      let currentIndex = array.length;
+    
+      // While there remain elements to shuffle...
+      while (currentIndex != 0) {
+    
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+    
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+    }
+
+    shuffle(teamsByEvent)
+
     // Step 3: Create practice slots by removing duplicate teams based on college
     const slots = [];
     const addedTeams = new Set(); // Track teams by college to remove duplicates
