@@ -330,6 +330,54 @@ const getAllEventsRanking = async (req, res) => {
 
 }
 
+const getPublishedEventsRanking = async (req, res) => {
+  try {
+    let events = await EventModel.find();
+    let response = [];
+    //get the latest leaderboard of all events
+    await Promise.all(events.map(async event => {
+      try {
+        //if event doesn't have any rounds, move to next event.
+        if (event.rounds.length == 0)
+          return;
+        //get last round id
+        let roundId = event.rounds[event.rounds.length - 1];
+        const round = await RoundModel.findOne({ _id: roundId });
+        if(!round.published)
+        {
+          response.push({
+            event,
+            ranks:[],
+          });
+          return;
+        }
+        // console.log(event, roundId);
+        let leaderboard = await getRoundLeaderboard(roundId);
+        let ranks = leaderboard.filter(item => item.slot.college._id == req.params.college);
+        response.push({
+          event,
+          ranks,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }))
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: response,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: 500,
+      message: "Server Error",
+      data: error,
+    });
+  }
+
+}
+
 module.exports = {
   create,
   get,
@@ -337,5 +385,6 @@ module.exports = {
   getParticipants,
   getTeams,
   update,
-  getAllEventsRanking
+  getAllEventsRanking,
+  getPublishedEventsRanking,
 };
