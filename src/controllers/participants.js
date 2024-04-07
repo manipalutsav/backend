@@ -53,12 +53,10 @@ const update = async (req, res) => {
         message: "Not Found. No participant was found for the given ID.",
       });
     }
-    console.log(req.body);
 
     if (req.body.name) participant.name = req.body.name;
     if (req.body.registrationID) participant.registrationID = req.body.registrationID;
     if (req.body.certificateEligible !== undefined) participant.certificateEligible = req.body.certificateEligible;
-    console.log(participant)
     await participant.save();
 
     return res.json({
