@@ -186,7 +186,9 @@ const getParticipants = async (req, res) => {
       name: participant.name,
       college: participant.college,
       faculty: participant.faculty,
+      certificateEligible: participant.certificateEligible,
     }));
+
 
     return res.json({
       status: 200,

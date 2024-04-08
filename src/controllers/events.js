@@ -1437,6 +1437,7 @@ const addBulkParticipants = (data, college) => {
           name: each.name,
           college: college,
           faculty: each.faculty,
+          certificateEligible: true,
         });
         members.push(participant._id);
         participant.save(err => {
