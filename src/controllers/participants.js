@@ -56,7 +56,7 @@ const update = async (req, res) => {
 
     if (req.body.name) participant.name = req.body.name;
     if (req.body.registrationID) participant.registrationID = req.body.registrationID;
-
+    if (req.body.certificateEligible !== undefined) participant.certificateEligible = req.body.certificateEligible;
     await participant.save();
 
     return res.json({

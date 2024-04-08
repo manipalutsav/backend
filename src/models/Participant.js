@@ -21,6 +21,10 @@ const schema = {
     required: true,
     default: false,
   },
+  certificateEligible: {
+    type: Boolean,
+    default: true,
+  }
 };
 
 const options = {
