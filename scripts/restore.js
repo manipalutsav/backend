@@ -7,7 +7,7 @@ dotenv.config();
 const importCollection = (collectionName) => {
     return new Promise((resolve, reject) => {
         let db = process.env.MONGODB_DATABASE || "utsav";
-        if (JSON.parse(fs.readFileSync("../database-backup" + collectionName + ".json")).length == 0)
+        if (JSON.parse(fs.readFileSync("../database-backup/" + collectionName + ".json")).length == 0)
             return resolve();
         child_process.exec(`mongoimport --db=${db} --collection=${collectionName}  --jsonArray --file=${collectionName}.json`, {
             cwd: "../database-backup"
