@@ -5,7 +5,6 @@ const { USER_TYPES } = require("../utils/constants");
 const hash = require("../utils/hash");
 const jwt = require("../utils/jwt");
 
-
 /**
  * Get a user
  * @param {object} req the request object

@@ -87,9 +87,7 @@ const create = async (req, res) => {
       message: "Internal Server Error",
     });
   }
-  
 };
-
 /**
  * Deletes a judge by ID and removes all associated judge score records.
  * 

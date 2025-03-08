@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const secretKey = process.env.HMAC_SECRET_KEY || "your-secret-key"; // replace with your actual secret or env variable
+const secretKey = process.env.HMAC_SECRET_KEY || "your-secret-key";
 
 const requireAdmin = (req, res, next) => {
   // Retrieve token from HTTP-only cookies
@@ -16,10 +16,10 @@ const requireAdmin = (req, res, next) => {
     const userData = jwt.verify(token, secretKey);
     // Check if the user type is 1
     if (userData.type === 1) {
-     console.log("User is an admin");
-      next();
+      // Optionally, attach the user data to req for later use
+      req.user = userData;
+      return next();
     } else {
-      console.log("User is not an admin");
       return res.status(403).json({
         status: 403,
         message: "Forbidden. Only users of type 1 can delete judges.",

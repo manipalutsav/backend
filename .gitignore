@@ -158,3 +158,4 @@ dump
 ssl
 
 dist
+scripts/createRootUser.js
