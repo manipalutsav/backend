@@ -1,7 +1,6 @@
 "use strict";
 
 const JudgeModel = require("../models/Judge");
-const JudgeScoreModel = require("../models/JudgeScore");
 
 const getAll = async (req, res) => {
   try {
@@ -87,61 +86,10 @@ const create = async (req, res) => {
       message: "Internal Server Error",
     });
   }
-  
 };
-
-/**
- * Deletes a judge by ID and removes all associated judge score records.
- * 
- * This function:
- * 1. Extracts the judge ID from the request parameters.
- * 2. Checks if the judge exists in the database.
- * 3. If the judge does not exist, returns a 404 error response.
- * 4. Deletes all `JudgeScore` records linked to the specified judge.
- * 5. Deletes the judge record from the database.
- * 6. Returns a success response if the operation is completed successfully.
- * 7. Handles any errors by returning a 500 Internal Server Error response.
- * 
- * @param {Object} req - Express request object containing the judge ID in `req.params.id`.
- * @param {Object} res - Express response object for sending JSON responses.
- * @returns {Object} JSON response indicating success or failure of the deletion operation.
- */
-const deleteJudgeById = async (req, res) => {
-  try {
-    const judge_id = req.params.id;
-
-    // Check if the judge exists
-    const judge = await JudgeModel.findById(judge_id);
-    if (!judge) {
-      return res.status(404).json({
-        status: 404,
-        message: "Judge not found",
-      });
-    }
-
-    // Delete related JudgeScore entries
-    await JudgeScoreModel.deleteMany({ judge: judge_id });
-
-    // Delete the judge
-    await JudgeModel.findByIdAndDelete(judge_id);
-
-    return res.json({
-      status: 200,
-      message: "Judge deleted successfully",
-    });
-  } catch (e) {
-    return res.status(500).json({
-      status: 500,
-      message: "Internal Server Error",
-      error: e.message,
-    });
-  }
-};
-
 
 module.exports = {
   getAll,
   getForRound,
   create,
-  deleteJudgeById
 };
