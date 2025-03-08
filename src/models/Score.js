@@ -13,7 +13,7 @@ const schema = {
   },
   judges: [
     {
-      id: mongoose.Schema.Types.ObjectId,
+      id: mongoose.Schema.Types.ObjectId, 
       points: [Number],
     },
   ],
