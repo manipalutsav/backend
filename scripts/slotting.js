@@ -7,14 +7,14 @@ const EventModel = require("../src/models/Event");
 const RoundModel = require("../src/models/Round");
 const TeamModel = require("../src/models/Team");
 
-dotenv.config();
+dotenv.config({path: "../.env"});
 
 
 const connectToDatabase = async () => {
     try {
         const ip = process.env.MONGODB_IP || "127.0.0.1";
-        const port = process.env.MONGODB_PORT;
-        const host = ip + ":" + port;
+        const port = process.env.MONGODB_PORT || 27017;
+        const host = ip + ":" + port ;
         const uri = "mongodb://" + host;
         console.log(uri)
         const options = {
@@ -22,10 +22,12 @@ const connectToDatabase = async () => {
             useUnifiedTopology: true,
             dbName: process.env.MONGODB_DATABASE,
         };
+        console.log(options)
 
         console.log(`Connecting to ${uri}`);
         await mongoose.connect(uri, options);
         console.log("Connected to MongoDB!");
+        console.log("Using database:", process.env.MONGODB_DATABASE || "default_db");
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         process.exit(1);
@@ -42,14 +44,14 @@ const findOrCreateSlot = async (roundId, collegeId, teamIndex) => {
 
 
         // Create new slot for the specified college and team index
-        // const newSlot = new Slot2Model({
-        //     number: newSlotNumber,
-        //     round: roundId,
-        //     college: collegeId,
-        //     teamIndex
-        // });
+        const newSlot = new Slot2Model({
+            number: newSlotNumber,
+            round: roundId,
+            college: collegeId,
+            teamIndex
+        });
 
-        // await newSlot.save();
+        await newSlot.save();
         console.log(`Slot added for round ${roundId}, college ${collegeId}, and teamIndex ${teamIndex} and slot number is ${newSlotNumber}.`);
     } catch (error) {
         console.error("Error creating slot:", error);
@@ -61,7 +63,7 @@ const slotTeamsForEventAndCollege = async (collegeId, eventId) => {
     try {
         
         // Find teams from the specified college in the event
-        const teams = await TeamModel.find({ college: ObjectId(collegeId), event: ObjectId(eventId) });
+        const teams = await TeamModel.find({ college: collegeId, event: eventId });
         // If no teams are found, log a message and return
         if (teams.length === 0) {
             console.log(`No teams found for college ${collegeId} in event ${eventId}.`);

@@ -7,8 +7,8 @@ const { addVolunteer, updateVolunteer, deleteVolunteer, getVolunteers, getVolunt
 
 router.post("/", addVolunteer);
 router.patch("/:volunteerId", updateVolunteer);
-router.delete("/:volunteerId", deleteVolunteer);
 router.get("/:volunteerId", getVolunteer);
 router.get("/all/:type", getVolunteers);
+router.delete("/:volunteerId", deleteVolunteer);
 
 module.exports = router;
