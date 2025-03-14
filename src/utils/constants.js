@@ -30,10 +30,10 @@ const response = (status = 200, data = "") => {
 }
 
 const USER_TYPES = {
-  ADMINISTRATOR: 1 << 0,
-  SUPPORT_TEAM: 1 << 1,
-  FACULTY_COORDINATOR: 1 << 2,
-  STUDENT_COORDINATOR: 1 << 3,
+  ADMINISTRATOR: 1 << 0,      // 1  (2^0)
+  SUPPORT_TEAM: 1 << 1,       // 2  (2^1)
+  FACULTY_COORDINATOR: 1 << 2,// 4  (2^2)
+  STUDENT_COORDINATOR: 1 << 3 // 8  (2^3)
 };
 
 const ROUND_STATUS = {

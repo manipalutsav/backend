@@ -106,6 +106,7 @@ exports.updateVolunteer = async (req, res) => {
 exports.deleteVolunteer = async (req, res) => {
   try {
     const id = req.params.volunteerId
+    
     if (!id || id.length === 0) { throw Error("Id is missing from request"); }
     let volunteer = await VolunteerModel.findById(id);
     if (!volunteer) {
@@ -115,14 +116,15 @@ exports.deleteVolunteer = async (req, res) => {
     if (![1, 4, 8].includes(req.user.type)) {
       throw Error("User does not have permission to delete volunteers");
     }
-    if ([4, 8].includes(req.user.type) && req.user.college != volunteer.collegeId) {
+    
+    if (req.user.college.toString() !== volunteer.collegeId.toString() && [4, 8].includes(req.user.type) ) {
       throw Error("User cannot remove volunteer of another college.");
     }
 
     let deleted = await Deleted.create({
       schema: "CoreVolunteer",
       date: new Date(),
-      user: req.user._id,
+      user: req.user.id, // from _id to id as the payload is having data in { id: '...' } this format,
       data: volunteer
     })
     await VolunteerModel.findByIdAndDelete(id);
@@ -139,6 +141,8 @@ exports.deleteVolunteer = async (req, res) => {
     });
   }
 };
+
+
 
 exports.getVolunteer = async (req, res) => {
   try {

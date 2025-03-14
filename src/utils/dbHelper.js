@@ -27,7 +27,7 @@ class Database {
   connect() {
     return mongoose.connect(this.uri, this.options).then(() => {
       // eslint-disable-next-line no-console
-      console.tick("Database connection successful");
+      console.tick("Database connection successful", this.uri);
     });
   }
 
