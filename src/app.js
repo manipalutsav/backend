@@ -70,6 +70,7 @@ const participationStatus = require("./routes/participationStatus");
 const practiceSlot = require("./routes/practiceSlot");
 const notifications = require("./routes/notifications");
 const settings = require("./routes/settings");
+const slotting = require("./routes/slotting");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
@@ -86,6 +87,8 @@ app.use("/volunteer", volunteerRouter);
 app.use("/practiceSlots", practiceSlot);
 app.use("/notifications", notifications);
 app.use("/settings", settings);
+app.use("/slotting", slotting);
+
 
 // Error handlers
 app.use(handle404);

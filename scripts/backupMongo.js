@@ -6,7 +6,7 @@ const exportCollection = (collectionName) => {
     return new Promise((resolve) => {
         let db = process.env.MONGODB_DATABASE || "utsav";
         child_process.exec(`mongoexport --db=${db} --collection=${collectionName}  --jsonArray --out=${collectionName}.json --pretty`, {
-            cwd: "../backup/dump"
+            cwd: "../database-backup"
         }, (err) => {
             if (err)
                 console.log("Failed to export collection", err);
@@ -17,7 +17,7 @@ const exportCollection = (collectionName) => {
 
 const updateBackupRepo = async () => {
     try {
-        let opts = { cwd: "../backup/dump" };
+        let opts = { cwd: "../database-backup" };
         child_process.execSync("git add .", opts)
         child_process.execSync(`git commit -m "DB Backup"`, opts)
         child_process.execSync(`git push origin ${process.env.BACKUP_BRANCH || "local"}`, opts)
@@ -41,7 +41,7 @@ const backupMongo = async () => {
 }
 
 const backupMongoCronJob = () => {
-    if(process.env.DB_BACKUP === "FALSE"){
+    if (process.env.DB_BACKUP === "FALSE") {
         console.log("Database backup is disabled, skipping");
         return;
     }

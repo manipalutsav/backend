@@ -451,6 +451,7 @@ const login = async (req, res) => {
       email: user.email,
       password: user.password,
       type: user.type,
+      college: user.college, // Included to implement the feature to remove the volunteer of a respective college by their faculty or student coordinator
     });
 
     res.cookie("token", token, {
