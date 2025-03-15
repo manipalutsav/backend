@@ -76,16 +76,16 @@ const slotTeamsForEventAndCollege = async (collegeId, eventId) => {
   try {
     // Find teams from the specified college in the event
     const teams = await TeamModel.find({ college: collegeId, event: eventId });
-    // If no teams are found, log a message and return
     if (teams.length === 0) {
-      console.log(
-        `No teams found for college ${collegeId} in event ${eventId}.`
-      );
+      console.log(`No teams found for college ${collegeId} in event ${eventId}.`);
       return 404;
     }
 
     // Get all rounds in the event
     const rounds = await RoundModel.find({ event: eventId });
+    
+    // We'll track a status for the overall process.
+    let overallStatus = 200;
 
     // For each team, check if there is a slot for each round
     for (const team of teams) {
@@ -96,12 +96,19 @@ const slotTeamsForEventAndCollege = async (collegeId, eventId) => {
           college: ObjectId(collegeId),
           teamIndex: team.index,
         });
-        // If no slot exists, create a new one
         if (!existingSlot) {
-          return await findOrCreateSlot(round._id, collegeId, team.index);
-        }else{
-          console.log(`Slot already exists for round ${round._id}, college ${collegeId}, and teamIndex ${team.index} and slot number is ${existingSlot.number}.`);
-          return 409;
+          // Create a new slot if it doesn't exist
+          const slotStatus = await findOrCreateSlot(round._id, collegeId, team.index);
+          // If slot creation fails, update overall status but continue processing
+          if (slotStatus !== 200) {
+            overallStatus = slotStatus;
+          }
+        } else {
+          console.log(
+            `Slot already exists for round ${round._id}, college ${collegeId}, and teamIndex ${team.index} with slot number ${existingSlot.number}.`
+          );
+          // Mark the overall status as conflict, but continue processing other teams
+          overallStatus = 409;
         }
       }
     }
@@ -109,39 +116,50 @@ const slotTeamsForEventAndCollege = async (collegeId, eventId) => {
     console.log(
       `Slotting completed for all teams from college ${collegeId} in event ${eventId}`
     );
+    return overallStatus;
   } catch (error) {
     console.error("Error:", error);
+    return 500;
   }
 };
 
 const slotCollegeById = async (req, res) => {
   const { collegeId, eventDetails } = req.body;
   try {
+    let finalStatus = 200;
+    // Process each event in eventDetails
     for (const event of eventDetails) {
-      const response = await slotTeamsForEventAndCollege(ObjectId(collegeId), ObjectId(event.id));
-      if (response === 404) {
-        return res.status(404).json({
-          status: 404,
-          message: `No teams found for college ${collegeId} in event ${event.id}.`,
-        });
-      } else if (response === 500) {
-        return res.status(500).json({
-          status: 500,
-          message: `Error slotting teams for college ${collegeId} in event ${event.id}.`,
-        });
-      } else if (response === 200) {
-        return res.status(200).json({
-            status: 200,
-            message: "Slotting completed for all teams from college",
-          });
-      }else if(response === 409){
-        return res.status(409).json({
-          status: 409,
-          message: `Slot already exists for round ${event.id}, college ${collegeId}, and teamIndex ${team.index} and slot number is ${existingSlot.number}.`,
-        });
+      const response = await slotTeamsForEventAndCollege(
+        ObjectId(collegeId),
+        ObjectId(event.id)
+      );
+      // Update finalStatus if any event returns an error status
+      if (response !== 200) {
+        finalStatus = response;
       }
     }
-    
+
+    if (finalStatus === 200) {
+      return res.status(200).json({
+        status: 200,
+        message: "Slotting completed for all teams from college",
+      });
+    } else if (finalStatus === 404) {
+      return res.status(404).json({
+        status: 404,
+        message: `No teams found for one or more events for college ${collegeId}.`,
+      });
+    } else if (finalStatus === 409) {
+      return res.status(409).json({
+        status: 409,
+        message: `One or more slots already exist.`,
+      });
+    } else {
+      return res.status(500).json({
+        status: 500,
+        message: `Error slotting teams for college ${collegeId}.`,
+      });
+    }
   } catch (err) {
     return res.status(500).json({
       status: 500,
@@ -154,3 +172,4 @@ module.exports = {
   getEventsName,
   slotCollegeById,
 };
+
