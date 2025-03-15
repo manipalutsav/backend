@@ -22,6 +22,9 @@ const getEventsName = async (req, res) => {
     for (let eventId of eventIds) {
       // console.log(eventId);
       const event = await EventModel.findById(eventId);
+      if(event.endDate < Date.now()){
+        continue;
+      }
       const eventData = {
         name: event.name,
         id: event._id,
