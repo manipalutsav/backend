@@ -154,6 +154,49 @@ const getPracticeSlots = async (req, res, next) => {
 };
 
 
+const getSoltsByDate = async (req, res, next) => {
+  try {
+    const date = req.body.date
+    // Fetch practice slots with populated college details
+    
+    const slots = await PracticeSlotModel.find({date: new Date(date)});
+
+    // Check if practice slots are found
+    if (!slots || slots.length === 0) {
+      return res.status(404).json({ status: 404, message: "Practice slots not found" });
+    }
+
+    // Map the practice slots data to include college name, location, and team details
+    const populatedSlots = await Promise.all(slots.map(async (slot) => {
+      const College = await CollegeModel.findById(slot.college);
+      // Check if college is found
+      if (!College) {
+        throw new Error("College not found for practice slot");
+      }
+      // Format the data with college name and location
+      const slotData = {
+        order: slot.number,
+        date:slot.date,
+        college: College.name,
+        location: College.location,
+        team: slot.index
+      };
+      return slotData;
+    }));
+
+    // Return the populated data with college details
+    return res.json({
+      status: 200,
+      message: "Success",
+      data: populatedSlots
+    });
+  } catch (error) {
+    console.error("Error fetching practice slots:", error);
+    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+  }
+};
+
+
 
 const deletePracticeSlots = async (req, res) => {
   const date = req.body.date;
@@ -167,5 +210,6 @@ const deletePracticeSlots = async (req, res) => {
 module.exports = {
   createPracticeSlot,
   getPracticeSlots,
-  deletePracticeSlots
+  deletePracticeSlots,
+  getSoltsByDate
 }
