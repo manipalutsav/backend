@@ -10,6 +10,14 @@ const schema = {
     ref: "College",
     required: true,
   },
+  startTime: {
+    type: Date,
+    required: true,
+  },
+  endTime: {
+    type: Date,
+    required: true,
+  },
   index: {
     type: Number,
   },
