@@ -2,6 +2,7 @@ const PracticeSlotModel = require("../models/PracticeSlot");
 const CollegeModel = require("../models/College");
 const Team = require("../models/Team");
 const Event = require("../models/Event");
+const { now } = require("mongoose");
 
 const createPracticeSlot = async (req, res) => {
   try {
@@ -100,25 +101,29 @@ const createPracticeSlot = async (req, res) => {
         data: [],
       });
     }
+    const totalMinutes = (endTime - startTime) / (1000 * 60);
 
-    const totalDuration = endTime - startTime;
-    const slotDuration = totalDuration / totalSlots;
+    // time in minutes per team
+    let timePerTeam = Math.floor(totalMinutes / totalSlots);
 
     // Create practice slots with calculated times
     const slots = [];
+
     for (const { college, team, order } of tempSlots) {
-      const slotStart = new Date(
-        startTime.getTime() + (order - 1) * slotDuration
+      const slotStartTime = new Date(
+        startTime.getTime() + (order-1) * timePerTeam * 60 * 1000
       );
-      const slotEnd = new Date(startTime.getTime() + order * slotDuration);
+      const slotEndTime = new Date(
+        slotStartTime.getTime() + timePerTeam * 60 * 1000
+      );
 
       await PracticeSlotModel.create({
         number: order,
         college: college._id,
         date: date,
         index: team.index,
-        startTime: slotStart,
-        endTime: slotEnd,
+        startTime: slotStartTime,
+        endTime: slotEndTime,
       });
 
       slots.push({
@@ -126,12 +131,12 @@ const createPracticeSlot = async (req, res) => {
         college: college.name,
         team: team.index,
         location: college.location,
-        startTime: slotStart.toLocaleTimeString('en-IN', { 
+        startTime: slotStartTime.toLocaleTimeString('en-IN', { 
           hour: 'numeric',
           minute: '2-digit',
           hour12: true 
         }),
-        endTime: slotEnd.toLocaleTimeString('en-IN', {
+        endTime: slotEndTime.toLocaleTimeString('en-IN', {
           hour: 'numeric',
           minute: '2-digit', 
           hour12: true
@@ -167,6 +172,25 @@ const getPracticeSlots = async (req, res, next) => {
     }
 
     // Map the practice slots data to include college name, location, and team details
+    const formatTime = (dateObj) => {
+      try {
+        // Try using 'en-IN' locale
+        return new Intl.DateTimeFormat('en-IN', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }).format(dateObj);
+      } catch (error) {
+        // Fallback to 'en-US' if 'en-IN' is not available
+        return new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }).format(dateObj);
+      }
+    };
+
+    // Map the practice slots data to include college name, location, and team details
     const populatedSlots = await Promise.all(
       slots.map(async (slot) => {
         const College = await CollegeModel.findById(slot.college);
@@ -174,23 +198,15 @@ const getPracticeSlots = async (req, res, next) => {
         if (!College) {
           throw new Error("College not found for practice slot");
         }
-        // Format the data with college name and location
+        // Format the data with college details and formatted time strings
         const slotData = {
           order: slot.number,
           date: slot.date,
           college: College.name,
           location: College.location,
           team: slot.index,
-          startTime: slot.startTime.toLocaleTimeString('en-IN', { 
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true 
-          }),
-          endTime: slot.endTime.toLocaleTimeString('en-IN', {
-            hour: 'numeric',
-            minute: '2-digit', 
-            hour12: true
-          })
+          startTime: formatTime(slot.startTime),
+          endTime: formatTime(slot.endTime)
         };
         return slotData;
       })
@@ -206,7 +222,7 @@ const getPracticeSlots = async (req, res, next) => {
     console.error("Error fetching practice slots:", error);
     return res
       .status(500)
-      .json({ status: 500, message: "Internal Server Error" });
+      .json({ status: 500, message: error.message }); //Returning for debuging purposes
   }
 };
 
