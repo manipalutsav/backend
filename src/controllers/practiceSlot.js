@@ -108,9 +108,10 @@ const createPracticeSlot = async (req, res) => {
 
     // Create practice slots with calculated times
     const slots = [];
+
     for (const { college, team, order } of tempSlots) {
       const slotStartTime = new Date(
-        startTime.getTime() + order * timePerTeam * 60 * 1000
+        startTime.getTime() + (order-1) * timePerTeam * 60 * 1000
       );
       const slotEndTime = new Date(
         slotStartTime.getTime() + timePerTeam * 60 * 1000
