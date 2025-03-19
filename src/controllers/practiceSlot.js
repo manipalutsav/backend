@@ -214,7 +214,6 @@ const getSoltsByDate = async (req, res, next) => {
   try {
     const date = req.body.date;
     // Fetch practice slots with populated college details
-
     const slots = await PracticeSlotModel.find({ date: new Date(date) });
 
     // Check if practice slots are found
@@ -224,6 +223,25 @@ const getSoltsByDate = async (req, res, next) => {
         .json({ status: 404, message: "Practice slots not found" });
     }
 
+    // Helper function to format time using Intl.DateTimeFormat with a fallback
+    const formatTime = (dateObj) => {
+      try {
+        // Try using 'en-IN' locale
+        return new Intl.DateTimeFormat('en-IN', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }).format(dateObj);
+      } catch (error) {
+        // Fallback to 'en-US' if 'en-IN' is not available
+        return new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }).format(dateObj);
+      }
+    };
+
     // Map the practice slots data to include college name, location, and team details
     const populatedSlots = await Promise.all(
       slots.map(async (slot) => {
@@ -232,23 +250,15 @@ const getSoltsByDate = async (req, res, next) => {
         if (!College) {
           throw new Error("College not found for practice slot");
         }
-        // Format the data with college name and location
+        // Format the data with college details and formatted time strings
         const slotData = {
           order: slot.number,
           date: slot.date,
           college: College.name,
           location: College.location,
           team: slot.index,
-          startTime: slot.startTime.toLocaleTimeString('en-IN', { 
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true 
-          }),
-          endTime: slot.endTime.toLocaleTimeString('en-IN', {
-            hour: 'numeric',
-            minute: '2-digit', 
-            hour12: true
-          })
+          startTime: formatTime(slot.startTime),
+          endTime: formatTime(slot.endTime)
         };
         return slotData;
       })
@@ -264,10 +274,9 @@ const getSoltsByDate = async (req, res, next) => {
     console.error("Error fetching practice slots:", error);
     return res
       .status(500)
-      .json({ status: 500, message: "Internal Server Error" });
+      .json({ status: 500, message: error.message }); //Returning for debuging purposes
   }
 };
-
 const deletePracticeSlots = async (req, res) => {
   const date = req.body.date;
   await PracticeSlotModel.deleteMany({ date: new Date(date) });
