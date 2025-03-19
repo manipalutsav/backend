@@ -1,7 +1,7 @@
-const PracticeSlotModel = require("../models/PracticeSlot");
-const CollegeModel = require("../models/College");
-const Team = require("../models/Team");
-const Event = require("../models/Event");
+const PracticeSlotModel = require('../models/PracticeSlot');
+const CollegeModel = require('../models/College');
+const Team = require('../models/Team');
+const Event = require('../models/Event');
 
 const createPracticeSlot = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ const createPracticeSlot = async (req, res) => {
     if (!inputStartTime || !inputEndTime) {
       return res.status(400).json({
         status: 400,
-        message: "Start time and end time are required",
+        message: 'Start time and end time are required',
       });
     }
 
@@ -23,15 +23,15 @@ const createPracticeSlot = async (req, res) => {
     if (startTime >= endTime) {
       return res.status(400).json({
         status: 400,
-        message: "End time must be after start time",
+        message: 'End time must be after start time',
       });
     }
 
     // Existing logic to get events and teams
     const events = await Event.find({
-      venue: "KMC Greens, Main Stage",
+      venue: 'KMC Greens, Main Stage',
       startDate: { $gt: new Date(date) },
-      endDate: { $lt: new Date(date + "T23:59:59.999Z") },
+      endDate: { $lt: new Date(date + 'T23:59:59.999Z') },
     });
 
     const teamsByEvent = [];
@@ -69,7 +69,7 @@ const createPracticeSlot = async (req, res) => {
       const teamIdentifier = `${team.college}-${team.index}`;
       const college = await CollegeModel.findOne({ _id: team.college });
 
-      if (college.location === "Mangalore") {
+      if (college.location === 'Mangalore') {
         mangaloreColleges.push({ team, college });
         continue;
       }
@@ -96,7 +96,7 @@ const createPracticeSlot = async (req, res) => {
     if (totalSlots === 0) {
       return res.json({
         status: 200,
-        message: "No teams found for practice slots",
+        message: 'No teams found for practice slots',
         data: [],
       });
     }
@@ -126,29 +126,29 @@ const createPracticeSlot = async (req, res) => {
         college: college.name,
         team: team.index,
         location: college.location,
-        startTime: slotStart.toLocaleTimeString('en-IN', { 
+        startTime: slotStart.toLocaleTimeString('en-IN', {
           hour: 'numeric',
           minute: '2-digit',
-          hour12: true 
+          hour12: true,
         }),
         endTime: slotEnd.toLocaleTimeString('en-IN', {
           hour: 'numeric',
-          minute: '2-digit', 
-          hour12: true
-        })
+          minute: '2-digit',
+          hour12: true,
+        }),
       });
     }
 
     return res.json({
       status: 200,
-      message: "Success",
+      message: 'Success',
       data: slots,
     });
   } catch (error) {
-    console.error("Error creating practice slots:", error);
+    console.error('Error creating practice slots:', error);
     return res.status(500).json({
       status: 500,
-      message: "Internal Server Error",
+      message: 'Internal Server Error',
     });
   }
 };
@@ -163,7 +163,7 @@ const getPracticeSlots = async (req, res, next) => {
     if (!slots || slots.length === 0) {
       return res
         .status(404)
-        .json({ status: 404, message: "Practice slots not found" });
+        .json({ status: 404, message: 'Practice slots not found' });
     }
 
     // Map the practice slots data to include college name, location, and team details
@@ -172,7 +172,7 @@ const getPracticeSlots = async (req, res, next) => {
         const College = await CollegeModel.findById(slot.college);
         // Check if college is found
         if (!College) {
-          throw new Error("College not found for practice slot");
+          throw new Error('College not found for practice slot');
         }
         // Format the data with college name and location
         const slotData = {
@@ -181,16 +181,16 @@ const getPracticeSlots = async (req, res, next) => {
           college: College.name,
           location: College.location,
           team: slot.index,
-          startTime: slot.startTime.toLocaleTimeString('en-IN', { 
+          startTime: slot.startTime.toLocaleTimeString('en-IN', {
             hour: 'numeric',
             minute: '2-digit',
-            hour12: true 
+            hour12: true,
           }),
           endTime: slot.endTime.toLocaleTimeString('en-IN', {
             hour: 'numeric',
-            minute: '2-digit', 
-            hour12: true
-          })
+            minute: '2-digit',
+            hour12: true,
+          }),
         };
         return slotData;
       })
@@ -199,14 +199,14 @@ const getPracticeSlots = async (req, res, next) => {
     // Return the populated data with college details
     return res.json({
       status: 200,
-      message: "Success",
+      message: 'Success',
       data: populatedSlots,
     });
   } catch (error) {
-    console.error("Error fetching practice slots:", error);
+    console.error('Error fetching practice slots:', error);
     return res
       .status(500)
-      .json({ status: 500, message: "Internal Server Error" });
+      .json({ status: 500, message: 'Internal Server Error' });
   }
 };
 
@@ -221,7 +221,7 @@ const getSoltsByDate = async (req, res, next) => {
     if (!slots || slots.length === 0) {
       return res
         .status(404)
-        .json({ status: 404, message: "Practice slots not found" });
+        .json({ status: 404, message: 'Practice slots not found' });
     }
 
     // Map the practice slots data to include college name, location, and team details
@@ -230,7 +230,7 @@ const getSoltsByDate = async (req, res, next) => {
         const College = await CollegeModel.findById(slot.college);
         // Check if college is found
         if (!College) {
-          throw new Error("College not found for practice slot");
+          throw new Error('College not found for practice slot');
         }
         // Format the data with college name and location
         const slotData = {
@@ -239,16 +239,18 @@ const getSoltsByDate = async (req, res, next) => {
           college: College.name,
           location: College.location,
           team: slot.index,
-          startTime: slot.startTime.toLocaleTimeString('en-IN', { 
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true 
-          }),
-          endTime: slot.endTime.toLocaleTimeString('en-IN', {
-            hour: 'numeric',
-            minute: '2-digit', 
-            hour12: true
-          })
+          startTime:
+            slot.startTime?.toLocaleTimeString('en-IN', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            }) || '',
+          endTime:
+            slot.endTime?.toLocaleTimeString('en-IN', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            }) || '',
         };
         return slotData;
       })
@@ -257,14 +259,15 @@ const getSoltsByDate = async (req, res, next) => {
     // Return the populated data with college details
     return res.json({
       status: 200,
-      message: "Success",
+      message: 'Success',
       data: populatedSlots,
     });
   } catch (error) {
-    console.error("Error fetching practice slots:", error);
-    return res
-      .status(500)
-      .json({ status: 500, message: "Internal Server Error" });
+    console.error('Error fetching practice slots:', error);
+    return res.status(500).json({
+      status: 500,
+      message: 'Internal Server Error, Error during getSoltsByDate:',
+    });
   }
 };
 
@@ -273,7 +276,7 @@ const deletePracticeSlots = async (req, res) => {
   await PracticeSlotModel.deleteMany({ date: new Date(date) });
   return res.json({
     status: 200,
-    message: "Success",
+    message: 'Success',
   });
 };
 
