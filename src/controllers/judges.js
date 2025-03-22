@@ -1,8 +1,8 @@
 "use strict";
-
+const ObjectId = require("mongodb").ObjectId;
 const JudgeModel = require("../models/Judge");
 const JudgeScoreModel = require("../models/JudgeScore");
-
+const FeedbackModel = require("../models/Feedback");
 const getAll = async (req, res) => {
   try {
     let judges = await JudgeModel.find();
@@ -89,16 +89,17 @@ const create = async (req, res) => {
   }
 };
 /**
- * Deletes a judge by ID and removes all associated judge score records.
+ * Deletes a judge by ID and removes all associated judge score records and feedback.
  * 
  * This function:
  * 1. Extracts the judge ID from the request parameters.
  * 2. Checks if the judge exists in the database.
  * 3. If the judge does not exist, returns a 404 error response.
  * 4. Deletes all `JudgeScore` records linked to the specified judge.
- * 5. Deletes the judge record from the database.
- * 6. Returns a success response if the operation is completed successfully.
- * 7. Handles any errors by returning a 500 Internal Server Error response.
+ * 5. Deletes all `Feedback` records linked to the specified judge.
+ * 6. Deletes the judge record from the database.
+ * 7. Returns a success response if the operation is completed successfully.
+ * 8. Handles any errors by returning a 500 Internal Server Error response.
  * 
  * @param {Object} req - Express request object containing the judge ID in `req.params.id`.
  * @param {Object} res - Express response object for sending JSON responses.
@@ -122,6 +123,7 @@ const deleteJudgeById = async (req, res) => {
 
     // Delete the judge
     await JudgeModel.findByIdAndDelete(judge_id);
+    await FeedbackModel.deleteOne({judge: ObjectId((judge_id))});
 
     return res.json({
       status: 200,
