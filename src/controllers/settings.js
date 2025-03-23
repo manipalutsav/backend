@@ -32,7 +32,6 @@ const get = async (req, res) => {
         data: settings[setting],
       });
     }
-
     return res.json({
       status: 404,
       message: "No setting found with the given name",
@@ -70,8 +69,9 @@ const getAll = async (req, res) => {
 };
 
 const updateSettings = async (req, res) => {
-  let { title, editTeamEnabled } = req.body;
-  if( title === null || editTeamEnabled === null) {
+  
+  let { title, editTeamEnabled, downloadCertificateEnabled } = req.body;
+  if( title === null || editTeamEnabled === null || downloadCertificateEnabled === null) {
     return res.status(404).json({
       status: 400,
       message: "Bad request",
@@ -85,10 +85,12 @@ const updateSettings = async (req, res) => {
     setting = await SettingModel.create({
       title: title,
       editTeamEnabled: editTeamEnabled,
+      downloadCertificateEnabled: downloadCertificateEnabled,
     });
   }else{
     setting.title = title;
     setting.editTeamEnabled = editTeamEnabled;
+    setting.downloadCertificateEnabled = downloadCertificateEnabled;
     await setting.save();
   }
 

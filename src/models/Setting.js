@@ -10,6 +10,10 @@ const schema = {
     type: Boolean,
     required: true,
   },
+  downloadCertificateEnabled:{
+    type: Boolean,
+    required: true,
+  }
 };
 
 const options = {
