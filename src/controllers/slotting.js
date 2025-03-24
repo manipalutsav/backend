@@ -10,37 +10,82 @@ const getEventsName = async (req, res) => {
     const collegeName = req.body.collegeName;
     const college = await CollegeModel.findOne({ name: collegeName });
     if (!college) {
-      return res.status(404).json({
-        status: 404,
-        message: "Not Found. No college was found for the specified name.",
-      });
+      return res.status(404).json({ status: 404, message: "College not found" });
     }
-    const events = await TeamModel.find({ college: college._id });
-    const eventIds = events.map((event) => event.event);
-    let eventDetails = [];
-    let eventData = {};
-    for (let eventId of eventIds) {
-      // console.log(eventId);
+
+    // Get unique event IDs using aggregation
+    const events = await TeamModel.aggregate([
+      { $match: { college: college._id } },
+      { $group: { _id: "$event" } }
+    ]);
+
+    const eventDetails = [];
+
+    for (const eventObj of events) {
+      const eventId = eventObj._id;
       const event = await EventModel.findById(eventId);
-      if(event.endDate < Date.now()){
-        continue;
+      
+      if (!event || event.endDate < Date.now()) continue;
+
+      const rounds = await RoundModel.find({ event: eventId });
+      const teams = await TeamModel.find({ 
+        college: college._id, 
+        event: eventId 
+      });
+
+      const unslottedTeams = [];
+      
+      for (const team of teams) {
+        const missingRounds = [];
+        
+        const slotChecks = await Promise.all(rounds.map(async (round) => {
+          const exists = await Slot2Model.exists({
+            round: round._id,
+            college: college._id,
+            teamIndex: team.index
+          });
+          
+          if (!exists) missingRounds.push({
+            roundId: round._id,
+            roundName: round.name
+          });
+          
+          return exists;
+        }));
+
+        if (missingRounds.length > 0) {
+          unslottedTeams.push({
+            teamId: team._id,
+            teamIndex: team.index,
+            missingRounds,
+            fullySlotted: false
+          });
+        }
       }
-      const eventData = {
-        name: event.name,
-        id: event._id,
-      };
-      eventDetails.push(eventData);
+
+      // Only add event if it has unslotted teams
+      if (unslottedTeams.length > 0) {
+        eventDetails.push({
+          id: event._id,
+          name: event.name,
+          unslottedTeams,
+          totalTeams: teams.length,
+          slottedTeams: teams.length - unslottedTeams.length
+        });
+      }
     }
+
     return res.status(200).json({
       status: 200,
       message: "Success",
-      eventDetails,
+      data: {
+        collegeId: college._id,
+        collegeName: college.name,
+        events: eventDetails
+      }
     });
   } catch (err) {
-    return res.status(500).json({
-      status: 500,
-      message: err.message,
-    });
+    return res.status(500).json({ status: 500, message: err.message });
   }
 };
 
@@ -142,7 +187,7 @@ const slotCollegeById = async (req, res) => {
     if (finalStatus === 200) {
       return res.status(200).json({
         status: 200,
-        message: "Slotting completed for all teams from college",
+        message: "Slotting completed for all teams from college ✅",
       });
     } else if (finalStatus === 404) {
       return res.status(404).json({
