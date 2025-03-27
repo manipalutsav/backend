@@ -43,7 +43,7 @@ const getRoundLeaderboard = async (roundId) => {
   let leaderboard = [];
   Array.from(slotIds)
     .map(slotId => slots.find(slot => String(slot._id) == slotId))//add slot details
-    .filter(slot => slot && !slot.disqualified)//filter out disqualified teams
+    .filter(slot => !slot.disqualified)//filter out disqualified teams
     .forEach(slot => {
       let total = scores.filter(score => score.slot == String(slot._id)).reduce((total, score) => total + score.total, 0);
       let bias = getOvertimeMinusPoints(slot.overtime)
@@ -124,7 +124,7 @@ const get2 = async (req, res) => {
     console.log(e)
     return res.status(500).json({
       status: 500,
-      message: "Internal Server Error",
+      message: e.message,
     });
   }
 
