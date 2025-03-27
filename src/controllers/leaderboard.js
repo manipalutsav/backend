@@ -39,12 +39,11 @@ const getRoundLeaderboard = async (roundId) => {
     score.total = score.points.reduce((p1, p2) => p1 + p2);
     slotIds.add(score.slot);
   })
-
   //add up totals for each slot
   let leaderboard = [];
   Array.from(slotIds)
     .map(slotId => slots.find(slot => String(slot._id) == slotId))//add slot details
-    .filter(slot => !slot.disqualified)//filter out disqualified teams
+    .filter(slot => slot && !slot.disqualified)//filter out disqualified teams
     .forEach(slot => {
       let total = scores.filter(score => score.slot == String(slot._id)).reduce((total, score) => total + score.total, 0);
       let bias = getOvertimeMinusPoints(slot.overtime)
@@ -490,6 +489,88 @@ const publish = async (req, res) => {
   }
 };
 
+
+const getLeaderBoard = async (req, res) => {
+  const remove_college_list = [{ name: "Cultural Coordination Committee", location: "Manipal" }, { name: "Kasturba Hospital", location: "Manipal" }, { name: "MAHE", location: "Manipal" }];
+
+  try {
+    let events = await EventModel.find({ faculty: false }).sort({ startDate: 1 });
+    events = events.filter((ev) => ev.name !== "Staff Variety Entertainment" && ev.name !== "Poetry (Kannada)");
+
+    let colleges = await CollegeModel.find().sort({ name: 1 });
+    colleges = colleges.filter((college) => { // Filter out the colleges that shouldn't be in the leaderboard
+      return (remove_college_list.find(r_college => r_college.name == college.name && r_college.location == college.location) == undefined);
+    })
+    let set = [];
+
+    for (let i = 0; i < events.length; i++) {
+      let event = events[i];
+
+      if (event.rounds.length == 0) continue;
+      let round = await RoundModel.find({ event: event._id, _id: event.rounds[0], published: true });
+      if (round.length == 0) continue;
+      console.log(round);
+      let scores = await JudgeScoreModel.find({ round: round[0]._id });
+      let slots = await Slot2Model.find({
+        round: round[0]._id
+      }).populate('college');
+
+      let slotIds = new Set();
+
+      scores.forEach(score => {
+        score.total = score.points.reduce((p1, p2) => p1 + p2);
+        slotIds.add(score.slot);
+      })
+
+
+      let leaderboard = [];
+      Array.from(slotIds)
+        .map(slotId => slots.find(slot => String(slot._id) == slotId))
+        .filter(slot => !slot.disqualified)//filter out disqualified teams
+        .forEach(slot => {
+          let total = scores.filter(score => score.slot == String(slot._id)).reduce((total, score) => total + score.total, 0);
+          let bias = getOvertimeMinusPoints(slot.overtime)
+          total = total - bias;
+          if (!leaderboard.find(leaderboardItem => leaderboardItem.slot._id == slot._id))
+            leaderboard.push({ slot: slot, total })
+        })
+
+
+      leaderboard.sort((p1, p2) => p2.total - p1.total);
+
+      let scoreOrder = Array.from(new Set(leaderboard.map(item => item.total)));
+      leaderboard.forEach(item => {
+        item.rank = scoreOrder.indexOf(item.total) + 1;
+      })
+
+      leaderboard.forEach(item => {
+        // #TODO, two teams of same college winning in one event.
+        if (item.rank <= 3) {
+          set.push({
+            college: item.slot.college,
+            event: event.id,
+            rank: item.rank
+          });
+        }
+      });
+
+    }
+
+
+    res.status(200).json({
+      status: 200,
+      message: "Success",
+      data: set,
+    });
+
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: e.message,
+    });
+  }
+}
+
 module.exports = {
   get,
   get2,
@@ -498,5 +579,6 @@ module.exports = {
   init,
   publish,
   update,
-  getRoundLeaderboard
+  getRoundLeaderboard,
+  getLeaderBoard
 };
