@@ -13,7 +13,11 @@ const schema = {
   downloadCertificateEnabled:{
     type: Boolean,
     required: true,
-  }
+  },
+  navbarDownloadCertificate:{
+    type: Boolean,
+    required: true,
+  },
 };
 
 const options = {

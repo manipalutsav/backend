@@ -20,4 +20,7 @@ router.post("/publish", Leaderboard.publish);
 // Modify the leaderboard with updated scores of the given college
 router.patch("/:college", Leaderboard.update);
 
+//Get the published events data for leaderboard
+router.get("/getleaderboard", Leaderboard.getLeaderBoard);
+
 module.exports = router;

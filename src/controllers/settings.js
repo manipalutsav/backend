@@ -70,8 +70,8 @@ const getAll = async (req, res) => {
 
 const updateSettings = async (req, res) => {
   
-  let { title, editTeamEnabled, downloadCertificateEnabled } = req.body;
-  if( title === null || editTeamEnabled === null || downloadCertificateEnabled === null) {
+  let { title, editTeamEnabled, downloadCertificateEnabled, navbarDownloadCertificate } = req.body;
+  if( title === null || editTeamEnabled === null || downloadCertificateEnabled === null , navbarDownloadCertificate === null) {
     return res.status(404).json({
       status: 400,
       message: "Bad request",
@@ -79,18 +79,20 @@ const updateSettings = async (req, res) => {
   }
 
   if(title == "") title = "MUCAPP";
-
+  
   let setting = await SettingModel.findOne();
   if(!setting){ // Setting doesn't exist, create it
     setting = await SettingModel.create({
       title: title,
       editTeamEnabled: editTeamEnabled,
       downloadCertificateEnabled: downloadCertificateEnabled,
+      navbarDownloadCertificate: navbarDownloadCertificate,
     });
   }else{
     setting.title = title;
     setting.editTeamEnabled = editTeamEnabled;
     setting.downloadCertificateEnabled = downloadCertificateEnabled;
+    setting.navbarDownloadCertificate = navbarDownloadCertificate;
     await setting.save();
   }
 
