@@ -70,8 +70,8 @@ const getAll = async (req, res) => {
 
 const updateSettings = async (req, res) => {
   
-  let { title, editTeamEnabled, downloadCertificateEnabled, navbarDownloadCertificate } = req.body;
-  if( title === null || editTeamEnabled === null || downloadCertificateEnabled === null , navbarDownloadCertificate === null) {
+  let { title, editTeamEnabled, downloadCertificateEnabled, navbarDownloadCertificate , downloadFacultyCertificates } = req.body;
+  if( title === null || editTeamEnabled === null || downloadCertificateEnabled === null , navbarDownloadCertificate === null , downloadFacultyCertificates === null ) {
     return res.status(404).json({
       status: 400,
       message: "Bad request",
@@ -87,12 +87,14 @@ const updateSettings = async (req, res) => {
       editTeamEnabled: editTeamEnabled,
       downloadCertificateEnabled: downloadCertificateEnabled,
       navbarDownloadCertificate: navbarDownloadCertificate,
+      downloadFacultyCertificates: downloadFacultyCertificates,
     });
   }else{
     setting.title = title;
     setting.editTeamEnabled = editTeamEnabled;
     setting.downloadCertificateEnabled = downloadCertificateEnabled;
     setting.navbarDownloadCertificate = navbarDownloadCertificate;
+    setting.downloadFacultyCertificates = downloadFacultyCertificates;
     await setting.save();
   }
 
