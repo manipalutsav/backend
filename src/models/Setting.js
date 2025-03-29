@@ -18,6 +18,10 @@ const schema = {
     type: Boolean,
     required: true,
   },
+  downloadFacultyCertificates:{
+    type: Boolean,
+    required: true,
+  },
 };
 
 const options = {
