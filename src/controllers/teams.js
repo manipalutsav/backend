@@ -3,6 +3,9 @@
 const TeamModel = require("../models/Team");
 const EventModel = require("../models/Event");
 const ParticipantModel = require("../models/Participant");
+const path = require("path");
+const fs = require("fs");
+const WinnerSubmission = require("../models/Winners");
 
 /**
  * Add new team into the system.
@@ -128,9 +131,98 @@ const deleteOne = async (req, res) => {
   }
 };
 
+
+const getTeamByCollegeIdAndEventId = async (req, res) => {
+  try {
+    const { collegeId, eventId } = req.params;
+    if(!collegeId || !eventId){
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request",
+      });
+    }
+    let team = await TeamModel.findOne({ event: eventId, college: collegeId });
+
+    return res.status(200).json({
+      status: 200,
+      message: "Success",
+      data: team,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+
+const VALID_PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
+
+exports.submitWinners = async (req, res) => {
+  try {
+    const { collegeId, eventId, participants } = req.body;
+
+    if (!collegeId || !eventId || !participants || !Array.isArray(participants)) {
+      return res.status(400).json({ message: "Invalid input data" });
+    }
+
+    const parsedParticipants = [];
+
+    for (let i = 0; i < participants.length; i++) {
+      const p = participants[i];
+
+      // Validate PAN number
+      if (!VALID_PAN_REGEX.test(p.pan)) {
+        return res.status(400).json({ message: `Invalid PAN number for participant ${i + 1}` });
+      }
+
+      // Validate uploaded files exist
+      const panFile = req.files[`panPhoto-${i}`]?.[0];
+      const chequeFile = req.files[`chequePhoto-${i}`]?.[0];
+
+      if (!panFile || !chequeFile) {
+        return res.status(400).json({ message: `Missing files for participant ${i + 1}` });
+      }
+
+      // File validation (size and type already handled in middleware)
+      parsedParticipants.push({
+        name: p.name,
+        regNo: p.regNo,
+        pan: p.pan,
+        panPhotoPath: panFile.path,
+        accountNumber: p.accountNumber,
+        bankName: p.bankName,
+        branch: p.branch,
+        ifsc: p.ifsc,
+        phone: p.phone,
+        chequePhotoPath: chequeFile.path
+      });
+    }
+
+    // Save to DB
+    const newSubmission = new WinnerSubmission({
+      collegeId,
+      eventId,
+      participants: parsedParticipants
+    });
+
+    await newSubmission.save();
+
+    res.status(200).json({ message: "Submission successful", submissionId: newSubmission._id });
+  } catch (error) {
+    console.error("Winner submission error:", error);
+    res.status(500).json({ message: e.message });
+  }
+};
+
+
 module.exports = {
   create,
   get,
   getAll,
   deleteOne,
+  getTeamByCollegeIdAndEventId
 };
