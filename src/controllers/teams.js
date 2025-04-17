@@ -156,65 +156,45 @@ const getTeamByCollegeIdAndEventId = async (req, res) => {
   }
 };
 
-
-
-
+// Regular expression for PAN validation (case-insensitive)
 const VALID_PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
-
-exports.submitWinners = async (req, res) => {
+const submitWinners = async (req, res) => {
+  console.log("Received files array:", JSON.stringify(req.files, null, 2));
   try {
-    const { collegeId, eventId, participants } = req.body;
+      // Parse the participants string into an array
+      const participants = JSON.parse(req.body.participants);
 
-    if (!collegeId || !eventId || !participants || !Array.isArray(participants)) {
-      return res.status(400).json({ message: "Invalid input data" });
-    }
+      // Map frontend fields to schema fields
+      const processedParticipants = participants.map((p, i) => {
+          const panFile = req.files.find(file => file.fieldname === `panPhoto-${i}`);
+          const chequeFile = req.files.find(file => file.fieldname === `chequePhoto-${i}`);
 
-    const parsedParticipants = [];
-
-    for (let i = 0; i < participants.length; i++) {
-      const p = participants[i];
-
-      // Validate PAN number
-      if (!VALID_PAN_REGEX.test(p.pan)) {
-        return res.status(400).json({ message: `Invalid PAN number for participant ${i + 1}` });
-      }
-
-      // Validate uploaded files exist
-      const panFile = req.files[`panPhoto-${i}`]?.[0];
-      const chequeFile = req.files[`chequePhoto-${i}`]?.[0];
-
-      if (!panFile || !chequeFile) {
-        return res.status(400).json({ message: `Missing files for participant ${i + 1}` });
-      }
-
-      // File validation (size and type already handled in middleware)
-      parsedParticipants.push({
-        name: p.name,
-        regNo: p.regNo,
-        pan: p.pan,
-        panPhotoPath: panFile.path,
-        accountNumber: p.accountNumber,
-        bankName: p.bankName,
-        branch: p.branch,
-        ifsc: p.ifsc,
-        phone: p.phone,
-        chequePhotoPath: chequeFile.path
+          return {
+              name: p.name,
+              regNo: p.regNumber,
+              pan: p.panNumber,
+              accountNumber: p.bankAccount,
+              bankName: p.bankName,
+              branch: p.branch,
+              ifsc: p.ifsc,
+              phone: p.phone,
+              panPhotoPath: panFile ? panFile.path : null,
+              chequePhotoPath: chequeFile ? chequeFile.path : null
+          };
       });
-    }
 
-    // Save to DB
-    const newSubmission = new WinnerSubmission({
-      collegeId,
-      eventId,
-      participants: parsedParticipants
-    });
+      // Create and save the WinnerSubmission document
+      const winnerSubmission = new WinnerSubmission({
+          collegeId: req.body.collegeId,
+          eventId: req.body.eventId,
+          participants: processedParticipants
+      });
 
-    await newSubmission.save();
-
-    res.status(200).json({ message: "Submission successful", submissionId: newSubmission._id });
+      await winnerSubmission.save();
+      res.status(200).json({ message: 'Winners submitted successfully' });
   } catch (error) {
-    console.error("Winner submission error:", error);
-    res.status(500).json({ message: e.message });
+      console.error('Winner submission error:', error);
+      res.status(500).json({ error: 'Failed to submit winners' });
   }
 };
 
@@ -224,5 +204,6 @@ module.exports = {
   get,
   getAll,
   deleteOne,
-  getTeamByCollegeIdAndEventId
+  submitWinners,
+  getTeamByCollegeIdAndEventId,
 };
