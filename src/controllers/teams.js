@@ -3,6 +3,9 @@
 const TeamModel = require("../models/Team");
 const EventModel = require("../models/Event");
 const ParticipantModel = require("../models/Participant");
+const path = require("path");
+const fs = require("fs");
+const WinnerSubmission = require("../models/Winners");
 
 /**
  * Add new team into the system.
@@ -128,9 +131,79 @@ const deleteOne = async (req, res) => {
   }
 };
 
+
+const getTeamByCollegeIdAndEventId = async (req, res) => {
+  try {
+    const { collegeId, eventId } = req.params;
+    if(!collegeId || !eventId){
+      return res.status(400).json({
+        status: 400,
+        message: "Bad Request",
+      });
+    }
+    let team = await TeamModel.findOne({ event: eventId, college: collegeId });
+
+    return res.status(200).json({
+      status: 200,
+      message: "Success",
+      data: team,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// Regular expression for PAN validation (case-insensitive)
+const VALID_PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
+const submitWinners = async (req, res) => {
+  console.log("Received files array:", JSON.stringify(req.files, null, 2));
+  try {
+      // Parse the participants string into an array
+      const participants = JSON.parse(req.body.participants);
+
+      // Map frontend fields to schema fields
+      const processedParticipants = participants.map((p, i) => {
+          const panFile = req.files.find(file => file.fieldname === `panPhoto-${i}`);
+          const chequeFile = req.files.find(file => file.fieldname === `chequePhoto-${i}`);
+
+          return {
+              name: p.name,
+              regNo: p.regNumber,
+              pan: p.panNumber,
+              accountNumber: p.bankAccount,
+              bankName: p.bankName,
+              branch: p.branch,
+              ifsc: p.ifsc,
+              phone: p.phone,
+              panPhotoPath: panFile ? panFile.path : null,
+              chequePhotoPath: chequeFile ? chequeFile.path : null
+          };
+      });
+
+      // Create and save the WinnerSubmission document
+      const winnerSubmission = new WinnerSubmission({
+          collegeId: req.body.collegeId,
+          eventId: req.body.eventId,
+          participants: processedParticipants
+      });
+
+      await winnerSubmission.save();
+      res.status(200).json({ message: 'Winners submitted successfully' });
+  } catch (error) {
+      console.error('Winner submission error:', error);
+      res.status(500).json({ error: 'Failed to submit winners' });
+  }
+};
+
+
 module.exports = {
   create,
   get,
   getAll,
   deleteOne,
+  submitWinners,
+  getTeamByCollegeIdAndEventId,
 };

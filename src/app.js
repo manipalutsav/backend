@@ -72,6 +72,7 @@ const notifications = require("./routes/notifications");
 const settings = require("./routes/settings");
 const slotting = require("./routes/slotting");
 const feedback = require("./routes/feedback");
+const teams = require("./routes/teams");
 
 app.use("/colleges", collegesRouter);
 app.use("/events", eventsRouter);
@@ -90,6 +91,7 @@ app.use("/notifications", notifications);
 app.use("/settings", settings);
 app.use("/slotting", slotting);
 app.use("/feedback", feedback)
+app.use("/teams", teams);
 
 // Error handlers
 app.use(handle404);
